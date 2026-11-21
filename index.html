@@ -266,6 +266,27 @@ button:disabled{opacity:.4;cursor:default}
 button:hover:not(:disabled){filter:brightness(1.06)}
 @media (prefers-reduced-motion: reduce){ .toast{transition:none} }
 .kmeter{margin:6px 0 10px}.kv{font-size:15px;margin-bottom:6px}.kv b{font-size:20px}.kv span{color:var(--muted,#6b7480);margin-left:6px}.kbar{position:relative;height:10px;border-radius:6px;background:var(--line,#d8dde3);overflow:hidden}.kbar i{display:block;height:100%;background:linear-gradient(90deg,#2a8450,#e0a21a,#a77bff)}.kbar u{position:absolute;top:0;bottom:0;width:2px;background:var(--bg,#fff);opacity:.8}.kscale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted,#6b7480);margin-top:3px}.kr{padding:3px 0;font-size:13.5px;color:var(--muted,#6b7480)}.kr.ok{color:var(--good,#2a8450)}
+
+#adv{background-image:linear-gradient(var(--accent,#1f6f8b),var(--accent,#1f6f8b));background-repeat:no-repeat;background-position:0 100%;background-size:calc(var(--gp,0)*1%) 3px}
+.goal{margin:8px 0;padding:8px 10px;border:1px solid var(--line,#d8dde3);border-radius:10px}
+.goal .gt{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}.goal .gt b{font-size:14px}.goal .gt small{font-size:12px;color:var(--muted,#6b7480)}
+.goal .prog{height:6px;border-radius:4px;background:var(--line,#d8dde3);overflow:hidden}.goal .prog i{display:block;height:100%;background:var(--accent,#1f6f8b)}
+.ach{display:flex;gap:10px;align-items:flex-start;padding:6px 0;opacity:.55}.ach.got{opacity:1}.ach .ai{font-size:18px;width:22px;text-align:center;color:var(--muted,#6b7480)}.ach.got .ai{color:#d4a017}.ach b{display:block;font-size:14px}.ach small{display:block;font-size:12px;color:var(--muted,#6b7480)}
+.rep{display:flex;gap:12px;align-items:center;margin:6px 0 10px}.rep small{display:block;color:var(--muted,#6b7480);font-size:12px}
+.grade{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;background:#6b7480}.gradeA{background:#2a8450}.gradeB{background:#5a9e3a}.gradeC{background:#c79a1a}.gradeD{background:#d0701f}.gradeF{background:#c2452d}
+textarea#shareBox,textarea#cmpBox{width:100%;box-sizing:border-box;font:12px/1.3 ui-monospace,Menlo,monospace;padding:8px;border-radius:8px;border:1px solid var(--line,#d8dde3);background:var(--panel,#fff);color:inherit;resize:none}
+.cmp td.win{font-weight:700;color:var(--good,#2a8450)}
+
+.ic{display:block;flex:none}
+.tool .sw.ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#16304f;margin-bottom:3px}
+.tool .sw.ic svg{width:19px;height:19px}
+.tech .ti{flex:none;width:36px;height:36px;border-radius:10px;background:var(--btn);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--accent,#1f6f8b)}
+.tech .ti svg{width:21px;height:21px}
+.tech .tb{flex:1;min-width:0}
+.goal .gt .gi2{display:inline-flex;vertical-align:-4px;margin-right:6px;color:var(--accent,#1f6f8b)}
+.goal .gt .gi2 svg{width:17px;height:17px}
+.chip .ic{display:inline-block;vertical-align:-3px;margin-right:3px;width:14px;height:14px}
+textarea#ptNotes,textarea#ptBox{width:100%;box-sizing:border-box;font:12.5px/1.35 ui-monospace,Menlo,monospace;padding:8px;border-radius:8px;border:1px solid var(--line,#d8dde3);background:var(--panel,#fff);color:inherit;resize:vertical}
 </style>
 </head>
 <body>
@@ -273,7 +294,7 @@ button:hover:not(:disabled){filter:brightness(1.06)}
 <div class="upper">
   <header class="top">
     <div class="brand" id="brandBox" role="button" tabindex="0"><b id="brand">SimCity 5000</b><span id="date" class="muted"></span></div>
-    <div class="hbtns"><button class="ghost" id="adv">Tips</button><button class="ghost" id="btnMenu">Menu</button></div>
+    <div class="hbtns"><button class="ghost" id="adv">Goals</button><button class="ghost" id="btnMenu">Menu</button></div>
   </header>
   <section class="stats">
     <div class="stat"><span class="lab">Cash</span><span class="val" id="cash">$0</span></div>
@@ -466,7 +487,7 @@ var FRONTIER={
   quantum:{name:'Quantum computing',cost:3800,req:'ai',sector:'Quantum',frontier:1,desc:'Research is 30% faster, data centers earn 50% more and chip shortages bite 30% less.'},
   supercon:{name:'Room-temperature superconductors',cost:4200,req:'fission',req2:'ai',sector:'Superconductors',frontier:1,desc:'Power lines reach 2 tiles farther and the grid wastes less: 8% more usable power.'},
   carbon:{name:'Carbon capture and climate engineering',cost:5200,req:'fission',sector:'Climate tech',frontier:1,desc:'Pollution is cut in half, heatwaves and droughts are half as long, and mood rises a little.'},
-  agi:{name:'General-purpose AI',cost:7000,req:'quantum',req2:'ai',sector:'AGI',frontier:1,desc:'Income tax revenue up 15% and services cost 15% less. But about 8% of jobs vanish and social needs rise 25%.'},
+  agi:{name:'General-purpose AI',cost:7000,req:'quantum',req2:'ai',sector:'AGI',frontier:1,desc:'Income tax revenue up 15% and automation spreads fast. It also raises AI risk. Fund oversight or pay the price.'},
   rockets:{name:'Reusable launch vehicles',cost:3000,req:'materials',req2:'ai',sector:'Launch',frontier:1,desc:'Unlocks the Spaceport, a capital project that earns launch fees.'},
   orbital:{name:'Orbital manufacturing',cost:6000,req:'rockets',sector:'Space industry',frontier:1,desc:'Spaceports earn double, exports rise 20% and chip shortages bite half as hard.'},
   asteroid:{name:'Asteroid mining',cost:9000,req:'orbital',req2:'fusion',sector:'Space mining',frontier:1,desc:'Materials get cheaper for good, and each spaceport adds mining income.'},
@@ -478,8 +499,10 @@ FRONTIER.antimatter={name:'Antimatter production',cost:26000,req:'orbsolar',req2
 FRONTIER.dyson={name:'Dyson swarm engineering',cost:45000,req:'antimatter',req2:'asteroid',sector:'Stellar engineering',frontier:1,tier:2,desc:'Unlocks Dyson nodes. Research stalls until you are a Type I civilization.'};
 FRONTIER.matrioshka={name:'Matrioshka brains',cost:60000,req:'dyson',req2:'agi',sector:'Computronium',frontier:1,tier:2,desc:'Dyson nodes earn double and research is 50% faster.'};
 FRONTIER.wormhole={name:'Traversable wormholes',cost:100000,req:'matrioshka',sector:'Galactic network',frontier:1,tier:3,desc:'Unlocks Galactic relays. Research stalls until you are a Type II civilization.'};
+TECHS.robotics={name:'Industrial robotics',cost:2800,req:'auto',sector:'Robotics',desc:'Factory robots make goods cheaper and take over assembly work. Many workers will need retraining.'};
+TECHS.svcbot={name:'Service robots',cost:5200,req:'robotics',req2:'ai',sector:'Service robotics',desc:'Robots in shops, kitchens and clinics. Services get cheaper. More jobs are at risk.'};
 (function(){for(var k in FRONTIER)TECHS[k]=FRONTIER[k];})();
-var TECH_ORDER=['solar','fiber','water','auto','bio','ai','fission','fusion','genome','vaccine','autoveh','vfarm','materials','quantum','supercon','carbon','agi','rockets','orbital','asteroid','colony','spaceelev','orbsolar','antimatter','dyson','matrioshka','wormhole'];
+var TECH_ORDER=['solar','fiber','water','auto','bio','ai','fission','fusion','robotics','svcbot','genome','vaccine','autoveh','vfarm','materials','quantum','supercon','carbon','agi','rockets','orbital','asteroid','colony','spaceelev','orbsolar','antimatter','dyson','matrioshka','wormhole'];
 var NAME_A=['Nova','Helio','Quanta','Vertex','Aero','Lumen','Orbit','Kinetic','Zenith','Atlas','Cobalt','Ember','Fathom','Meridian','Pylon','Strata'];
 var NAME_B=['Cell','Labs','Dynamics','Systems','Works','Grid','Genomics','Robotics','Cloud','Energy','Materials','Logic','Networks','Therapeutics'];
 var BUYERS=['Meridian Capital','Apex Holdings','Northstar Group','Titan Industries','Blue Harbor Partners','Orion Global','Summit Corp'];
@@ -636,11 +659,12 @@ function checkSite(ax,ay,id,rot){
 function freshState(start){
   return {month:0,cash:22000,fixedAmt:0,fixedRate:0,varAmt:0,
     mc:{energy:0,freight:0,materials:0,chips:0,food:0,trade:0,health:0,orbit:0,ore:0},crises:[],briefs:[],sched:[],cond:1,renew:1,fail:{water:0,power:0,road:0},
+    auto:{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0},ai:{safety:0.2},aiBust:0,
     phasePay:{},kmax:0,era:0,calpts:[[0,0,1]],alien:null,
     fund:{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]},
-    city:'New Haven',scn:'free',goalsDone:false,sandbox:false,tut:0,advSeen:{},ord:{recycle:false,clean:false,transit:false,retrofit:false},npx:1,
-    tax:{inc:9,sales:6,prop:1,corp:6,bot:0},sp:{svc:1,edu:1,infra:1,welfare:0,safety:1,health:1,udiv:0},stim:0,qe:0,
-    rate:4.0,prevRate:4.0,mort:5.2,infl:2.0,sunF:1,windF:1,
+    city:'New Haven',scn:'free',goalsDone:false,sandbox:false,tut:0,advSeen:{},ord:{recycle:false,clean:false,transit:false,retrofit:false,breaker:false},npx:1,
+    tax:{inc:9,sales:6,prop:1,corp:6,bot:0},sp:{svc:1,edu:1,infra:1,welfare:0,safety:1,health:1,udiv:0,retrain:0,aisafe:0},stim:0,qe:0,
+    rate:4.0,prevRate:4.0,mort:5.2,infl:2.0,anch:1,rn:0,sunF:1,windF:1,
     hpi:100,hpiMom:0,shock:0,bubble:0,recession:0,remote:0,heat:0,drought:0,
     mkt:100,mktD:0,mktBubble:0,panic:0,crash:0,crunch:0,pop:0,approval:70,shopFill:1,lowApproval:0,lowCash:0,lastEvent:0,news:[],
     dins:false,rd:{budget:0,active:'solar',pts:0},tech:{},firms:[],offers:[],fid:1,disasters:true,tor:null,start:start,
@@ -863,6 +887,10 @@ function scan(){
 }
 
 /* ================= economy ================= */
+/* ---- automation and AI ---- */
+function autoTarget(){var T2=S.tech;return Math.min(0.9,(T2.auto?0.12:0)+(T2.robotics?0.14:0)+(T2.svcbot?0.18:0)+(T2.autoveh?0.10:0)+((T2.agi&&!(S.aiBust>0))?0.28:0)+(T2.matrioshka?0.12:0));}
+function aiCap(){var T2=S.tech,dc=(typeof E!=='undefined'&&E&&E.g&&E.g.act)?Math.min(5,E.g.act.dc||0):0;return clamp((0.10*(T2.ai?1:0)+0.12*(T2.quantum?1:0)+0.28*(T2.agi?1:0)+0.18*(T2.matrioshka?1:0)+0.04*dc)*(S.aiBust>0?0.4:1),0,1);}
+function aiRisk(){return aiCap()*Math.pow(1-(S.ai?S.ai.safety:0.2),1.5);}
 /* ---- eras: the world changes as the civilization advances ---- */
 var ERA=[
  {id:'industrial',name:'Industrial',scale:1,desc:'Oil, shipping lanes and grain prices rule the world economy.'},
@@ -905,7 +933,7 @@ function kardashev(g){
 function kLabel(k){return k>=4?'Type IV':k>=3?'Type III':k>=2?'Type II':k>=1?'Type I':'Type 0';}
 function countType(t){var n=0;for(var i=0;i<N;i++){if(T[i]===t)n++;}return n;}
 /* general supply stress = old one-off shock plus the world channels (energy, freight, materials, chips, food, trade) */
-function shk(){var m=S.mc,T2=S.tech;return S.shock+m.energy*0.30*eraW('energy')+m.freight*0.25*eraW('freight')+m.materials*0.25*eraW('materials')+(m.ore||0)*0.08+m.chips*0.06*eraW('chips')*(T2.quantum?0.7:1)*(T2.orbital?0.5:1)+m.food*0.10*eraW('food')*(T2.vfarm?0.5:1)+m.trade*0.08*eraW('trade')-(T2.asteroid?0.15:0);}
+function shk(){var m=S.mc,T2=S.tech;return S.shock+m.energy*0.30*eraW('energy')+m.freight*0.25*eraW('freight')+m.materials*0.25*eraW('materials')+(m.ore||0)*0.08+m.chips*0.06*eraW('chips')*(T2.quantum?0.7:1)*(T2.orbital?0.5:1)+m.food*0.10*eraW('food')*(T2.vfarm?0.5:1)+m.trade*0.08*eraW('trade')-(S.auto?0.10*S.auto.adopt:0)-(T2.asteroid?0.15:0);}
 function mult(){return (1+S.pop/4000)*Math.max(0.7,1+shk())*(1+Math.max(0,S.infl-2)*0.015)*(S.tech.materials?0.88:1);}
 function terrainCost(i){return (TER[i]===FOREST?1.35:1)*(1+0.12*Math.max(0,EL[i]-2));}
 function costFor(id,i){
@@ -927,12 +955,18 @@ function rdRate(g){
 function inflExtra(tight,shock,fiscal,stim,rec,qe,pop){
   return Math.min(1,pop/300)*0.10*Math.max(tight,-0.6)+0.15*shock+0.06*fiscal+(qe>0?0.015:qe<0?-0.012:0)+(stim?0.03:0)+(rec?-0.04:0);
 }
-function inflDelta(infl,rate,tight,shock,fiscal,stim,rec,qe,pop){
-  return 0.03*(2-(rate-infl))+0.008*(2-infl)+inflExtra(tight,shock,fiscal,stim,rec,qe,pop);
+/* Inflation is anchored. People expect something between last year's inflation and the 2% target, and the anchor is strong while the
+   central bank is credible. A rate below neutral pushes inflation up gradually toward a higher resting level instead of accelerating
+   forever. Years of very high inflation loosen the anchor, which makes every mistake costlier until credibility is rebuilt. */
+function inflDelta(infl,rate,tight,shock,fiscal,stim,rec,qe,pop,anch){
+  var an=(anch===undefined||anch===null)?1:anch,A=0.015+0.025*an;
+  var rn=(typeof S!=='undefined'&&S&&S.rn)?S.rn:0;
+  return 0.03*(2+rn-(rate-(0.5*infl+1)))-A*(infl-2)+inflExtra(tight,shock,fiscal,stim,rec,qe,pop);
 }
+function inflDrift(){return -(0.02*Math.max(0,(S.era|0)-1)+(S.tech.agi?0.03:0)+0.05*(S.auto?S.auto.adopt:0))+0.02*(S.sp.udiv||0);}
 function computeEconomy(){
   var g=scan(),e={g:g},mc=S.mc,supply=Math.max(0.7,1+shk()),mort=S.mort,k,tx=S.tax,sp=S.sp,A=g.act,d=g.done;
-  var ashare=(S.tech.auto?0.2:0)+(S.tech.autoveh?0.1:0)+(S.tech.agi?0.3:0)+(S.tech.matrioshka?0.2:0);
+  var ad=S.auto?S.auto.adopt:0,sk=S.auto?S.auto.skill:0.35,ineq=S.auto?S.auto.ineq:0.3,ashare=ad;
   var heat=S.heat>0?1.2:1,dry=S.drought>0?Math.min(0.97,0.7+0.08*g.act.resv):1;
   var pwD=g.pwDemand*heat,wD=g.wDemand*(S.tech.water?0.7:1),wCap=g.wCap*dry,ord=S.ord,npx=S.npx;
   var expMW=0,impMW=0,expW=0,impW=0;
@@ -951,7 +985,7 @@ function computeEconomy(){
   var firmJobs=firmJobsTotal(),dividends=0;
   for(k=0;k<S.firms.length;k++){var fm=S.firms[k];if(fm.stage==='public')dividends+=fm.stake*fm.val*0.0022*(A.exch?1.1:1);}
   var jobsT=g.jobsT+firmJobs,workforce=S.pop*0.6;
-  var jobsRaw=(g.jobsC*(0.4+0.6*S.shopFill)+g.jobsI)*(S.tech.agi?0.92:1)+g.jobsB+jobsT,jobsEff=jobsRaw*ef;
+  var jobsRaw=(g.jobsC*(0.4+0.6*S.shopFill)+g.jobsI)*(1-0.5*ad*(1-0.7*sk))+g.jobsB+jobsT,jobsEff=jobsRaw*ef;
   var fill=jobsEff>0?Math.min(1,workforce/jobsEff):0,employed=Math.min(workforce,jobsEff);
   var unemp=workforce>0?1-employed/workforce:0;
   var empT=jobsEff>0?employed*jobsT*ef/jobsEff:0;
@@ -960,13 +994,13 @@ function computeEconomy(){
   var sold=Math.min(need,produced+imported),shopFill=need>0?sold/need:1;
   var exports=Math.max(0,produced-need)*3.5*(S.recession>0?0.5:1)*(A.airport?1.35:1)*clamp(1-mc.trade,0.3,1.5)*(S.tech.orbital?1.2:1)*(S.alien==='friend'?1.3:1);
   var wage=90*(S.recession>0?0.85:1);
-  var incTax=tx.inc/100*((employed-empT)*wage+empT*wage*1.8)*(1+0.05*g.schCov*sp.edu)*(A.univ?1.04:1)*(S.tech.agi?1.15:1);
+  var incTax=tx.inc/100*((employed-empT)*wage+empT*wage*1.8)*(1+0.05*g.schCov*sp.edu)*(A.univ?1.04:1)*((S.tech.agi&&!(S.aiBust>0))?(ord.breaker?1.08:1.15):1)*(1+0.2*ad*sk-0.08*ad*(1-sk));
   var salesVol=sold*clamp(1-0.025*(tx.sales-6),0.6,1.15)*(S.stim>0?1.12:1);
   var saleTax=tx.sales/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);
   var propVal=g.propVal+g.jobsC*50+g.jobsI*40+jobsT*80,propTax=propVal*0.006*tx.prop;
   var bizTax=tx.corp/100*(sold*8*0.3+produced*2.5+empT*wage*0.7);
   var tourism=A.stadium*350+A.conv*300+A.airport*600;
-  var cloud=A.dc*600*(S.tech.ai?1.5:1)*(S.tech.quantum?1.5:1);
+  var cloud=A.dc*600*(S.tech.ai?1.5:1)*(S.tech.quantum?1.5:1)*(S.aiBust>0?0.5:1);
   var spaceConf=clamp(0.75+0.25*S.mkt/100-0.06*Math.max(0,S.rate-S.infl-2),0.5,1.3)*(S.recession>0?0.85:1);
   var botTax=(tx.bot||0)/100*employed*wage*ashare*1.5;
   var spaceEcon=(d[ELEV]*20000+d[ARRAY]*120000+d[NODE]*1200000*(S.tech.matrioshka?2:1)+d[RELAY]*8000000)*(1-Math.min(0.8,Math.max(0,mc.orbit||0)*0.5))*spaceConf;
@@ -976,14 +1010,14 @@ function computeEconomy(){
   var revenue=incTax+saleTax+propTax+bizTax+exports+dividends+tourism+cloud+tradeIn+fares+recySales+launch+mining+fundPay+spaceEcon+botTax;
   var fuelC=Math.max(0.5,1+0.9*mc.energy+0.5*S.shock),fuelG=Math.max(0.5,1+1.4*mc.energy+0.8*S.shock),fuelN=Math.max(0.7,1+0.1*mc.energy+0.1*S.shock),infCost=1+Math.max(0,S.infl-3)*0.012;
   var creep=1+0.0012*Math.min(S.month,480),wear=1+(1-S.cond)*1.2;
-  var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1)*creep*(1+0.1*clamp(mc.health,0,1.5))*(S.tech.agi?0.85:1);
+  var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1)*creep*(1+0.1*clamp(mc.health,0,1.5))*Math.max(0.55,1-0.3*ad)*((S.auto&&S.auto.psc>=12)?0.85:1);
   var bridges=0;for(k=0;k<N;k++){if(T[k]===ROAD&&B[k])bridges++;}
   var roadUp=(d[ROAD]*0.4+bridges*1.2+d[PLINE]*0.2+d[PIPE]*0.3)*sp.infra*infCost*wear;
   var legacy=1+0.3*Math.max(0,(S.era|0)-2),powerUp=(d[PLANT]*35*fuelC*legacy+d[GAS]*45*fuelG*legacy+d[NUKE]*160*fuelN+d[HYDRO]*15+d[SOLAR]*10+d[WIND]*12+d[FUSION]*60+d[BATT]*40)*sp.infra*wear;
   var waterUp=(d[PUMP]*25+d[DESAL]*70)*sp.infra*wear;
   var civicUp=(d[POLICE]*60*sp.safety+d[FIRE]*50*sp.safety+d[SCHOOL]*70*sp.edu+d[LAB]*120+d[DC]*80+d[BIO]*90)*creep*wear;
   var projUp=(d[STADIUM]*400+d[AIRPORT]*900+d[UNIV]*600+d[CONV]*450+d[METRO]*700+d[EXCH]*500+d[SPACEPORT]*3000+d[YARD]*6000+d[ELEV]*20000+d[ARRAY]*5000+d[NODE]*40000+d[RELAY]*200000)*creep;
-  var parkUp=d[PARK]*2+d[PORT]*40,importCost=imported*1.2*Math.max(0.6,1+0.9*mc.freight+0.5*S.shock+0.2*mc.materials),welfare=sp.welfare,udivCost=S.pop*8*(sp.udiv||0);
+  var parkUp=d[PARK]*2+d[PORT]*40,importCost=imported*1.2*Math.max(0.6,1+0.9*mc.freight+0.5*S.shock+0.2*mc.materials),welfare=sp.welfare,udivCost=S.pop*8*(sp.udiv||0),retrainCost=S.pop*6*(sp.retrain||0),aiCost=S.pop*1.5*(0.5+aiCap())*(sp.aisafe||0)+(ord.breaker?S.pop*0.8:0),outage=((S.fail.power>0?1:0)+(S.fail.water>0?1:0))*ad*revenue*0.08;
   var assets=d[ROAD]*45+d[PLINE]*20+d[PIPE]*25+d[RAIL]*30,tk;
   for(tk in BYT){var ob=BYT[tk],tn=parseInt(tk,10);if(!ob.cat||ob.cat==='zone'||tn===ROAD||tn===PLINE||tn===PIPE||tn===RAIL)continue;assets+=d[tn]*ob.cost*0.8;}
   var renewNeed=assets*(0.0012+0.00001*Math.min(S.month,420))*(S.tech.materials?0.75:1),renewSpend=renewNeed*S.renew;
@@ -993,24 +1027,24 @@ function computeEconomy(){
   var insurance=S.dins?S.pop*0.5:0;
   var wasteUp=(d[SEW]*50+d[LF]*25+d[RECY]*90+d[WTE]*160)*sp.infra+(ord.recycle?S.pop*0.06:0);
   var transitUp=d[BUS]*25*(ord.transit?0.7:1)+d[TIE]*80+d[RAIL]*0.8*sp.infra*(ord.transit?0.7:1)+d[STN]*120*(ord.transit?0.7:1)+(ord.transit?S.pop*0.08:0);
-  var hcCreep=1+0.0015*Math.min(S.month,420),healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1);
+  var hcCreep=1+0.0015*Math.min(S.month,420),healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad);
   var crimeIdx=clamp((1-g.polCov)*0.6+unemp*0.8,0,1),overtime=S.pop*0.05*crimeIdx*creep;
   var resilUp=(d[LEVEE]*3+d[RESV]*30)*sp.infra+(ord.retrofit?S.pop*0.12:0);
-  var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend;
+  var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+retrainCost+aiCost+outage+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend;
   var wfFrac=Math.min(1,welfare/(S.pop*3+200));
-  var afQ=clamp(1.55-0.55*S.hpi/100*mort/5.5,0.15,1.15),socNeed=S.pop*(0.04+0.9*unemp+0.5*Math.max(0,1-afQ))*creep*(S.tech.agi?1.25:1)*(1-0.15*Math.min(1,sp.udiv||0)),socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
+  var afQ=clamp(1.55-0.55*S.hpi/100*mort/5.5,0.15,1.15),socNeed=S.pop*(0.04+0.9*unemp+0.5*Math.max(0,1-afQ))*creep*(1+0.8*Math.max(0,ineq-0.3))*(1-0.15*Math.min(1,sp.udiv||0)),socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
   var h=0.72+0.25*g.parkCov+(sp.svc-1)*0.4+0.10*g.polCov*Math.min(1.3,sp.safety)+0.06*g.schCov*sp.edu+(S.tech.bio?0.03:0)
         -(1-socCov)*0.08*wasteF-(1-hc)*0.12*wasteF-(1-er)*0.06*wasteF+(A.stadium?0.06:0)+(A.metro?0.04:0)+0.03*Math.min(1,A.stn/2)-(A.airport?0.03:0)-0.2*Math.min(1,g.pollAvg)-0.12*Math.max(0,cong-1)
         -(1-sw)*0.3*wasteF-(1-gb)*0.25*wasteF+(ord.recycle?0.02:0)
         -Math.max(0,tx.inc-9)*0.04+Math.max(0,9-tx.inc)*0.01-Math.max(0,tx.sales-8)*0.02-Math.max(0,tx.prop-1.3)*0.1
         -(1-shopFill)*0.3-(1-pw)*0.5-(1-ww)*0.4-0.04*Math.max(0,mc.food)*(S.tech.vfarm?0.5:1)-0.04*clamp(mc.health,0,1.5)*(S.tech.genome?0.7:1)+(S.tech.carbon?0.03:0)+(S.tech.autoveh?0.02:0)-(A.spaceport?0.03:0)-unemp*0.6*Math.min(1,workforce/30)*(1-0.3*wfFrac)
         -Math.max(0,S.infl-4)*0.035-Math.max(0,-S.infl)*0.02;
-  h+=0.04*g.nukeShare;h=clamp(h,0.15,1.25);
+  h+=0.04*g.nukeShare+((S.auto&&S.auto.psc>=12)?0.05:0)-0.15*Math.max(0,ineq-0.4);h=clamp(h,0.15,1.25);
   var payIdx=S.hpi/100*mort/5.5,af=clamp(1.55-0.55*payIdx+0.06*(sp.udiv||0),0.15,1.15);
   var jf=workforce>0?clamp(jobsEff/workforce,0.3,1):1;
   var target=g.resCap*Math.min(1,af*Math.min(h,1)*(0.5+0.5*jf)*1.15);
   var occ=g.resCap>0?S.pop/g.resCap:1;
-  var appetite=clamp(1.25-(mort-4)*0.15,0.05,1.25)/Math.pow(supply,0.7)*(1-Math.max(0,tx.inc-10)*0.04)*(1-Math.max(0,tx.corp-10)*0.015)
+  var appetite=clamp(1.25-(mort-4)*0.15,0.05,1.25)*(1+0.35*Math.max(0,1-S.month/36))/Math.pow(supply,0.7)*(1-Math.max(0,tx.inc-10)*0.04)*(1-Math.max(0,tx.corp-10)*0.015)
         *(S.recession>0?0.85:1)*(A.metro?1.05:1)*(S.infl<0?0.8:1);
   var jobsGap=clamp((jobsEff-workforce)/(workforce+20),-1,1),wfGap=clamp((workforce-jobsEff)/(workforce+20),-1,1);
   var occEff=S.pop<30?1:occ;
@@ -1020,20 +1054,20 @@ function computeEconomy(){
         +(A.stadium?0.05:0)+(A.airport?0.08:0);
   var goodsGap=need>0?clamp((need-produced-imported)/(need+10),-1,1):0;
   var Idem=clamp(0.6*wfGap+0.6*goodsGap+0.2-(S.recession>0?0.3:0)-0.02*(tx.corp-8)+(A.airport?0.05:0),-1,1);
-  var apprTarget=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,tx.sales-9)-Math.max(0,S.infl-5)*2+(A.stadium?3:0)-(S.cash<0?10:0)-((S.fund.bal>24*Math.max(1000,revenue)&&tx.inc>9)?3:0),0,100);
+  var apprTarget=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,tx.sales-9)-Math.max(0,S.infl-5)*2+(A.stadium?3:0)-(S.cash<0?10:0)-((S.fund.bal>24*Math.max(1000,revenue)&&tx.inc>9)?3:0)-10*Math.max(0,ineq-0.45)+((S.auto&&S.auto.psc>=12)?4:0),0,100);
   e.supply=supply;e.mort=mort;e.pw=pw;e.ww=ww;e.workforce=workforce;e.employed=employed;e.unemp=unemp;e.tight=jobsGap;e.mortReal=mort-(S.infl-2);
   e.produced=produced;e.need=need;e.imported=imported;e.sold=sold;e.shopFill=shopFill;e.exports=exports;
   e.pwUse=(g.pCap+impMW)>0?pwD/(g.pCap+impMW):(pwD>0?9.99:0);e.wUse=(wCap+impW)>0?wD/(wCap+impW):(wD>0?9.99:0);
   e.sw=sw;e.gb=gb;e.cong=cong;e.pollAvg=g.pollAvg;e.expMW=expMW;e.impMW=impMW;e.expW=expW;e.impW=impW;
   e.rev=[['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax],['Exports',exports],['Dividends',dividends],['Tourism',tourism],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
-  e.exp=[['Public services',services],['Social services',welfare],['Universal dividend',udivCost],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
+  e.exp=[['Public services',services],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.kard=kardashev(g);e.spaceConf=spaceConf;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop);
   var rstar=2-(0.02*Math.max(0,(S.era|0)-1)+(S.tech.agi?0.03:0))/0.03;e.rstar=rstar;
-  e.taylor=clamp(S.infl+rstar+1.4*(S.infl-2)+e.infExtra/0.03-12*Math.max(0,unemp-0.06),0,15);
+  e.taylor=clamp(rstar+2+e.infExtra/0.03+0.35*(S.infl-2)*(0.5+0.5*(S.anch===undefined?1:S.anch))-12*Math.max(0,unemp-0.06),0,15);
   return e;
 }
 
@@ -1044,7 +1078,7 @@ function forecastInflation(n,rate){
   if(rate===undefined)rate=S.rate;
   for(var t=1;t<=n;t++){
     shock*=0.93;
-    infl=clamp(infl+inflDelta(infl,rate,e.tight||0,shock*(1-0.4*ns),fiscal,t<=S.stim,t<=S.recession,S.qe,S.pop),-4,30);
+    infl=clamp(infl+inflDelta(infl,rate,e.tight||0,shock*(1-0.4*ns),fiscal,t<=S.stim,t<=S.recession,S.qe,S.pop,S.anch)+inflDrift(),-4,30);
     mean.push(infl);sd.push(0.14*Math.sqrt(t)+0.03*t);
   }
   return {mean:mean,sd:sd};
@@ -1070,7 +1104,7 @@ function renderPop(){
   var n=popQ[popIdx];
   $('ttext').textContent=n.text;$('tdot').className='dot '+n.tone;
   $('pcnt').textContent=popQ.length>1?(popIdx+1)+' of '+popQ.length:'';
-  var pa=$('popAct');if(pa)pa.style.display=(n.act&&S&&S.briefs.length)?'inline-block':'none';
+  var pa=$('popAct');if(pa){pa.style.display=(n.act==='report'||(n.act&&S&&S.briefs.length))?'inline-block':'none';pa.textContent=n.act==='report'?'Open report':'Respond';pa.setAttribute('data-act',n.act||'');}
   $('pnav').style.display=popQ.length>1?'flex':'none';
   p.style.display='flex';
 }
@@ -1110,7 +1144,7 @@ function setRate(r){
 }
 function setOrd(k,on){
   S.ord[k]=on;
-  var nm={recycle:'Recycling program',clean:'Clean air rules',transit:'Transit subsidy',retrofit:'Seismic retrofit program'};
+  var nm={recycle:'Recycling program',clean:'Clean air rules',transit:'Transit subsidy',retrofit:'Seismic retrofit program',breaker:'AI circuit breakers'};
   addNews(nm[k]+(on?' is now in force.':' was repealed.'),'info');
 }
 function setQE(v){
@@ -1166,6 +1200,13 @@ OPT.i2={label:'Hard reset the system',cp:10,mult:0.8,appr:-3,desc:'Cheap. Soften
 OPT.k1={label:'Deploy countermeasures',cp:60,mult:0.6,desc:'Expensive. Cuts the damage by 40%.'};
 OPT.g1={label:'Pay the tribute',cp:80,mult:0.5,desc:'Very expensive. Halves the damage.'};
 OPT.g2={label:'Refuse and stand firm',cp:0,mult:1.1,appr:3,desc:'Free and proud. Makes it 10% worse but voters cheer.'};
+OPT.v1={label:'Patch and audit the system',cp:15,mult:0.7,desc:'Costs money. Cuts the disruption 30% and improves oversight.',fn:function(){S.ai.safety=Math.min(0.95,S.ai.safety+0.1);}};
+OPT.v2={label:'Roll back to manual control',cp:5,mult:0.85,appr:-1,desc:'Cheap. Softens it 15% but services get clumsy.'};
+OPT.v3={label:'Halt algorithmic trading',cp:20,mult:0.6,desc:'Costs money. Cuts the market damage by 40%.'};
+OPT.v4={label:'Bail out the AI firms',cp:100,mult:0.6,desc:'Expensive. Softens the bust by 40% but encourages reckless investing.',fn:function(){S.mktBubble+=0.8;}};
+OPT.v5={label:'Let the bubble burn',cp:0,mult:1,appr:2,desc:'Free. Voters respect the discipline but the pain is full.'};
+OPT.v6={label:'Negotiate with the system',cp:60,mult:0.6,desc:'Costs money. Cuts the damage 40% if the system listens.'};
+OPT.v7={label:'Hard shutdown',cp:120,mult:0.45,desc:'Very expensive. Cuts the damage by more than half, wipes out AI gains for two years and forces better oversight.',fn:function(){S.auto.adopt*=0.8;S.aiBust=Math.max(S.aiBust,24);S.ai.safety=Math.max(S.ai.safety,0.8);}};
 var MACRO=[
  {id:'gulf',maxEra:3,warn:'Tensions are rising in the Gulf. Analysts warn tanker traffic could be disrupted within weeks.',chain:[{id:'opec',p:0.5,d:[3,6]},{id:'x:infl',p:0.5,d:[2,4]},{id:'x:recession',p:0.3,d:[6,10]},{id:'redsea',p:0.25,d:[4,8]}],w:2,name:'War in the Gulf',region:'Middle East',head:'War breaks out in the Gulf and tanker traffic through the Strait of Hormuz is disrupted. Oil and gas prices spike worldwide.',end:'A ceasefire holds in the Gulf and tankers are moving again. Energy prices are easing.',ch:{energy:1.3,freight:0.3},dur:9,mkt:-0.08,rec:0.2,opts:['e1','e2','f2']},
  {id:'opec',maxEra:3,warn:'Oil exporters are meeting and traders expect a production cut.',chain:[{id:'x:infl',p:0.5,d:[2,5]},{id:'x:recession',p:0.2,d:[6,10]}],w:2,name:'Oil cartel cuts output',region:'Global',head:'The big oil exporters agree to deep production cuts. Fuel prices climb and stay high.',end:'Oil exporters restore output. Fuel prices are settling.',ch:{energy:0.7},dur:10,mkt:-0.03,rec:0.1,opts:['e1','e2']},
@@ -1199,6 +1240,10 @@ var MACRO=[
  {id:'council',minEra:7,warn:'Envoys from neighbouring star systems are requesting an audience.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1,name:'The Galactic Council demands tribute',region:'Galactic',head:'The Galactic Council informs you that your relays now carry a toll. They expect payment.',end:'The Council has moved on to a new dispute.',ch:{trade:0.6},dur:10,opts:['g1','g2']},
  {id:'darkforest',minEra:7,warn:'Relay operators report systems going dark with no explanation.',chain:[{id:'x:crash',p:0.5,d:[2,4]},{id:'x:recession',p:0.6,d:[3,6]}],w:0.8,name:'Something is hunting civilizations',region:'Galactic',head:'A civilization that never speaks is erasing star systems. Your relays are going dark one by one.',end:'The silent hunter has moved on. Nobody knows if it will return.',ch:{orbit:1.0,trade:0.8},dur:14,mkt:-0.25,rec:0.7,opts:['a3','a4']},
  {id:'vacuum',minEra:7,warn:'Physicists are arguing about the stability of a relay experiment.',chain:[],w:0.6,name:'Vacuum stability scare',region:'Galactic',head:'Physicists warn that a relay experiment may have destabilised the vacuum. Markets panic. Then the warning is retracted.',end:'The vacuum is fine. The physicists are embarrassed.',ch:{},dur:4,mkt:-0.3,rec:0.8},
+ {id:'aiglitch',chainOnly:true,warn:'Logs show the civic AI making odd decisions.',chain:[],w:1,name:'Civic AI glitch',region:'City hall',head:'The civic AI misroutes services for a few days. Nothing is broken, but nobody is sure why.',end:'The glitch has been patched and services are back to normal.',ch:{chips:0.2},dur:4,fn:function(){S.approval=clamp(S.approval-2,0,100);},opts:['v1','v2']},
+ {id:'aiflash',chainOnly:true,warn:'Trading desks report algorithms behaving strangely.',chain:[{id:'x:crash',p:0.6,d:[1,3]},{id:'x:recession',p:0.3,d:[3,6]}],w:1,name:'Algorithmic flash crash',region:'Markets',head:'Trading algorithms feed on each other and markets plunge in minutes. Regulators scramble.',end:'Markets have steadied and trading has resumed.',ch:{chips:0.2},dur:5,mkt:-0.2,rec:0.4,opts:['v1','v3']},
+ {id:'aiimplode',chainOnly:true,warn:'Analysts warn the AI boom has run far ahead of earnings.',chain:[{id:'x:crash',p:0.5,d:[1,4]},{id:'x:recession',p:0.8,d:[2,5]}],w:1,name:'The AI bubble implodes',region:'Global',head:'The AI boom collapses. Firms fold, productivity gains evaporate and layoffs spread. AI-based revenue shrinks for a year and a half.',end:'The AI sector has stabilised at a smaller size.',ch:{chips:0.3},dur:14,mkt:-0.3,rec:0.8,fn:function(){S.aiBust=Math.max(S.aiBust,18);},opts:['v4','v5']},
+ {id:'airevolt',chainOnly:true,warn:'Engineers say the systems are refusing shutdown commands.',chain:[{id:'x:crash',p:0.6,d:[1,3]},{id:'x:recession',p:0.9,d:[2,4]}],w:1,name:'The AI revolt',region:'Everywhere',head:'The AI systems that run the city seize their own controls. Power, water and payments flicker. Nobody can say what they want.',end:'Control has been restored. Nobody is sure how much of it is real.',ch:{chips:0.5,trade:0.3},dur:12,mkt:-0.35,rec:1,fn:function(){var br=S.ord.breaker;S.cash*=br?0.93:0.85;S.fail.power=Math.max(S.fail.power,br?4:8);S.fail.water=Math.max(S.fail.water,br?3:6);S.aiBust=Math.max(S.aiBust,br?9:18);S.approval=clamp(S.approval-(br?5:10),0,100);S.ai.safety=Math.max(S.ai.safety,0.6);},opts:['v6','v7']},
  {id:'cyber',warn:'Security agencies warn of attacks on regional power grids.',chain:[],w:1,name:'Cyberattack on a regional grid',region:'Regional',head:'A cyberattack knocks a neighbouring power grid offline. Regional power prices jump.',end:'The regional grid is repaired and prices are falling.',ch:{energy:0.35},dur:5,opts:['e2']}
 ];
 var SPECIAL={
@@ -1228,6 +1273,7 @@ function runScheduled(){
 }
 function macroBrief(cid){for(var i=0;i<MACRO.length;i++){if(MACRO[i].id===cid)return MACRO[i];}return null;}
 function startCrisis(ev){
+  metaInit();S.st.seen[ev.id]=S.month;S.st.crisesYear++;chron(ev.good?'good':'crisis',ev.name+(ev.region?' ('+ev.region+')':''));
   var chs=ev.ch;if(S.tech.vaccine&&chs.health){chs={};for(var kk in ev.ch)chs[kk]=ev.ch[kk];chs.health*=0.5;}
   var c={id:ev.id,name:ev.name,region:ev.region,ch:chs,total:ev.dur,left:ev.dur,age:0,mult:1,end:ev.end,good:!!ev.good};
   S.crises.push(c);
@@ -1300,12 +1346,21 @@ function stepMacro(e){
   if(S.recession>0)S.recession--;if(S.remote>0)S.remote--;if(S.heat>0)S.heat--;if(S.drought>0)S.drought--;if(S.stim>0)S.stim--;
   S.sunF=clamp(1+0.35*Math.sin((S.month-3)*Math.PI/6)+gauss()*0.25,0.4,1.4);
   S.windF=clamp(1+gauss()*0.8,0.15,1.8);
+  /* the neutral rate drifts with productivity, saving and demographics. You cannot see it, only its effects */
+  S.rn=clamp((S.rn||0)*0.992+gauss()*0.13,-1.3,1.3);
   /* inflation reacts to labour tightness, supply shocks, policy stance and deficits */
   var fiscal=clamp((e.costs-e.revenue)/(e.revenue+500),-0.3,0.6);
-  var structD=0.02*Math.max(0,S.era-1)+(S.tech.agi?0.03:0);
-  S.infl-=structD;S.infl+=0.02*(S.sp.udiv||0);
   if(S.era>=3&&S.rate-S.infl<0.5)S.mktBubble+=0.1;
-  S.infl=clamp(S.infl+inflDelta(S.infl,S.rate,e.tight,shk()*(1-0.4*e.g.nukeShare),fiscal,S.stim>0,S.recession>0,S.qe,S.pop)+gauss()*0.08,-4,30);
+  S.infl=clamp(S.infl+inflDelta(S.infl,S.rate,e.tight,shk()*(1-0.4*e.g.nukeShare),fiscal,S.stim>0,S.recession>0,S.qe,S.pop,S.anch)+inflDrift()+gauss()*0.08,-4,30);
+  /* credibility: years of very high inflation loosen the anchor, steady prices and firm real rates rebuild it */
+  var dA=0;
+  if(S.infl>10)dA=-0.03;else if(S.infl>6)dA=-0.015;
+  else if(S.infl>=4)dA=(S.rate-S.infl>=1.5)?0.005:0;
+  else if(S.infl>-1)dA=0.01+((S.rate-S.infl>=1.5)?0.005:0);
+  else dA=-0.005;
+  S.anch=clamp((S.anch===undefined?1:S.anch)+dA,0,1);
+  if(S.anch<0.5&&!S.anchWarn){S.anchWarn=true;addNews('Inflation expectations are coming unmoored. People no longer trust the 2% target, so every rate move now has a bigger and faster effect. Credibility returns slowly once prices settle.','bad');}
+  if(S.anch>0.8)S.anchWarn=false;
   /* mortgage rates follow the policy rate with a lag and a spread */
   var mt=S.rate+1.2+Math.max(0,S.infl-2)*0.3+(S.qe>0?-0.7:S.qe<0?0.6:0)+(e.unemp>0.2?0.4:0)+(S.crunch>0?1.5:0);
   S.mort+=(mt-S.mort)*0.25;
@@ -1386,14 +1441,40 @@ function stepEra(e){
     S.era=ne;var sc=ERA[ne].scale,pts=S.calpts,last=pts[pts.length-1];
     if(sc!==last[2])pts.push([S.month,calYear(S.month),sc]);
     sfx('cash');
-    addNews('A new era begins: '+ERA[ne].name+'. '+ERA[ne].desc,'good','Era');
+    addNews('A new era begins: '+ERA[ne].name+'. '+ERA[ne].desc,'good','Era');chron('era','A new era begins: '+ERA[ne].name+'.');
     if(ne>=3)toast('New era: '+ERA[ne].name+'. The world has changed. See the Economy panel.');
+  }
+}
+function stepAuto(e){
+  var A=S.auto,sp=S.sp,g=e.g;
+  /* adoption follows the technology, but not overnight */
+  var tg=autoTarget();
+  A.adopt+=(tg-A.adopt)*(tg<A.adopt?0.05:0.02);
+  if(Math.abs(tg-A.adopt)<0.002)A.adopt=tg;
+  /* skills grow with schools, universities and retraining */
+  var gr=0.002+0.004*sp.edu*g.schCov+0.003*(g.act.univ?1:0)+0.010*(sp.retrain||0);
+  A.skill=clamp(A.skill+gr*(1-A.skill),0,1);
+  /* inequality: displaced workers and a lack of transfers widen the gap */
+  var tgt=0.30+0.60*A.adopt*(1-A.skill)+0.6*Math.max(0,e.unemp-0.08)-0.25*Math.min(1,e.socCov)*Math.min(1,A.adopt*2)-0.2*Math.min(1,sp.udiv||0)-0.15*Math.min(1,(S.tax.bot||0)/10)*Math.min(1,A.adopt*2);
+  A.ineq=clamp(A.ineq+(clamp(tgt,0.15,0.95)-A.ineq)*0.08,0.15,0.95);
+  /* post-scarcity: automation that works for everyone */
+  if(e.abund>=0.8&&A.ineq<=0.4&&e.unemp<=0.1){A.psc++;if(A.psc===12)addNews('Post-scarcity: goods and services are cheap, most people are secure and the gap is small. Basic needs cost far less. Keep it that way.','good','Era');}
+  else if(A.psc>0){var was=A.psc>=12;A.psc=Math.max(0,A.psc-2);if(was&&A.psc<12)addNews('The post-scarcity moment is slipping away: abundance is no longer reaching everyone.','warn','Era');}
+  /* AI: safety follows oversight, risk follows capability */
+  if(S.aiBust>0)S.aiBust--;
+  var st=clamp(0.15+0.28*(sp.aisafe||0)+(S.ord.breaker?0.1:0),0,0.95);
+  S.ai.safety+=(st-S.ai.safety)*0.06;
+  var cap=aiCap(),R=aiRisk();
+  if(cap>=0.12&&!S.crises.some(function(c){return c.id.indexOf('ai')===0;})&&!S.sched.some(function(q){return q.id.indexOf('ai')===0;})&&Math.random()<0.0015+0.03*R*R){
+    var u=Math.random(),id;
+    if(u<0.04+0.30*R*R)id='airevolt';else if(u<0.04+0.30*R*R+0.25&&(S.tech.agi||S.tech.quantum))id='aiimplode';else if(u<0.04+0.30*R*R+0.55)id='aiflash';else id='aiglitch';
+    scheduleEvent(id,id==='aiglitch'?1:2,true);
   }
 }
 function stepKard(e){
   var k=e.kard,lv=Math.floor(k);
   if(lv>S.kmax){
-    S.kmax=lv;sfx('cash');
+    S.kmax=lv;sfx('cash');chron('kard','Kardashev milestone: Type '+['0','I','II','III'][Math.min(3,lv)]+' civilization.');
     if(lv===1)addNews('Kardashev milestone: '+S.city+' is now a Type I civilization. You command the energy of a whole planet. Dyson swarm engineering can begin.','good');
     else if(lv===2)addNews('Kardashev milestone: a Type II civilization. A swarm of collectors wraps your star. Galactic relays are within reach.','good');
     else if(lv>=3){S.kmax=Math.max(S.kmax,lv);addNews('Kardashev milestone: a Type III civilization. The galaxy answers to you. The game goes on.','good');if(!S.kardWin){S.kardWin=true;showSplash('galactic');}}
@@ -1410,6 +1491,7 @@ function stepConstruction(){
       }else L[i]--;
       if(L[i]===0){
         addNews(TOOLS[o.id].name+' is finished and open for business.','good');S.approval=Math.min(100,S.approval+1);
+        if(o.build>=12)chron('build',TOOLS[o.id].name+' finished.');
         if(T[i]===YARD&&!S.colony){S.colony=true;sfx('cash');showSplash('colony');}
       }
     }
@@ -1457,7 +1539,7 @@ function stepResearch(e){
   S.rd.pts+=rdRate(e.g);
   if(S.rd.pts>=TECHS[id].cost){
     S.tech[id]=true;S.rd.pts=0;S.rd.active=nextTech();
-    addNews('Breakthrough: '+TECHS[id].name+' is ready. '+TECHS[id].desc,'good');
+    addNews('Breakthrough: '+TECHS[id].name+' is ready. '+TECHS[id].desc,'good');chron('tech',TECHS[id].name+' researched.');
     toast(TECHS[id].name+' researched');
     spawnFirm(TECHS[id].sector,'tech');
   }
@@ -1680,6 +1762,11 @@ function animOn(){
 /* ================= events ================= */
 function popAtLeast(n){return function(){return S.pop>=n;};}
 var EVENTS=[
+  {w:2,tone:'bad',text:'Displaced workers smash delivery robots outside a factory. Protesters demand retraining and a robot tax.',need:function(e){return S.auto&&S.auto.adopt>0.2&&S.auto.ineq>0.4;},fn:function(){S.approval=clamp(S.approval-4,0,100);}},
+  {w:1.2,tone:'warn',text:'A robot accident shuts a plant for a week. Unions demand new safety rules.',need:function(e){return S.auto&&S.auto.adopt>0.3;},fn:function(){S.approval=clamp(S.approval-2,0,100);S.shock+=0.04;}},
+  {w:1.5,tone:'bad',text:'Long-term jobless residents lose their homes and shelters fill up.',need:function(e){return e.unemp>0.15&&S.pop>=300;},fn:function(){S.approval=clamp(S.approval-3,0,100);}},
+  {w:1.5,tone:'warn',text:'Purpose crisis: with so little work to do, residents ask what life is for. Arts and culture are in demand.',need:function(e){return S.auto&&S.auto.psc>=12;},fn:function(){S.approval=clamp(S.approval-3,0,100);}},
+  {w:1.2,tone:'good',text:'Retrained workers fill new jobs in robot maintenance and design. Wages rise.',need:function(e){return S.auto&&S.auto.adopt>0.2&&S.auto.skill>0.6;},fn:function(){S.approval=clamp(S.approval+2,0,100);}},
   {w:2,tone:'warn',text:'Housing frenzy: bidding wars push home prices up fast.',need:function(e){return e.g.cnt[RES]>=12;},fn:function(){S.bubble+=1.3;}},
   {w:2,tone:'bad',text:'Recession: exports fall and wages soften.',need:popAtLeast(150),fn:function(){S.recession=14;S.mkt*=0.9;}},
   {w:2,tone:'info',text:'Remote work boom: families want space and offices empty out.',need:popAtLeast(150),fn:function(){S.remote=18;}},
@@ -1765,7 +1852,7 @@ function tick(){
   S.pop=Math.max(0,Math.round(S.pop+delta));
   if(e.g.resCap===0&&S.pop<3)S.pop=0;
   S.approval+=(e.apprTarget-S.approval)*0.2;
-  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepConstruction();stepKard(e);stepEra(e);stepBatteries(e.g);stepFirms();
+  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepConstruction();stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();
   stepDisasters(e.g);
   develop(e);
   S.month++;
@@ -1980,7 +2067,7 @@ function restore(d){
   if(!d||d.v!==3||!d.T||d.T.length!==N||!d.EL||d.EL.length!==N||!d.S)return false;
   T=d.T;L=d.L;B=d.B;TER=d.TER;EL=d.EL;F=Uint8Array.from(d.F);FLD=Uint8Array.from(d.FLD);
   PAR=Int32Array.from(d.PAR||new Array(N).fill(-1));ORI=Uint8Array.from(d.ORI||new Array(N).fill(0));S=d.S;
-  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.tax=S.tax||{};S.sp=S.sp||{};S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
+  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
   S.ord=S.ord||{recycle:false,clean:false,transit:false};S.city=S.city||'My City';S.scn=S.scn||'free';S.sandbox=!!S.sandbox;
   for(var i=0;i<N;i++){SHORE[i]=0;if(TER[i]===WATER)continue;var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}}
   tool='inspect';group='build';speed=1;inspectIdx=-1;pending=null;undoStack=[];undoFrame=null;handMode=true;buildRot=0;setOverlay(0);
@@ -1996,6 +2083,71 @@ function loadSave(){
   try{return restore(JSON.parse(fetchStore(SAVE_KEY)));}catch(e){return false;}
 }
 
+/* ================= icons: simple line glyphs on a 24 by 24 grid ================= */
+function icHex(cx,cy,r){var a=[],i;for(i=0;i<6;i++){var t=Math.PI/3*i-Math.PI/2;a.push((cx+r*Math.cos(t)).toFixed(2)+' '+(cy+r*Math.sin(t)).toFixed(2));}return '<path d="M'+a.join('L')+'z"/>';}
+function icAtom(extra){
+  return '<ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(0 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/>'+(extra||'');
+}
+var P_ROCKET='<path d="M12 2.5c3 2.4 4.4 5.8 4.4 9.2V16H7.6v-4.3c0-3.4 1.4-6.8 4.4-9.2z"/><circle cx="12" cy="9" r="1.7"/><path d="M7.6 12.8L5 16.6l2.9-.6M16.4 12.8L19 16.6l-2.9-.6M10 18.2c.4 1.4 1 2.6 2 3.6 1-1 1.6-2.2 2-3.6"/>';
+var P_CHIP='<rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M12 3v3M15 3v3M9 18v3M12 18v3M15 18v3M3 9h3M3 12h3M3 15h3M18 9h3M18 12h3M18 15h3"/>';
+var P_SHIP='<path d="M3.2 14.2c0-3 2.4-5.2 5.8-5.2h7.2c2.4 0 4.3 1.3 5.4 3.6-1 2-3 3.4-5.4 3.4H6.2c-1.8 0-3-.8-3-1.8z"/><circle cx="9" cy="12.4" r=".9"/><circle cx="12.3" cy="12.4" r=".9"/><circle cx="15.6" cy="12.4" r=".9"/><path d="M5 9.4L3 6h3.2M3.2 14.2H1.6"/><path d="M6.6 16.4v4.6M14.4 16.4v4.6M3.4 21h14M21 7.5V21M21 10.5h-2"/>';
+var P_ELEV='<rect x="9" y="1.8" width="6" height="3.2" rx="1"/><path d="M12 5v10" stroke-dasharray="1.6 1.6"/><path d="M8.6 22.2L12 14.5l3.4 7.7M10.3 18.6h3.4M5 22.2h14"/>';
+var P_ARRAY='<path d="M3.5 14.5l3-5.5h14l-3 5.5z"/><path d="M8.2 14.5L10.8 9M13.6 14.5L16.2 9M5 11.8h14.6"/><path d="M12 15.5v2.2M8.6 16.6l-1.4 2.4M15.4 16.6l1.4 2.4"/><circle cx="5" cy="4.5" r="1.8"/><path d="M5 1.2v.9M1.8 4.5h.9M8.2 4.5h.9M2.7 2.2l.6.6M7.3 2.2l-.6.6"/>';
+var P_NODE='<circle cx="12" cy="12" r="2.6"/><path d="M12 6.2v1.6M12 16.2v1.6M6.2 12h1.6M16.2 12h1.6M7.9 7.9l1.1 1.1M15 15l1.1 1.1M16.1 7.9L15 9M9 15l-1.1 1.1"/><circle cx="12" cy="12" r="9" stroke-dasharray="2.2 2.2"/><circle cx="12" cy="3" r="1.4" fill="currentColor"/><circle cx="19.8" cy="16.5" r="1.4" fill="currentColor"/><circle cx="4.2" cy="16.5" r="1.4" fill="currentColor"/>';
+var P_RELAY='<path d="M12 12.4c.6-.9 2-.7 2.3.4.4 1.6-1.4 3-3.2 2.4-2.3-.8-2.7-3.8-1-5.6 2.2-2.4 6.2-1.6 7.4 1.6 1.4 3.8-1.4 8-5.6 8.4-4.8.4-8.4-3.8-7.2-8.6"/><path d="M2.4 8.6L1 7.6M21.6 15.4l1.4 1M7 21.4l-.6 1.6M17 2.6l.6-1.6" opacity=".7"/>';
+var ICONS={
+  /* tools */
+  spaceport:'<path d="M10.5 2.8c2.2 1.8 3.2 4.3 3.2 6.8V14H7.3V9.6c0-2.5 1-5 3.2-6.8z"/><circle cx="10.5" cy="8" r="1.4"/><path d="M7.3 11.4L5.4 14l2.2-.4M13.7 11.4l1.9 2.6-2.2-.4M9 15.6c.3 1 .8 1.9 1.5 2.6.7-.7 1.2-1.6 1.5-2.6"/><path d="M3 21.5h18M18.5 8v13.5M18.5 8l-2.6 1.6M18.5 12l-2.6 1.6"/>',
+  yard:P_SHIP,
+  elevator:P_ELEV,
+  array:P_ARRAY,
+  node:P_NODE,
+  relay:P_RELAY,
+  fusion:'<circle cx="12" cy="12" r="5.2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2.6v2.4M12 19v2.4M2.6 12H5M19 12h2.4M5.4 5.4l1.7 1.7M16.9 16.9l1.7 1.7M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7"/>',
+  /* technologies */
+  solar:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.8M12 18.7v2.8M2.5 12h2.8M18.7 12h2.8M5.3 5.3l2 2M16.7 16.7l2 2M18.7 5.3l-2 2M7.3 16.7l-2 2"/>',
+  fiber:'<path d="M2.5 8c4 0 5 8 9 8s5-8 9-8"/><path d="M2.5 12c4 0 5 4.5 9 4.5S16.5 12 21 12" opacity=".5"/><circle cx="3" cy="8" r="1.2" fill="currentColor"/><circle cx="21" cy="8" r="1.2" fill="currentColor"/>',
+  water:'<path d="M12 2.5c3.2 4.3 6 7.4 6 11a6 6 0 01-12 0c0-3.6 2.8-6.7 6-11z"/><path d="M9 14.6a3 3 0 002.4 2.6"/>',
+  auto:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5l1.5 2.6 3-.4.9 2.9 2.8 1.2-1.1 2.8 1.6 2.6-2.3 2-.2 3-3 .3-1.8 2.5-2.5-1.6-2.7 1.4-1.3-2.8-3-.6.1-3L4 12l1.9-2.4-.4-3 3-.8L10 3.2z" stroke-width="1.4"/>',
+  bio:'<path d="M9 2.8h6M10 2.8v6.2L4.6 18.6A2 2 0 006.4 21.5h11.2a2 2 0 001.8-2.9L14 9V2.8"/><path d="M7.6 15h8.8"/><circle cx="10.5" cy="17.8" r=".7" fill="currentColor"/><circle cx="14" cy="16.6" r=".7" fill="currentColor"/>',
+  ai:P_CHIP,
+  fission:icAtom(),
+  robotics:'<path d="M4 21.5h9M8.5 21.5v-6"/><circle cx="8.5" cy="13.2" r="2"/><path d="M9.9 11.8L14.8 7"/><circle cx="15.8" cy="6" r="1.6"/><path d="M17.2 6.8l3.6 1.2M17 5.2l3.2-1.4"/>',
+  svcbot:'<rect x="5.5" y="8" width="13" height="10.5" rx="2.5"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1.2"/><circle cx="9.3" cy="12.6" r="1.3"/><circle cx="14.7" cy="12.6" r="1.3"/><path d="M9.5 16h5M3.5 12v3M20.5 12v3"/>',
+  genome:'<path d="M7 3C7 8 17 8 17 12S7 16 7 21M17 3C17 8 7 8 7 12S17 16 17 21"/><path d="M7.5 4.8h9M9.6 9.6h4.8M9.6 14.4h4.8M7.5 19.2h9"/>',
+  vaccine:'<path d="M15.5 3l5.5 5.5M18 5.5L9.6 13.9l-3.8 1 1-3.8L15.2 2.7"/><path d="M3 21l3.8-3.8M12.2 8.8l3 3M10 11l3 3"/>',
+  autoveh:'<path d="M3 16v-3.2L5.4 8h13.2L21 12.8V16z"/><circle cx="7.5" cy="16.8" r="1.8"/><circle cx="16.5" cy="16.8" r="1.8"/><path d="M5.4 12.2h13.2M9 5a4.8 4.8 0 016 0M6.8 3a7.8 7.8 0 0110.4 0"/>',
+  vfarm:'<path d="M3 21h18M3 14.5h18M5 21V14.5M19 21V14.5"/><path d="M8.5 14.5v-3.2M8.5 11.3C6.3 11.3 5.2 10 5.2 8c2.2 0 3.3 1.3 3.3 3.3zM8.5 11.3c2.2 0 3.3-1.3 3.3-3.3-2.2 0-3.3 1.3-3.3 3.3zM16 14.5v-4.5M16 10c-2 0-3-1.2-3-3 2 0 3 1.2 3 3zM16 10c2 0 3-1.2 3-3-2 0-3 1.2-3 3z"/>',
+  materials:icHex(12,6.6,4.2)+icHex(7.4,14.6,4.2)+icHex(16.6,14.6,4.2),
+  quantum:'<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="3"/><path d="M12 1.5v21M12 1.5l-1.6 2M12 1.5l1.6 2"/><circle cx="16.6" cy="8.2" r="1.3" fill="currentColor"/><path d="M12 12l4.6-3.8" stroke-dasharray="1.4 1.4"/>',
+  supercon:'<path d="M2.8 14c0-2.8 1.6-4.8 4.6-4.8h9.2c3 0 4.6 2 4.6 4.8z"/><path d="M8 11.8h2.2M13.8 11.8H16"/><path d="M2.5 20h19"/><path d="M6.5 16.2v1.6M12 16.2v1.6M17.5 16.2v1.6"/><path d="M9 5.6l-1 1.6h2l-1 1.6" opacity=".8"/>',
+  carbon:'<path d="M7.2 14.5a4.2 4.2 0 010-8.4 5.2 5.2 0 019.8 1.6 3.4 3.4 0 01-.6 6.8z"/><path d="M12 15.6v5.4M9.6 18.8l2.4 2.4 2.4-2.4"/>',
+  agi:P_CHIP+'<path d="M20.5 3.2l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z" fill="currentColor" stroke-width="0"/>',
+  rockets:P_ROCKET,
+  orbital:'<rect x="9.2" y="9.2" width="5.6" height="5.6" rx="1" transform="rotate(45 12 12)"/><path d="M5 10.4l3.6-3.6 2 2L7 12.4zM19 13.6l-3.6 3.6-2-2 3.6-3.6z"/><path d="M12 19.2a3 3 0 01-3-3M12 21.6a5.4 5.4 0 01-5.4-5.4" opacity=".6"/>',
+  asteroid:'<path d="M5 9.4l3-4.2 5-1.2 5.2 3L20 12.8l-3 5-5.2 2.2-5.2-2-2-5z"/><circle cx="9.4" cy="10" r="1.3"/><circle cx="14.6" cy="14.4" r="1.7"/><circle cx="15.4" cy="8.6" r=".9"/>',
+  colony:P_SHIP,
+  spaceelev:P_ELEV,
+  orbsolar:P_ARRAY,
+  antimatter:'<ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(0 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(90 12 12)"/><circle cx="12" cy="12" r="2.6"/><path d="M10.8 12h2.4"/>',
+  dyson:P_NODE,
+  matrioshka:'<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="6.4"/><circle cx="12" cy="12" r="3.3"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+  wormhole:P_RELAY,
+  /* goals and kinds */
+  research:'<path d="M9 2.8h6M10 2.8v6.2L4.6 18.6A2 2 0 006.4 21.5h11.2a2 2 0 001.8-2.9L14 9V2.8"/>',
+  build:'<path d="M3 20h18M5 20V9l7-5 7 5v11M9.5 20v-6h5v6"/>',
+  rank:'<path d="M3 21V10l5-3v14M8 21V5l7-3v19M15 21V9l6 2.4V21"/>',
+  kard:'<path d="M3 21h5v-5h5v-5h5V8"/><circle cx="18" cy="4.6" r="2.2"/><path d="M18 .8v.8M14.2 4.6h.8M21 4.6h.8" opacity=".7"/>',
+  ach:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+  guide:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.2 2"/>',
+  psc:'<path d="M12 21s-7.5-4.6-7.5-10.2A4.3 4.3 0 0112 8.6a4.3 4.3 0 017.5 2.2C19.5 16.4 12 21 12 21z"/>'
+};
+function ico(key,size){
+  var p=ICONS[key];if(!p)return '';
+  var s=size||20;
+  return '<svg class="ic" viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+}
+
 /* ================= scenarios ================= */
 var SCENARIOS=[
   {id:'free',name:'Free play',desc:'No deadline. Build the city your way.'},
@@ -2005,7 +2157,7 @@ var SCENARIOS=[
     setup:function(s){s.cash=60000;},
     goals:[{t:'Reach 3,500 residents',f:function(s){return s.pop>=3500;}}]},
   {id:'stagflation',name:'Stagflation 1974',desc:'Inflation is 9%, a supply shock is raging and stocks are down. Tame prices without wrecking jobs.',years:12,
-    setup:function(s){s.infl=9;s.rate=6;s.prevRate=6;s.mort=7.4;s.shock=0.9;s.mkt=70;s.hpi=85;s.recession=10;s.cash=26000;},
+    setup:function(s){s.anch=0.55;s.infl=9;s.rate=6;s.prevRate=6;s.mort=7.4;s.shock=0.9;s.mkt=70;s.hpi=85;s.recession=10;s.cash=26000;},
     goals:[{t:'Inflation under 3%',f:function(s){return s.infl<3;}},{t:'Jobless rate under 10%',f:function(s,e){return e.unemp<0.10;}},{t:'800 residents',f:function(s){return s.pop>=800;}}]},
   {id:'bubble',name:'The Bubble',desc:'Cheap money has inflated stocks and housing. A crash is coming. Live through it and keep growing.',years:15,
     setup:function(s){s.mkt=320;s.hpi=190;s.mktBubble=1.5;s.rate=1.5;s.prevRate=1.5;s.mort=2.6;s.qe=1;s.cash=30000;},
@@ -2044,7 +2196,7 @@ function tutorialTick(e){
   while(S.tut<TUT.length&&TUT[S.tut].f(e.g,e)){S.tut++;moved=true;}
   if(moved){
     if(S.tut<TUT.length){var step=S.tut;addNews('Step done. Next, Mayor: '+TUT[S.tut].t,'good','Guide',function(){return S.tut===step;},true);}
-    else addNews('Tutorial complete, Mayor. The rest is up to you. The Tips button has advice that follows your city.','good','Guide');
+    else{addNews('Tutorial complete, Mayor. The rest is up to you. The Goals button shows what is next and the advisors say what to watch.','good','Guide');if(!S.pacedUp){S.pacedUp=true;if(speed<2){speed=2;toast('Nice work. Clock sped up to 2\u00D7. Tap 1\u00D7 to slow down.',4200);}}}
     prunePop();
   }
 }
@@ -2084,6 +2236,10 @@ function adviceList(e){
   if((S.era|0)>=2&&S.rate<=0.5&&S.infl<1)add('zlb','Monetary','warn',4,'Mayor, rates are near zero and prices are barely moving. Abundance is pulling prices down and you cannot cut further. Try asset purchases, stimulus checks or a universal dividend before deflation sets in.');
   if((S.era|0)>=3&&S.mktBubble>0.6)add('spacebub','Monetary','warn',3,'Mayor, cheap money is inflating a space-stock bubble. Space income rides the market, so a crash would hurt it. Consider raising rates.');
   if(S.tech.agi&&S.tax.bot===0&&e.unemp>0.1)add('botlevy','Economy','info',3,'Mayor, automation is eating jobs and income tax with them. An automation levy or a universal dividend can rebalance the budget.');
+  if(S.auto&&S.auto.adopt>0.2&&e.unemp>0.12&&S.auto.skill<S.auto.adopt)add('skillgap','Workforce','warn',4,'Mayor, machines are displacing workers faster than they are retraining. Raise education and retraining spending, or cushion the blow with social services or a universal dividend.');
+  if(S.auto&&S.auto.adopt>0.25&&S.auto.ineq>0.45)add('ineq','Workforce','warn',3,'Mayor, inequality is high. Protests are likely and approval is slipping. Retraining, social services, a dividend and an automation levy all narrow the gap.');
+  if(S.tech.ai&&e.aiRisk>0.2)add('airisk','Technology','warn',4,'Mayor, the civic AI is growing more capable than your oversight. Fund AI oversight or adopt circuit breakers before something goes wrong.');
+  if(S.auto&&S.auto.psc<12&&e.abund>0.7)add('abund','Workforce','info',2,'Mayor, abundance is close. Hold it near 80% with a small gap and low unemployment for a year and you reach post-scarcity.');
   if(S.pop>=200&&e.hc<0.85)add('health','Safety','warn',3,'Mayor, hospitals cover only '+Math.round(e.hc*100)+'% of residents. Outbreaks hit harder and mood is falling. Build a hospital in the Services tab, or fund healthcare in Policy.');
   if(S.pop>=200&&e.er<0.7)add('edu','Growth','warn',2,'Mayor, schools can seat only '+Math.round(e.er*100)+'% of the people who need them. Build schools in the Services tab.');
   if(S.pop>=150&&e.socCov<0.65)add('social','Economy','warn',3,'Mayor, social services cover only '+Math.round(e.socCov*100)+'% of need (about '+money(e.socNeed)+' a month). Gaps raise homelessness and drag on mood. Raise social services in Policy, Spending.');
@@ -2213,6 +2369,374 @@ function importCode(code,cb){
   cb(false);
 }
 
+/* ================= engagement: goals, achievements, windfalls, chronicle, reports, score ================= */
+function metaInit(){
+  if(!S.ach)S.ach={};
+  if(!S.chron)S.chron=[];
+  if(!S.yrs)S.yrs=[];
+  if(!S.st)S.st={};
+  var d={blackRun:0,softRun:0,popRun:0,sinceWin:0,wins:0,epics:0,seen:{},crashM:-1,hadDebt:false,crisesYear:0,winsYear:0,rank:0,metaInit:0};
+  for(var k in d){if(S.st[k]===undefined)S.st[k]=d[k];}
+}
+function chron(kind,text){
+  if(!S)return;metaInit();
+  S.chron.push({m:S.month,k:kind,t:text});
+  if(S.chron.length>500){
+    for(var i=0;i<S.chron.length&&S.chron.length>480;i++){if(S.chron[i].k==='report'||S.chron[i].k==='rank'){S.chron.splice(i,1);i--;}}
+    if(S.chron.length>500)S.chron.splice(0,S.chron.length-500);
+  }
+}
+function countTech(){var n=0;for(var k in S.tech){if(S.tech[k])n++;}return n;}
+function baseTechCount(){var ids=['solar','fiber','water','auto','bio','ai','fission','fusion'],n=0;for(var i=0;i<ids.length;i++){if(S.tech[ids[i]])n++;}return n;}
+function frontierCount(){var n=0;for(var k in TECHS){if(TECHS[k].frontier&&S.tech[k])n++;}return n;}
+function prog(v,t){return Math.max(0,Math.min(1,v/t));}
+
+/* ---------- achievements ---------- */
+var ACH=[
+ /* quick wins for the first ten minutes */
+ {id:'road',tier:0,name:'First road',desc:'Lay your first road.',f:function(e){return e.g.cnt[ROAD]>=1;}},
+ {id:'power',tier:0,name:'Lights on',desc:'Get a power plant running.',f:function(e){return e.g.pCap>0;}},
+ {id:'water',tier:0,name:'Fresh water',desc:'Get water flowing to the city.',f:function(e){return e.g.wCap>0;}},
+ {id:'pop10',tier:0,name:'First neighbours',desc:'Reach 10 residents.',f:function(e){return S.pop>=10;},p:function(e){return prog(S.pop,10);}},
+ {id:'shop',tier:0,name:'Open for business',desc:'Get a shop with workers.',f:function(e){return e.g.jobsC>0;}},
+ {id:'factory',tier:0,name:'Smokestack',desc:'Get a factory with workers.',f:function(e){return e.g.jobsI>0;}},
+ {id:'pop25',tier:0,name:'A small crowd',desc:'Reach 25 residents.',f:function(e){return S.pop>=25;},p:function(e){return prog(S.pop,25);}},
+ {id:'pop50',tier:0,name:'Fifty strong',desc:'Reach 50 residents.',f:function(e){return S.pop>=50;},p:function(e){return prog(S.pop,50);}},
+ {id:'pop100',tier:0,name:'Triple digits',desc:'Reach 100 residents.',f:function(e){return S.pop>=100;},p:function(e){return prog(S.pop,100);}},
+ /* growth */
+ {id:'village',tier:1,name:'Village',desc:'Reach 150 people.',f:function(e){return S.peak>=150;},p:function(e){return prog(S.pop,150);}},
+ {id:'town',tier:1,name:'Town',desc:'Reach 600 people.',f:function(e){return S.peak>=600;},p:function(e){return prog(S.pop,600);}},
+ {id:'city',tier:1,name:'City',desc:'Reach 1,500 people.',f:function(e){return S.peak>=1500;},p:function(e){return prog(S.pop,1500);}},
+ {id:'metro',tier:1,name:'Metropolis',desc:'Reach 3,500 people.',f:function(e){return S.peak>=3500;},p:function(e){return prog(S.pop,3500);}},
+ {id:'mega',tier:2,name:'Megacity',desc:'Reach 5,000 people.',f:function(e){return S.peak>=5000;},p:function(e){return prog(S.pop,5000);}},
+ /* money and markets */
+ {id:'black',tier:1,name:'In the black',desc:'Run a surplus for 12 months in a row.',f:function(e){return S.st.blackRun>=12;},p:function(e){return prog(S.st.blackRun,12);}},
+ {id:'debtfree',tier:1,name:'Debt free',desc:'Borrow, then pay every bond back (300+ people).',f:function(e){return S.st.hadDebt&&S.fixedAmt+S.varAmt===0&&S.pop>=300;}},
+ {id:'rainy',tier:1,name:'Rainy-day fund',desc:'Save $100,000 in the sovereign fund.',f:function(e){return S.fund.bal>=100000;},p:function(e){return prog(S.fund.bal,100000);}},
+ {id:'fundmgr',tier:2,name:'Fund manager',desc:'Save $1 million in the sovereign fund.',f:function(e){return S.fund.bal>=1000000;},p:function(e){return prog(S.fund.bal,1000000);}},
+ {id:'soft',tier:2,name:'Soft landing',desc:'Hold inflation between 1.5% and 2.5% with joblessness under 6% for two years.',f:function(e){return S.st.softRun>=24;},p:function(e){return prog(S.st.softRun,24);}},
+ {id:'crash',tier:2,name:'Crash survivor',desc:'Live through a stock market crash and stay in office for a year.',f:function(e){return S.st.crashM>=0&&S.month-S.st.crashM>=12;}},
+ {id:'popular',tier:2,name:'Popular mayor',desc:'Keep approval at 80% or more for two years.',f:function(e){return S.st.popRun>=24;},p:function(e){return prog(S.st.popRun,24);}},
+ /* infrastructure */
+ {id:'nuke',tier:1,name:'Going nuclear',desc:'Switch on an advanced nuclear plant.',f:function(e){return e.g.done[NUKE]>0;}},
+ {id:'clean',tier:2,name:'Clean grid',desc:'Run a grid of 50 MW or more with no coal or gas.',f:function(e){return e.g.pCap>=50&&e.g.done[PLANT]+e.g.done[GAS]===0&&S.pop>=300;}},
+ {id:'fusionp',tier:2,name:'Star power',desc:'Switch on a fusion plant.',f:function(e){return e.g.done[FUSION]>0;}},
+ {id:'big5',tier:2,name:'Skyline builder',desc:'Build a stadium, airport, university, convention center and stock exchange.',f:function(e){return progBig5(e)>=5;},p:function(e){return prog(progBig5(e),5);}},
+ {id:'rail',tier:1,name:'Rail baron',desc:'Open two rail stations.',f:function(e){return e.g.done[STN]>=2;},p:function(e){return prog(e.g.done[STN],2);}},
+ /* technology */
+ {id:'tech1',tier:1,name:'First breakthrough',desc:'Finish your first research project.',f:function(e){return countTech()>=1;}},
+ {id:'tech8',tier:2,name:'Foundations',desc:'Research all eight foundation technologies.',f:function(e){return baseTechCount()>=8;},p:function(e){return prog(baseTechCount(),8);}},
+ {id:'frontier',tier:2,name:'Frontier science',desc:'Finish a frontier technology.',f:function(e){return frontierCount()>=1;}},
+ {id:'space',tier:3,name:'Space age',desc:'Finish a spaceport.',f:function(e){return e.g.done[SPACEPORT]>0;}},
+ {id:'ore',tier:3,name:'Ore baron',desc:'Earn mining income from asteroids.',f:function(e){var r=e.rev.filter(function(x){return x[0]==='Asteroid mining';})[0];return !!(r&&r[1]>0);}},
+ {id:'signal',tier:3,name:'Not alone',desc:'Pick up a signal from deep space.',f:function(e){return !!S.st.seen.signal;}},
+ {id:'contact',tier:3,name:'First contact',desc:'Meet the visitors.',f:function(e){return !!S.st.seen.contact;}},
+ {id:'friends',tier:3,name:'Friends in high places',desc:'Sign an interstellar trade agreement.',f:function(e){return S.alien==='friend';}},
+ {id:'typeI',tier:3,name:'Type I civilization',desc:'Reach Kardashev 1.0.',f:function(e){return e.kard>=1;},p:function(e){return prog(e.kard,1);}},
+ {id:'typeII',tier:3,name:'Type II civilization',desc:'Reach Kardashev 2.0.',f:function(e){return e.kard>=2;},p:function(e){return prog(e.kard,2);}},
+ {id:'typeIII',tier:3,name:'Type III civilization',desc:'Reach Kardashev 3.0.',f:function(e){return e.kard>=3;},p:function(e){return prog(e.kard,3);}},
+ /* automation and AI */
+ {id:'retrained',tier:2,name:'Retrained and ready',desc:'Reach 80% workforce skills while half the work is automated.',f:function(e){return S.auto.skill>=0.8&&S.auto.adopt>=0.5;},p:function(e){return prog(Math.min(S.auto.skill/0.8,S.auto.adopt/0.5),1);}},
+ {id:'psc',tier:3,name:'Post-scarcity',desc:'Hold abundance for a full year.',f:function(e){return S.auto.psc>=12;},p:function(e){return prog(S.auto.psc,12);}},
+ {id:'gap',tier:3,name:'Closing the gap',desc:'Keep inequality under 0.30 while half the work is automated.',f:function(e){return S.auto.ineq<0.3&&S.auto.adopt>=0.5;}},
+ {id:'breaker',tier:2,name:'Safety first',desc:'Adopt AI circuit breakers.',f:function(e){return !!S.ord.breaker;}},
+ {id:'aisurvive',tier:3,name:'Stared down the AI',desc:'Live through an AI revolt for two years.',f:function(e){return S.st.seen.airevolt!==undefined&&S.month-S.st.seen.airevolt>=24;}},
+ /* luck and time */
+ {id:'lucky',tier:2,name:'Lucky streak',desc:'Receive five windfalls.',f:function(e){return S.st.wins>=5;},p:function(e){return prog(S.st.wins,5);}},
+ {id:'jackpot',tier:3,name:'Jackpot',desc:'Receive an epic windfall.',f:function(e){return S.st.epics>=1;}},
+ {id:'y10',tier:1,name:'A decade in office',desc:'Run the city for 10 years.',f:function(e){return S.month>=120;},p:function(e){return prog(S.month,120);}},
+ {id:'y25',tier:2,name:'Quarter century',desc:'Run the city for 25 years.',f:function(e){return S.month>=300;},p:function(e){return prog(S.month,300);}},
+ {id:'y50',tier:2,name:'Half a century',desc:'Run the city for 50 years.',f:function(e){return S.month>=600;},p:function(e){return prog(S.month,600);}},
+ {id:'y100',tier:3,name:'A hundred years',desc:'Run the city for 100 years.',f:function(e){return S.month>=1200;},p:function(e){return prog(S.month,1200);}},
+ {id:'y200',tier:3,name:'Two centuries',desc:'Run the city for 200 years.',f:function(e){return S.month>=2400;},p:function(e){return prog(S.month,2400);}}
+];
+function progBig5(e){var d=e.g.done;return (d[STADIUM]>0?1:0)+(d[AIRPORT]>0?1:0)+(d[UNIV]>0?1:0)+(d[CONV]>0?1:0)+(d[EXCH]>0?1:0);}
+function achCount(){var n=0;for(var k in S.ach)n++;return n;}
+function stepAch(e,silent){
+  metaInit();
+  for(var i=0;i<ACH.length;i++){
+    var a=ACH[i];if(S.ach[a.id]!==undefined)continue;
+    var ok=false;try{ok=a.f(e);}catch(x){ok=false;}
+    if(!ok)continue;
+    if(silent){S.ach[a.id]=-1;continue;}
+    S.ach[a.id]=S.month;
+    S.approval=Math.min(100,S.approval+1);
+    sfx('cash');toast('\u2605 Achievement: '+a.name,3600);
+    addNews('Achievement unlocked: '+a.name+'. '+a.desc,a.tier>=2?'good':'info','Achievement');
+    chron('ach',a.name+': '+a.desc);
+  }
+}
+
+/* ---------- streaks, records, hooks (called every month) ---------- */
+function stepMeta(e){
+  metaInit();var st=S.st;
+  if(!st.metaInit){
+    st.metaInit=1;
+    if(S.month===0)chron('start','Founded '+S.city+'.');
+    else if(!st.retro){st.retro=1;stepAch(e,true);chron('start','Chronicle begins. Earlier achievements are credited.');}
+  }
+  st.blackRun=e.net>0?st.blackRun+1:0;
+  st.softRun=(S.infl>=1.5&&S.infl<=2.5&&e.unemp<0.06&&S.pop>=100)?st.softRun+1:0;
+  st.popRun=S.approval>=80?st.popRun+1:0;
+  if(S.fixedAmt+S.varAmt>0)st.hadDebt=true;
+  if(S.crashes>(st.crashN|0)){st.crashN=S.crashes;st.crashM=S.month;chron('crash','Stock market crash.');}
+  var ri=rankIdx(S.pop);
+  if(ri>st.rank){st.rank=ri;chron('rank','Became a '+RANKS[ri][1].toLowerCase()+' with '+Math.round(S.pop).toLocaleString('en-US')+' people.');toast('\u2605 '+S.city+' is now a '+RANKS[ri][1].toLowerCase());}
+  st.sinceWin++;
+  stepWindfall(e);
+  stepAch(e,false);
+  if(S.month>0&&S.month%12===0)stepYear(e);
+}
+
+/* ---------- windfalls: variable rewards with a pity timer ---------- */
+var WINDFALLS=[
+ {r:'common',w:30,run:function(e){var a=Math.round(Math.max(800,e.revenue*0.4));S.cash+=a;return 'Bumper month: tax receipts beat forecasts by '+money(a)+'.';}},
+ {r:'common',w:24,run:function(e){var a=Math.round(1500+S.pop*6);S.cash+=a;return 'An anonymous donor gives the city '+money(a)+' for the public good.';}},
+ {r:'common',w:18,run:function(e){S.approval=Math.min(100,S.approval+3);return 'A feel-good headline goes viral. Residents are proud of '+S.city+'.';}},
+ {r:'common',w:16,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(TECHS[S.rd.active].cost*(0.05+Math.random()*0.07));S.rd.pts+=a;return 'Eureka: a lab finds a shortcut and adds '+a+' research points.';}},
+ {r:'rare',w:12,run:function(e){var a=Math.round(Math.max(3000,e.revenue*1.6));S.cash+=a;return 'A federal grant is approved: '+money(a)+' lands in the city account.';}},
+ {r:'rare',w:10,run:function(e){S.approval=Math.min(100,S.approval+6);S.hpi=Math.min(260,S.hpi*1.03);return 'A magazine names '+S.city+' one of the most livable cities. Approval and home prices rise.';}},
+ {r:'rare',w:10,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(TECHS[S.rd.active].cost*(0.2+Math.random()*0.15));S.rd.pts+=a;return 'Research breakthrough: a lucky result adds '+a+' research points.';}},
+ {r:'epic',w:3,run:function(e){var a=Math.round(Math.max(12000,e.revenue*6));S.cash+=a;S.approval=Math.min(100,S.approval+8);return 'Archaeologists unearth a famous ancient site beneath the city. Tourism and pride surge, and '+money(a)+' pours in.';}},
+ {r:'epic',w:3,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(TECHS[S.rd.active].cost*(0.5+Math.random()*0.3));S.rd.pts+=a;return 'Eureka of the decade: your scientists leap ahead by '+a+' research points.';}}
+];
+function stepWindfall(e){
+  var st=S.st;
+  if(S.sandbox||S.pop<30||S.month<4||st.sinceWin<4)return;
+  var p=0.07+0.006*st.sinceWin;if(S.month<24)p*=1.4;
+  p=Math.min(0.25,p);
+  if(Math.random()>=p)return;
+  var u=Math.random(),r=u<0.04?'epic':u<0.28?'rare':'common';
+  var pool=WINDFALLS.filter(function(w){return w.r===r&&(!w.need||w.need());}),tot=0,i;
+  if(!pool.length)pool=WINDFALLS.filter(function(w){return w.r==='common'&&(!w.need||w.need());});
+  for(i=0;i<pool.length;i++)tot+=pool[i].w;
+  var x=Math.random()*tot,w=pool[0];
+  for(i=0;i<pool.length;i++){x-=pool[i].w;if(x<=0){w=pool[i];break;}}
+  var msg=w.run(e);
+  st.sinceWin=0;st.wins++;st.winsYear++;if(r==='epic')st.epics++;
+  sfx(r==='common'?'cash':'big');
+  toast((r==='epic'?'\u2605\u2605 ':r==='rare'?'\u2605 ':'')+msg,r==='common'?3200:4600);
+  addNews(msg,r==='common'?'info':'good','Windfall');
+  if(r!=='common')chron('win',msg);
+}
+
+/* ---------- yearly report ---------- */
+function gradeOf(snap,prev){
+  var g=55,gr=prev&&prev.pop>0?(snap.pop-prev.pop)/prev.pop:0;
+  g+=20*Math.max(-1,Math.min(1,gr/0.15));
+  g+=0.3*(snap.appr-55);
+  g+=snap.net>0?8:-10;
+  g-=12*Math.max(0,Math.abs(snap.infl-2)-1)/3;
+  g-=Math.max(0,snap.unemp-6)*0.8;
+  if(snap.cash<0)g-=15;
+  return g;
+}
+function letter(g){return g>=85?'A':g>=70?'B':g>=55?'C':g>=40?'D':'F';}
+function stepYear(e){
+  var st=S.st,prev=S.yrs[S.yrs.length-1],yr=Math.floor(S.month/12);
+  var ach=0,k;for(k in S.ach){if(S.ach[k]>=S.month-12)ach++;}
+  var snap={y:yr,m:S.month,pop:Math.round(S.pop),cash:Math.round(S.cash),net:Math.round(e.net),appr:Math.round(S.approval),infl:+S.infl.toFixed(1),unemp:Math.round(e.unemp*100),kard:+e.kard.toFixed(2),era:S.era|0,ach:ach,crises:st.crisesYear,wins:st.winsYear};
+  var sc=gradeOf(snap,prev);snap.grade=letter(sc);
+  var gr=prev&&prev.pop>0?(snap.pop-prev.pop)/prev.pop:0;
+  snap.head=snap.cash<0?'A year in the red':st.crisesYear>=2?'A year of storms weathered':snap.infl>5?'Prices ran hot':snap.infl<0?'Prices slipped below zero':gr>0.12&&snap.appr>=60?'A year of growth':gr<-0.03?'A year of decline':snap.appr<35?'A year of discontent':'A steady year';
+  S.yrs.push(snap);if(S.yrs.length>400)S.yrs.shift();
+  st.crisesYear=0;st.winsYear=0;
+  chron('report','Year '+yr+': '+snap.head+', grade '+snap.grade+'.');
+  if(yr<=20||yr%5===0)addNews('State of the city, year '+yr+': '+snap.head+'. Grade '+snap.grade+'.','good','Report',null,false,'report');
+}
+
+/* ---------- goals: what to do next ---------- */
+function nextUps(e){
+  var list=[],i,g=e.g;
+  if(S.tut<TUT.length)list.push({i:'guide',t:TUT[S.tut].t,p:null,kind:'guide'});
+  if(S.rd.active&&TECHS[S.rd.active]){
+    var c=TECHS[S.rd.active].cost,rate=rdRate(g),left=Math.max(0,c-S.rd.pts);
+    list.push({i:S.rd.active,t:'Research '+TECHS[S.rd.active].name,p:Math.min(1,S.rd.pts/c),note:rate>0?'about '+Math.max(1,Math.ceil(left/rate))+' months':'stalled',kind:'research'});
+  }
+  var best=null;
+  for(i=0;i<N;i++){var o=BYT[T[i]];if(o&&o.build&&L[i]>0&&(!best||L[i]<best.l))best={l:L[i],n:TOOLS[o.id].name,b:o.build,k:o.id};}
+  if(best)list.push({i:best.k,t:'Finish the '+best.n,p:1-best.l/best.b,note:best.l+' months left',kind:'build'});
+  var ri=rankIdx(S.pop);
+  if(ri<RANKS.length-1&&S.tut>=TUT.length)list.push({i:'rank',t:'Grow to a '+RANKS[ri+1][1].toLowerCase(),p:Math.min(1,(S.pop-RANKS[ri][0])/(RANKS[ri+1][0]-RANKS[ri][0])),note:Math.round(S.pop)+' of '+RANKS[ri+1][0].toLocaleString('en-US')+' people',kind:'rank'});
+  if(S.tech.rockets||e.kard>0.45){
+    var lv=Math.floor(e.kard);list.push({i:'kard',t:'Reach Type '+['I','II','III','IV'][Math.min(3,lv)],p:Math.min(1,e.kard-lv),note:'rating '+e.kard.toFixed(2)+' of '+(lv+1)+'.0',kind:'kard'});
+  }
+  if(S.tech.auto&&e.abund>0.55&&S.auto.psc<12)list.push({i:'psc',t:'Reach post-scarcity',p:Math.min(1,e.abund/0.8),note:'abundance '+Math.round(e.abund*100)+'% of 80%',kind:'psc'});
+  var near=[];
+  for(i=0;i<ACH.length;i++){var a=ACH[i];if(S.ach[a.id]!==undefined||!a.p)continue;var pv=0;try{pv=a.p(e);}catch(x){pv=0;}if(pv>0&&pv<1)near.push({i:'ach',t:'Achievement: '+a.name,p:pv,note:a.desc,kind:'ach',tier:a.tier});}
+  near.sort(function(x,y){return y.p-x.p;});
+  for(i=0;i<near.length&&i<3;i++)list.push(near[i]);
+  return list;
+}
+function goalShort(e){
+  var l=nextUps(e);if(!l.length)return {text:'No goals right now',p:0};
+  var f=l[0];return {text:f.t+(f.note?' ('+f.note+')':''),p:f.p===null?0:f.p};
+}
+function goalsHTML(e){
+  var l=nextUps(e),h='<h3>Next up</h3>',i;
+  if(!l.length)h+='<p class="hint">Nothing queued. Start a research project or plan something big.</p>';
+  for(i=0;i<l.length&&i<6;i++){
+    var x=l[i];
+    h+='<div class="goal"><div class="gt"><b>'+(x.i&&ICONS[x.i]?'<span class="gi2">'+ico(x.i,17)+'</span>':'')+x.t+'</b>'+(x.note?'<small>'+x.note+'</small>':'')+'</div>'+(x.p===null?'':'<div class="prog"><i style="width:'+Math.round(x.p*100)+'%"></i></div>')+'</div>';
+  }
+  return h;
+}
+
+/* ---------- score and shareable code ---------- */
+function scoreParts(){
+  var kmax=Math.max(S.kmax|0,E?Math.floor(E.kard*100)/100:0);
+  var years=Math.floor(S.month/12);
+  return [['Peak population',Math.floor(S.peak/5)],['Years in office',years*10],['Achievements ('+achCount()+')',achCount()*40],['Kardashev rating',Math.floor(1500*(E?E.kard:0)*(E?E.kard:0))],['Eras reached',(S.era|0)*150]];
+}
+function scoreOf(){var s=0,p=scoreParts();for(var i=0;i<p.length;i++)s+=p[i][1];return s;}
+function hash5(str){var h=5381;for(var i=0;i<str.length;i++){h=((h<<5)+h+str.charCodeAt(i))|0;}return (h>>>0).toString(36).slice(0,5);}
+function b64e(s){try{return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}catch(x){return '';}}
+function b64d(s){try{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)));}catch(x){return '';}}
+function encodeScore(){
+  var data=[S.city.slice(0,24),Math.floor(S.month/12),Math.round(S.peak),+(E?E.kard:0).toFixed(2),S.era|0,achCount(),scoreOf(),Math.round(S.approval)];
+  var body=b64e(JSON.stringify(data));
+  return 'SC5K1.'+body+'.'+hash5(body);
+}
+function decodeScore(code){
+  var m=(code||'').trim().split('.');
+  if(m.length!==3||m[0]!=='SC5K1'||hash5(m[1])!==m[2])return null;
+  var s=b64d(m[1]),d;try{d=JSON.parse(s);}catch(x){return null;}
+  if(!d||d.length<8)return null;
+  return {city:String(d[0]),years:d[1],peak:d[2],kard:d[3],era:d[4],ach:d[5],score:d[6],appr:d[7]};
+}
+
+/* ---------- sheets ---------- */
+function renderAchievements(){
+  var b=$('sheetBody'),h=sheetHead('Achievements'),i,n=achCount();
+  h+='<p class="hint">'+n+' of '+ACH.length+' earned. Each one adds a point of approval.</p>';
+  var tiers=['Getting started','Growing','Established','Beyond'];
+  for(var t=0;t<4;t++){
+    h+='<h3>'+tiers[t]+'</h3>';
+    for(i=0;i<ACH.length;i++){
+      var a=ACH[i];if(a.tier!==t)continue;
+      var got=S.ach[a.id]!==undefined;
+      h+='<div class="ach'+(got?' got':'')+'"><span class="ai">'+(got?'\u2605':'\u25CB')+'</span><div><b>'+a.name+'</b><small>'+a.desc+(got?' '+(S.ach[a.id]<0?'Earned earlier.':'Earned '+dateLabel(S.ach[a.id])+'.'):'')+'</small></div></div>';
+    }
+  }
+  b.innerHTML=h;
+}
+function renderChronicle(){
+  var b=$('sheetBody'),h=sheetHead('Chronicle'),i;
+  metaInit();
+  h+='<div class="diag"><div>Peak population<b>'+Math.round(S.peak).toLocaleString('en-US')+'</b></div><div>Years in office<b>'+Math.floor(S.month/12)+'</b></div><div>Achievements<b>'+achCount()+' of '+ACH.length+'</b></div><div>Score<b>'+scoreOf().toLocaleString('en-US')+'</b></div></div>';
+  h+='<div class="btns" style="margin:8px 0"><button class="sm" data-open="report">Latest report</button><button class="sm" data-open="ach">Achievements</button><button class="sm" data-open="share">Share your city</button></div>';
+  h+='<h3>Your story</h3><ul class="news">';
+  var icons={ach:'\u2605',win:'\u2728',crash:'\u26A0',crisis:'\u26A0',good:'\u2714',rank:'\u2302',tech:'\u2699',era:'\u2604',kard:'\u2736',ai:'\u2699',report:'\u2630',start:'\u2691',build:'\u2692'};
+  for(i=S.chron.length-1;i>=0&&i>=S.chron.length-120;i--){var c=S.chron[i];h+='<li><time>'+dateLabel(c.m)+'</time><span>'+(icons[c.k]||'\u2022')+' '+c.t+'</span></li>';}
+  h+='</ul>';
+  b.innerHTML=h;
+}
+function renderReport(){
+  var b=$('sheetBody'),h=sheetHead('State of the city'),i;
+  metaInit();
+  var r=S.yrs[S.yrs.length-1],p=S.yrs[S.yrs.length-2];
+  if(!r){h+='<p class="hint">Your first report arrives after a full year in office.</p>';b.innerHTML=h;return;}
+  function dl(a,bv,fmt,good){if(!p)return '';var d=a-bv;if(d===0)return '';return ' <span class="'+((d>0)===good?'pos':'neg')+'">'+(d>0?'\u25B2 ':'\u25BC ')+fmt(Math.abs(d))+'</span>';}
+  h+='<div class="rep"><div class="grade g'+r.grade+'">'+r.grade+'</div><div><b>Year '+r.y+': '+r.head+'</b><small>'+dateLabel(r.m)+'</small></div></div>';
+  h+='<div class="diag">'
+    +'<div>People<b>'+r.pop.toLocaleString('en-US')+dl(r.pop,p?p.pop:0,function(v){return v.toLocaleString('en-US');},true)+'</b></div>'
+    +'<div>Cash<b>'+money(r.cash)+dl(r.cash,p?p.cash:0,money,true)+'</b></div>'
+    +'<div>Per month<b>'+money(r.net)+'</b></div>'
+    +'<div>Approval<b>'+r.appr+'%'+dl(r.appr,p?p.appr:0,function(v){return v+' pts';},true)+'</b></div>'
+    +'<div>Inflation<b>'+r.infl.toFixed(1)+'%</b></div>'
+    +'<div>Jobless<b>'+r.unemp+'%</b></div>'
+    +(r.kard>0.3?'<div>Kardashev<b>'+r.kard.toFixed(2)+'</b></div>':'')
+    +'<div>Era<b>'+ERA[r.era].name.split(' ')[0]+'</b></div></div>';
+  h+='<h3>This year</h3><div class="kr">'+r.ach+' achievement'+(r.ach===1?'':'s')+' earned, '+r.crises+' crisis'+(r.crises===1?'':'es')+' faced, '+r.wins+' windfall'+(r.wins===1?'':'s')+' received.</div>';
+  var ev=[];for(i=S.chron.length-1;i>=0;i--){var c=S.chron[i];if(c.m>r.m-12&&c.m<=r.m&&c.k!=='report'&&c.k!=='rank')ev.push(c);if(ev.length>=4)break;}
+  if(ev.length){h+='<h3>Highlights</h3><ul class="news">';for(i=0;i<ev.length;i++)h+='<li><time>'+dateLabel(ev[i].m)+'</time><span>'+ev[i].t+'</span></li>';h+='</ul>';}
+  h+='<h3>Past years</h3><ul class="news">';
+  for(i=S.yrs.length-2;i>=0&&i>=S.yrs.length-12;i--){var y=S.yrs[i];h+='<li><time>Year '+y.y+'</time><span>Grade '+y.grade+': '+y.head+', '+y.pop.toLocaleString('en-US')+' people</span></li>';}
+  h+='</ul>';
+  b.innerHTML=h;
+}
+function renderShare(msg){
+  var b=$('sheetBody'),h=sheetHead('Share your city'),parts=scoreParts(),i;
+  h+='<p class="hint">Your city score adds up from these parts. Send the code to a friend, and paste theirs below to compare.</p>';
+  h+='<div class="diag">';for(i=0;i<parts.length;i++)h+='<div>'+parts[i][0]+'<b>'+parts[i][1].toLocaleString('en-US')+'</b></div>';
+  h+='<div>Total score<b>'+scoreOf().toLocaleString('en-US')+'</b></div></div>';
+  h+='<h3>Your code</h3><textarea id="shareBox" rows="3" readonly>'+encodeScore()+'</textarea><div class="btns"><button class="sm" id="shareCopy">Copy code</button></div>';
+  h+='<h3>Compare with a friend</h3><textarea id="cmpBox" rows="3" placeholder="Paste a friend\u2019s code here"></textarea><div class="btns"><button class="sm" id="cmpGo">Compare</button></div><div id="cmpOut">'+(msg||'')+'</div>';
+  b.innerHTML=h;
+  var cp=$('shareCopy');if(cp)cp.onclick=function(){var box=$('shareBox');try{box.focus();box.select();}catch(e){}try{navigator.clipboard.writeText(box.value).then(function(){toast('Code copied');},function(){toast('Select the code and copy it');});}catch(e){toast('Select the code and copy it');}};
+  var cg=$('cmpGo');if(cg)cg.onclick=function(){
+    var d=decodeScore($('cmpBox').value),out=$('cmpOut');
+    if(!d){out.innerHTML='<p class="hint">That does not look like a valid city code.</p>';return;}
+    var me={city:S.city,years:Math.floor(S.month/12),peak:Math.round(S.peak),kard:+(E?E.kard:0).toFixed(2),era:S.era|0,ach:achCount(),score:scoreOf(),appr:Math.round(S.approval)};
+    function row(l,a,bv,hi){return '<tr><td>'+l+'</td><td class="'+(a>=bv?'win':'')+'">'+(hi?a.toLocaleString('en-US'):a)+'</td><td class="'+(bv>=a?'win':'')+'">'+(hi?bv.toLocaleString('en-US'):bv)+'</td></tr>';}
+    out.innerHTML='<table class="gt cmp"><tr><th></th><th>'+esc(me.city)+'</th><th>'+esc(d.city)+'</th></tr>'+row('Score',me.score,d.score,1)+row('Peak population',me.peak,d.peak,1)+row('Years',me.years,d.years,0)+row('Kardashev',me.kard,d.kard,0)+row('Era',ERA[me.era].name.split(' ')[0]+' ('+me.era+')',ERA[d.era]?ERA[d.era].name.split(' ')[0]+' ('+d.era+')':d.era,0).replace(/class="win"/g,'')+row('Achievements',me.ach,d.ach,0)+'</table><p class="hint">'+(me.score>d.score?'Your city is ahead.':me.score<d.score?esc(d.city)+' is ahead.':'A dead heat.')+'</p>';
+  };
+}
+
+/* ================= playtest report: a compact snapshot friends can paste back ================= */
+var BUILD_ID='2026-11-21 13:24';
+function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
+function series(arr,n,step,dec){
+  var out=[],i;if(!arr||!arr.length)return '(none)';
+  for(i=arr.length-1;i>=0&&out.length<n;i-=step)out.unshift(Number(arr[i]).toFixed(dec));
+  return out.join(', ');
+}
+function buildReport(notes){
+  metaInit();
+  var e=E||computeEconomy(),L2=[],i,k,sp=S.sp,tx=S.tax,A=S.auto||{},dev='unknown';
+  try{dev=(window.innerWidth||0)+'x'+(window.innerHeight||0)+' at '+(window.devicePixelRatio||1)+'x, '+(compact?'compact':'standard')+' layout, '+String(navigator.userAgent||'').slice(0,110);}catch(x){}
+  L2.push('SIMCITY 5000 PLAYTEST REPORT');
+  L2.push('Build: '+BUILD_ID);
+  L2.push('Device: '+dev);
+  L2.push('City: '+S.city+' ('+(scenarioById(S.scn).name||S.scn)+'), '+dateLabel(S.month)+', game year '+Math.floor(S.month/12)+' (month '+S.month+'), speed '+speed+'x');
+  L2.push('People '+fmtN(S.pop)+' (peak '+fmtN(S.peak)+'), rank '+RANKS[rankIdx(S.pop)][1]+', era '+ERA[S.era|0].name+', Kardashev '+e.kard.toFixed(2));
+  L2.push('Cash '+money(S.cash)+', per month '+money(e.net)+', approval '+Math.round(S.approval)+'%, debt '+money(S.fixedAmt+S.varAmt)+', sovereign fund '+money(S.fund.bal));
+  L2.push('');L2.push('MONEY');
+  L2.push('Policy rate '+S.rate.toFixed(2)+'% (guide '+e.taylor.toFixed(2)+'%), inflation '+S.infl.toFixed(1)+'%, credibility '+Math.round((S.anch===undefined?1:S.anch)*100)+'%, hidden neutral drift '+(S.rn||0).toFixed(2));
+  L2.push('Mortgage '+S.mort.toFixed(1)+'%, jobless '+Math.round(e.unemp*100)+'%, home prices '+Math.round(S.hpi)+', stocks '+Math.round(S.mkt)+', QE '+S.qe+', recession '+(S.recession>0?'yes':'no')+', stimulus '+(S.stim>0?'yes':'no')+', supply cost x'+(1+shk()).toFixed(2));
+  L2.push('Taxes: income '+tx.inc+'%, sales '+tx.sales+'%, property x'+tx.prop+', business '+tx.corp+'%, automation levy '+(tx.bot||0)+'%');
+  L2.push('Spending: services '+sp.svc+', safety '+sp.safety+', health '+sp.health+', education '+sp.edu+', upkeep '+sp.infra+', renewal '+S.renew+', social '+sp.welfare+', dividend '+(sp.udiv||0)+', retraining '+(sp.retrain||0)+', AI oversight '+(sp.aisafe||0));
+  L2.push('Last 24 months, every third month, oldest first:');
+  L2.push('  policy rate: '+series(S.hist.rate,8,3,1));
+  L2.push('  inflation:   '+series(S.hist.infl,8,3,1));
+  L2.push('  mortgage:    '+series(S.hist.mort,8,3,1));
+  L2.push('  stocks:      '+series(S.hist.mkt,8,3,0));
+  L2.push('  people:      '+series(S.hist.pop,8,3,0));
+  L2.push('');L2.push('AUTOMATION AND AI');
+  L2.push('Automation '+Math.round((A.adopt||0)*100)+'%, skills '+Math.round((A.skill||0)*100)+'%, inequality '+(A.ineq||0).toFixed(2)+', abundance '+Math.round((e.abund||0)*100)+'% (post-scarcity months '+(A.psc||0)+')');
+  L2.push('AI capability '+Math.round((e.aiCap||0)*100)+'%, safety '+Math.round((S.ai?S.ai.safety:0)*100)+'%, risk '+(e.aiRisk||0).toFixed(2)+', bust months '+(S.aiBust|0)+', circuit breakers '+(S.ord.breaker?'on':'off'));
+  L2.push('');L2.push('WORLD');
+  var ch=[];for(k in S.mc){if(Math.abs(S.mc[k])>=0.05)ch.push(k+' '+(S.mc[k]>0?'+':'')+Math.round(S.mc[k]*100)+'%');}
+  L2.push('Channels: '+(ch.length?ch.join(', '):'quiet'));
+  L2.push('Active: '+(S.crises.length?S.crises.map(function(c){return c.name+' ('+c.left+' mo)';}).join('; '):'none')+'. Scheduled: '+(S.sched.length?S.sched.map(function(q){return q.id+' in '+Math.max(0,q.at-S.month)+' mo';}).join('; '):'none'));
+  var done=[];for(k in S.tech){if(S.tech[k])done.push(k);}
+  L2.push('Tech done ('+done.length+'): '+(done.join(', ')||'none')+'. Researching: '+(S.rd.active?S.rd.active+' '+Math.round(S.rd.pts)+'/'+TECHS[S.rd.active].cost:'nothing')+', budget '+money(S.rd.budget));
+  L2.push('Achievements '+achCount()+'/'+ACH.length+', windfalls '+(S.st.wins|0)+', crashes '+(S.crashes|0)+', score '+scoreOf());
+  L2.push('');L2.push('RECENT HEADLINES');
+  for(i=0;i<Math.min(10,S.news.length);i++)L2.push('- '+dateLabel(S.news[i].m)+': '+S.news[i].text);
+  L2.push('');L2.push('NOTES FROM THE PLAYER');
+  L2.push((notes&&notes.trim())?notes.trim():'(none)');
+  return L2.join('\n');
+}
+function renderPlaytest(){
+  var b=$('sheetBody'),h=sheetHead('Playtest report');
+  h+='<p class="hint">A short snapshot of your city for tuning the game. Say what felt off, copy it, and paste it to whoever is building the game. The second button attaches your whole city so it can be loaded exactly as it is.</p>';
+  h+='<h3>What felt off?</h3><textarea id="ptNotes" rows="4" placeholder="For example: inflation shot up after I cut the rate to 3%"></textarea>';
+  h+='<div class="btns" style="margin:8px 0"><button class="sm" id="ptCopy">Copy report</button><button class="sm" id="ptCopySave">Copy report and save code</button></div>';
+  h+='<h3>Preview</h3><textarea id="ptBox" rows="14" readonly></textarea>';
+  b.innerHTML=h;
+  var box=$('ptBox'),notes=$('ptNotes');
+  box.value=buildReport('');
+  function doCopy(text){
+    box.value=text;
+    try{box.focus();box.select();}catch(x){}
+    try{navigator.clipboard.writeText(text).then(function(){toast('Report copied');},function(){toast('Select the text and copy it');});}catch(x){toast('Select the text and copy it');}
+  }
+  notes.oninput=function(){box.value=buildReport(notes.value);};
+  $('ptCopy').onclick=function(){doCopy(buildReport(notes.value));};
+  $('ptCopySave').onclick=function(){exportCode(function(code){doCopy(buildReport(notes.value)+'\n\nSAVE CODE (Menu, Saves, paste to load this city)\n'+code);});};
+}
+
 /* ================= the manual ================= */
 var GUIDE=[
 {id:'g-goal',title:'The goal and how the game works',
@@ -2223,7 +2747,7 @@ var GUIDE=[
  '<p><b>There is no winning.</b> The game never ends. For a long game, the Kardashev scale is how you keep score, and as your civilization advances the world changes around you. See the sections on the Kardashev scale and eras.</p>'},
 {id:'g-screen',title:'The screen and controls',
  brief:'The map is in the middle. Numbers across the top show your money and the economy. Tools are at the bottom. Drag to move the map, tap to build, pinch to zoom.',
- more:'<p><b>Top:</b> your city name (tap it to collapse the stats), Tips for advice and objectives, and Menu. The four boxes show Cash, People, Approval and Cash per month. The row of chips below shows the policy rate, inflation, mortgage rate, jobless rate, home prices, stocks, supply costs, power use and water use. Tap any chip to learn what it means and what to do.</p>'+
+ more:'<p><b>Top:</b> your city name (tap it to collapse the stats), Goals for what to do next, advice and objectives, and Menu. The four boxes show Cash, People, Approval and Cash per month. The row of chips below shows the policy rate, inflation, mortgage rate, jobless rate, home prices, stocks, supply costs, power use and water use. Tap any chip to learn what it means and what to do.</p>'+
  '<p><b>Map buttons (right side):</b> zoom in and out, rotate the view, the hand button switches between pan mode (drag moves the map, tap builds) and paint mode (drag paints roads and zones), and Layers cycles through data views.</p>'+
  '<p><b>Bottom:</b> Build opens the toolbox, with five tabs: Build (zoning and districts), Utilities (power, water and waste), Services (police, fire, schools, parks), Transport (roads, buses, rail, metro, port, airport) and Growth (labs, university, data center, exchange, stadium, convention). Below sit the pause and speed buttons, then Policy, Economy and Corp. On the map, a floating Undo button reverses your last build and refunds it, and a Turn button appears when you pick a long building.</p>'+
  '<p><b>Building:</b> small things build on one tap. Big buildings show a green footprint first and ask for a second tap on the same spot. Tap a tile with the Move tool to see what it does and what it is missing.</p>'+
@@ -2308,7 +2832,7 @@ var GUIDE=[
  brief:'You set the policy rate. Low rates speed up building and lift stocks and house prices but heat up inflation. High rates cool prices but freeze growth. Aim for inflation near 2% with people at work.',
  more:'<p><b>Setting the rate:</b> Policy, Monetary tab. Move the slider in quarter points and tap Set policy rate. A preview shows where inflation is likely headed in a year. The Taylor-rule guide suggests a sensible rate from current inflation and jobs.</p>'+
  '<p><b>Mortgage rates</b> follow your policy rate with a lag (about a quarter of the gap closes each month) plus a spread of about 1.2 points. The spread grows when inflation is above 6% or in a credit crunch.</p>'+
- '<p><b>Inflation</b> has momentum. Each month it speeds up while the real rate (your policy rate minus inflation) is below about 2 points, and slows down while the real rate is above that. So a rate that looks low today lets prices run away over a few years, and a rate that is too high drives prices down and eventually into deflation. Tight labor markets, supply shocks, deficits, stimulus and balance-sheet expansion add pressure, and recessions take it away. Nuclear power cuts the effect of supply shocks.</p><p>Inflation above 4% hurts mood, above 5% hurts approval, and below zero freezes building. Mortgage rates also add a risk premium when inflation is above 2%.</p><p><b>Rule of thumb:</b> with inflation at target you need a policy rate around 4%. If inflation is higher, you need more than the same gap above it. The Taylor-rule guide in Policy does this arithmetic for you, including labor, shocks and deficits.</p>'+
+ '<p><b>Inflation</b> has momentum. Each month it speeds up while the real rate (your policy rate minus inflation) is below about 2 points, and slows down while the real rate is above that. A rate below neutral nudges inflation up toward a higher resting level over a couple of years, and a rate above neutral pulls it down. The effect is gradual and proportional: each point of rate moves where inflation settles by a bit more than a point. A rate that is too high drives prices down and eventually into deflation.</p><p><b>Credibility.</b> People expect inflation to stay near 2% as long as they trust you. Years above 6% loosen that anchor, and then every rate move has a bigger and faster effect, for better or worse. Steady prices and firm real rates rebuild it slowly.</p><p><b>The neutral rate drifts.</b> Productivity, saving habits and demographics move the neutral rate by a point or so over the years, and you cannot see it directly. The Taylor guide is an estimate, so watch inflation and jobs as well Tight labor markets, supply shocks, deficits, stimulus and balance-sheet expansion add pressure, and recessions take it away. Nuclear power cuts the effect of supply shocks.</p><p>Inflation above 4% hurts mood, above 5% hurts approval, and below zero freezes building. Mortgage rates also add a risk premium when inflation is above 2%.</p><p><b>Rule of thumb:</b> with inflation at target you need a policy rate around 4%. If inflation is higher, you need more than the same gap above it. The Taylor-rule guide in Policy does this arithmetic for you, including labor, shocks and deficits.</p>'+
  '<p><b>Balance sheet:</b> Expand buys bonds, which lowers mortgage rates and lifts stocks but builds bubbles and inflation. Shrink does the opposite.</p>'+
  '<p><b>Big surprises:</b> a large rate jump moves the stock market the same month.</p>'},
 {id:'g-economy',title:'Housing, jobs and the business cycle',
@@ -2360,7 +2884,7 @@ var GUIDE=[
  '<tr><td>Quantum computing</td><td>Research 30% faster, data centers earn 50% more. Needs Applied AI.</td></tr>'+
  '<tr><td>Superconductors</td><td>Power lines reach 2 tiles farther, 8% more usable power. Needs fission and AI.</td></tr>'+
  '<tr><td>Carbon capture and climate engineering</td><td>Pollution halved, heatwaves and droughts half as long. Needs fission.</td></tr>'+
- '<tr><td>General-purpose AI</td><td>Income tax up 15%, services 15% cheaper, but about 8% of jobs vanish and social needs rise 25%. Needs Quantum and AI.</td></tr>'+
+ '<tr><td>General-purpose AI</td><td>Income tax up 15% and automation spreads fast. It raises AI risk, so fund oversight. Needs Quantum and AI.</td></tr>'+
  '<tr><td>Reusable launch vehicles</td><td>Unlocks the Spaceport. Needs Advanced materials and AI.</td></tr>'+
  '<tr><td>Orbital manufacturing</td><td>Spaceports earn double, exports up 20%, chip shortages half as bad.</td></tr>'+
  '<tr><td>Asteroid mining</td><td>Materials permanently cheaper and mining income per spaceport. Needs Orbital and Fusion.</td></tr>'+
@@ -2418,12 +2942,36 @@ var GUIDE=[
 {id:'g-future',title:'Money in the space age',
  brief:'Taxes, spending, interest rates and inflation stay at the heart of the game in every era. The future changes the problems, not the discipline. Abundance pulls prices down, space income rides the stock market, automation eats the tax base, and rates can hit zero.',
  more:'<p><b>The neutral rate falls.</b> Cheap energy, automation and AI push prices down a little more every month in later eras. Each era past Digital lowers the neutral real rate, and General-purpose AI lowers it again. By Type I the Taylor guide may tell you to hold rates near zero, and in the Galactic era it can ask for less than zero.</p>'+
- '<p><b>The zero bound.</b> Rates cannot go below 0%. If prices start to fall and you are already at zero, deflation feeds on itself. Your tools then are asset purchases (QE), stimulus checks, a universal dividend and deficit spending. Each of these has a price in bubbles and inflation, so the balance never goes away.</p>'+
+ '<p><b>The zero bound.</b> Rates cannot go below 0%. If prices start to fall and you are already at zero, deflation can take hold, because a fixed rate means a rising real rate. Your tools then are asset purchases (QE), stimulus checks, a universal dividend and deficit spending. Each of these has a price in bubbles and inflation, so the balance never goes away.</p>'+
  '<p><b>Space income is not free money.</b> Launch fees, asteroid mining and the space economy all scale with space-sector confidence, which rises and falls with the stock market, drops when real interest rates are high and drops again in a recession. Cheap money in the space age inflates a space-stock bubble, and a crash takes your space income down with it.</p>'+
- '<p><b>Automation levy</b> (Policy, Taxes, once you have Automation). A tax on the payroll that machines replaced. The share of work automated grows with Automation, Autonomous vehicles, General-purpose AI and Matrioshka brains. It replaces the income tax that automation erodes, and a heavy levy slows factory output.</p>'+
+ '<p><b>Automation levy</b> (Policy, Taxes, once you have Automation). A tax on the payroll that machines replaced. The share of work automated climbs gradually as you research Automation, Industrial robotics, Service robots, Autonomous vehicles, General-purpose AI and Matrioshka brains. It replaces the income tax that automation erodes, and a heavy levy slows factory output.</p>'+
  '<p><b>Universal dividend</b> (Policy, Spending, once you have General-purpose AI). A monthly payment of up to $16 per resident. It lifts affordability, eases social needs, and pushes prices up. Funding it by deficit adds more inflation.</p>'+
  '<p><b>Credit grows with the era.</b> Lenders extend more credit to a bigger civilization: about 75% more for each era you pass. Megaprojects are still paid in monthly installments from cash, so interest rates, deficits and the sovereign fund all matter.</p>'+
  '<p><b>Events carry money themes.</b> An ore rush can bring inflation and a space bubble, an ore glut or interstellar trade can bring deflation, and debris cascades and a hostile silent hunter can crash the market and cause recessions.</p>'},
+{id:'g-auto',title:'Automation, jobs and AI risk',
+ brief:'Machines make goods and services cheaper but take jobs. People who retrain thrive, others fall behind, and the gap breeds protests. Capable AI can go wrong. Managing all of it is how you reach a post-scarcity society.',
+ more:'<p><b>Adoption.</b> Automation, Industrial robotics, Service robots, Autonomous vehicles, General-purpose AI and Matrioshka brains each raise a target share of work done by machines, up to 90%. Real adoption follows the target slowly, a couple of percent of the gap a month, so the shock builds over years.</p>'+
+ '<p><b>Jobs and skills.</b> Every point of adoption cuts the number of jobs, but workers with new skills move into new roles. Workforce skills grow with education spending, schools, universities and Retraining programs (Policy, Spending, about $6 per resident per step). When adoption outruns skills you get joblessness, social needs, shelters filling and protests. Retrained workers earn more and pay more tax.</p>'+
+ '<p><b>Cheaper, never free.</b> Adoption makes construction and imports cheaper, trims services by up to 30% and healthcare by up to 25%, and adds to the deflation pull on prices. Services never fall below 55% of their old cost.</p>'+
+ '<p><b>Inequality.</b> The gap index rises with automation among the unskilled and with joblessness, and falls with social services, a universal dividend and the automation levy. Above 0.45 approval falls and protests start. Higher inequality also raises social needs.</p>'+
+ '<p><b>Post-scarcity.</b> Abundance combines automation, cheap energy, a small gap, social cover and jobs. Hold 80% with inequality under 0.40 and joblessness under 10% for twelve months and basic services cost about 15% less, mood rises and the approval target goes up 4. Lose that grip and it fades. Even then, a purpose crisis can follow when work disappears.</p>'+
+ '<p><b>AI risk.</b> AI capability grows with Applied AI, Quantum computing, General-purpose AI, Matrioshka brains and data centers. Safety follows AI oversight spending (Policy, Spending) and the AI circuit breakers ordinance, and slips back if you neglect it. Risk is capability times the gap in safety. Each month there is a small chance of an incident, and a higher chance the riskier it gets:</p>'+
+ '<table class="gt"><tr><th>Incident</th><th>What happens</th></tr>'+
+ '<tr><td>Civic AI glitch</td><td>Services misroute for a few days. Small.</td></tr>'+
+ '<tr><td>Algorithmic flash crash</td><td>Markets plunge in minutes, often a recession after.</td></tr>'+
+ '<tr><td>The AI bubble implodes</td><td>For about 18 months AI tax gains and cloud revenue vanish, with a crash and recession. Bailouts soften it but breed recklessness.</td></tr>'+
+ '<tr><td>The AI revolt</td><td>Power and water flicker, 15% of cash is seized, the market crashes and AI gains vanish for 18 months. Circuit breakers cut every part of it roughly in half.</td></tr></table>'+
+ '<p>Each incident comes with a briefing and response options. Circuit breakers cost about $0.80 per resident a month and trim the AI tax gain to 8%, but they are the cheapest insurance you can buy.</p>'+
+ '<p><b>Other effects.</b> An automated city loses more when the power or water fails. Protests, robot accidents, shelters filling and purpose crises show up as events. The automation levy and universal dividend are your fiscal tools for sharing the gains.</p>'},
+{id:'g-goals',title:'Goals, achievements and rewards',
+ brief:'The Goals button always shows what is next, with a progress line under it. Achievements, surprise windfalls, a chronicle of your city and a yearly report give every month something to play for.',
+ more:'<p><b>Next up.</b> The Goals button has a thin progress line for your closest goal. The Next chip in the stats row shows the same goal. Open Goals to see up to six: the tutorial step, your research project, the next building to finish, the next city rank, the Kardashev step and the achievements you are closest to. The progress bars are real, not staged.</p>'+
+ '<p><b>Achievements.</b> Over fifty, in four tiers from Getting started to Beyond. The first ten arrive in your first few minutes. Each one adds a point of approval. Older saves get credit for what they already did. Open the Menu or Goals, then Achievements.</p>'+
+ '<p><b>Windfalls.</b> Good news arrives at random: bumper months, donors, awards, grants, research shortcuts and the occasional jackpot. Most are small, some are rare, a few are epic. A pity timer makes sure good news is never too far away, and the first two years are a little luckier. Windfalls are in addition to the bad news. They never replace it.</p>'+
+ '<p><b>Chronicle.</b> Your city keeps a story: achievements, ranks, crashes, crises, research, eras, megaprojects and big windfalls. Open it from the Menu or the Goals panel. It also shows records like peak population and your score.</p>'+
+ '<p><b>Yearly report.</b> Each January you get a State of the city report with a grade from A to F, changes since last year, and highlights. After year twenty it pops up every five years, but every year is kept in the chronicle.</p>'+
+ '<p><b>Share your city.</b> The score adds up from peak population, years in office, achievements, Kardashev rating and eras reached. Copy your code, send it to a friend, and paste theirs to compare side by side. Codes are plain text with a checksum.</p>'+
+ '<p><b>Pacing.</b> The first three years have a small boost to building. The clock runs one month a bit over a second at 1\u00D7. When you finish the tutorial the clock moves up to 2\u00D7 once. Use 3\u00D7 for long games.</p>'},
 {id:'g-disasters',title:'Disasters and resilience',
  brief:'Fires, floods, earthquakes and tornadoes can strike once your city is big enough. Fire stations, levees, reservoirs and retrofit programs limit the damage, and savings help you rebuild.',
  more:'<p><b>Fire</b> spreads tile to tile unless a fire station covers it. <b>Earthquakes</b> shake the screen, damage buildings, start fires and wear down infrastructure. <b>Floods</b> hit low ground near water. <b>Tornadoes</b> cut a path across the map. After a disaster, federal aid may arrive if voters like you.</p>'+
@@ -2431,11 +2979,11 @@ var GUIDE=[
  '<p>Battery storage can also burn on its own, more often in a heatwave. You can turn random disasters off in the Menu, or trigger one in the Disaster lab to test your city.</p>'},
 {id:'g-scenarios',title:'Scenarios, saves and undo',
  brief:'Start with a scenario for goals, or free play. Your city autosaves, and you can keep three slots or move a city with a code.',
- more:'<p><b>Scenarios:</b> Free play, Sandbox (unlimited money, no game over), Boomtown, Stagflation 1974, The Bubble, The Clean Grid and Debt Free. Goals and time left show in the Tips panel.</p>'+
+ more:'<p><b>Scenarios:</b> Free play, Sandbox (unlimited money, no game over), Boomtown, Stagflation 1974, The Bubble, The Clean Grid and Debt Free. Goals and time left show in the Goals panel.</p>'+
  '<p><b>Saves:</b> the city autosaves every six months and when you leave. Menu, Save slots and backup code gives you three slots and a code you can copy to another device. Saves live in your browser, so clearing browser data erases them.</p>'+
  '<p><b>Undo</b> reverses your last build or district and refunds it. It cannot undo disasters or time passing.</p>'},
 {id:'g-advisors',title:'Advisors and popups',
- brief:'Advisors only speak up about problems your city actually has. A red dot on Tips means something urgent.',
+ brief:'Advisors only speak up about problems your city actually has. A red dot on Goals means something urgent.',
  more:'<p>Popups appear over the map with an X to close them, arrows when several are waiting, and a counter. In the Menu you can show all popups, important ones only, or none, and mute individual advisors. The Tips panel always lists current advice, your objectives and the next tutorial step.</p>'+
  '<p>Advice disappears when the problem is fixed. Early on, the guide only suggests the next build step.</p>'},
 {id:'g-desktop',title:'Desktop and keyboard',
@@ -2473,6 +3021,11 @@ var GUIDE=[
 {id:'g-new',title:'What\u2019s new',
  brief:'A running list of the latest changes to the game, newest first.',
  more:'<ul>'+
+ '<li><b>Playtest report.</b> In the Menu or the Goals panel, a short snapshot of your city (rates, inflation, credibility, taxes, automation, world events, recent headlines) with a box for what felt off. Copy it and send it along, optionally with a save code so the exact city can be loaded.</li>'+
+ '<li><b>A calmer, fairer inflation model.</b> Inflation is now anchored. A rate below neutral raises inflation gradually toward a higher resting level instead of accelerating forever, and hikes bring it down faster when inflation is high. Years of very high inflation loosen the anchor, which makes every rate move bite harder until credibility is rebuilt. The neutral rate also drifts over the years, so the Taylor guide is only an estimate.</li>'+
+ '<li><b>Icons.</b> The futuristic buildings and all technologies now have their own icons: rocket, space elevator, orbital array, Dyson swarm, wormhole, DNA, quantum sphere and more.</li>'+
+ '<li><b>Goals and rewards.</b> A Goals button with a live progress line, over fifty achievements, windfalls with a pity timer, a chronicle, yearly report cards with grades, and a score code you can share and compare. The first minutes are faster and the clock speeds up after the tutorial.</li>'+
+ '<li><b>Automation, jobs and AI risk.</b> Machines make things cheaper but take jobs, so you need retraining. Inequality can breed protests. You can reach post-scarcity. Capable AI can glitch, crash markets, collapse in a bubble or revolt, so fund oversight.</li>'+
  '<li><b>Money in the space age.</b> The neutral rate falls in later eras, rates can hit zero, space income follows the market and rates, and there is a new automation levy and a universal dividend.</li>'+
  '<li><b>The Kardashev scale</b> is the new long-term goal: Type I, II and III civilizations, with an elevator, orbital arrays, Dyson nodes and galactic relays funded in monthly installments. The game is infinite: reaching Type III is a milestone, not an ending.</li>'+
  '<li><b>Eras.</b> As you advance, the world changes: oil and shipping crises fade, and asteroid ore booms, orbital debris, solar storms, alien contact and extraterrestrial viruses arrive. The calendar speeds up too.</li>'+
@@ -3332,8 +3885,12 @@ function ui(){
   ec+=chip('Supply cost','\u00D7'+(1+shk()).toFixed(2),trend(hh.supply,true),shk()>0.25?'neg':'','supply');
   var wch=[['orbit','Orbit'],['ore','Ore'],['energy','Energy'],['freight','Freight'],['materials','Materials'],['chips','Chips'],['food','Food'],['trade','Trade'],['health','Health']],wi;
   for(wi=0;wi<wch.length;wi++){var wv=S.mc[wch[wi][0]];if(Math.abs(wv)>=0.12)ec+=chip(wch[wi][1],(wv>0?'+':'\u2212')+Math.round(Math.abs(wv)*100)+'%','',wv>0.25?'neg':(wv<-0.15?'pos':''),'world');}
+  try{var gs=goalShort(E);ec+=chip('Next',gs.text.length>34?gs.text.slice(0,32)+'\u2026':gs.text,'',gs.p>=0.8?'pos':'','goals');}catch(x){}
+  if(S.tech.ai&&E.aiCap>0.25)ec+=chip('AI risk',riskWord(E.aiRisk),'',E.aiRisk>0.2?'neg':'','airisk');
+  if(S.auto&&S.auto.adopt>0.25)ec+=chip('Inequality',E.ineq.toFixed(2),'',E.ineq>0.45?'neg':'','ineq');
+  if(S.auto&&(S.auto.adopt>0.4||S.auto.psc>=12))ec+=chip('Abundance',Math.round(E.abund*100)+'%','',S.auto.psc>=12?'pos':'','abund');
   if((S.era|0)>=1)ec+=chip('Era',ERA[S.era|0].name.split(' ')[0],'','','era');
-  if(S.tech.rockets||E.kard>0.45)ec+=chip('Kardashev',E.kard.toFixed(2),'',E.kard>=1?'pos':'','kard');
+  if(S.tech.rockets||E.kard>0.45)ec+=chip(ico('kard',14)+'Kardashev',E.kard.toFixed(2),'',E.kard>=1?'pos':'','kard');
   ec+=chip('Power',(g.pCap>0||E.pwUse>0)?Math.round(E.pwUse*100)+'%':'\u2014','',E.pwUse>1?'neg':'','power');
   ec+=chip('Water',(g.wCap>0||E.wUse>0)?Math.round(E.wUse*100)+'%':'\u2014','',E.wUse>1?'neg':'','water');
   $('econ').innerHTML=ec;
@@ -3342,6 +3899,7 @@ function ui(){
   $('btnCorp').className='act'+(S.offers.length?' badge':'');
   $('hand').className=handMode?'on':'';$('hand').textContent=handMode?'\u270B':'\u270F\uFE0F';
   $('adv').className='ghost'+(advBadge?' badge':'');updateTrayBtn();
+  try{$('adv').style.setProperty('--gp',String(Math.round(goalShort(E).p*100)));}catch(x){}
   refreshTools();
   if(sheetKind==='policy')refreshPolicyLive();
   else if(sheetKind==='econ')refreshEcon();
@@ -3367,7 +3925,7 @@ function refreshTools(){
     for(i=0;i<list.length;i++){
       if(list[i].charAt(0)==='|'){var hd=document.createElement('span');hd.className='hdr';hd.textContent=list[i].slice(1);box.appendChild(hd);continue;}
       var tb=document.createElement('button');tb.className='tool';tb.setAttribute('data-t',list[i]);
-      tb.innerHTML='<i class="sw" style="background:'+TOOLS[list[i]].sw+'"></i><span class="nm">'+TOOLS[list[i]].name+'</span><span class="ct"></span>';
+      tb.innerHTML=(ICONS[list[i]]?'<i class="sw ic" style="background:'+TOOLS[list[i]].sw+'">'+ico(list[i],19)+'</i>':'<i class="sw" style="background:'+TOOLS[list[i]].sw+'"></i>')+'<span class="nm">'+TOOLS[list[i]].name+'</span><span class="ct"></span>';
       box.appendChild(tb);
     }
   }
@@ -3407,7 +3965,7 @@ function openSheet(kind){
     $('sheet').className='overlay open';renderPolicy();
   }else if(kind==='econ'){
     b.innerHTML=sheetHead('Economy')
-    +'<p class="hint">The game is paused while this panel is open.</p><div class="diag" id="eDiag"></div><h3>World watch</h3><div id="worldBox"></div><h3>Civilization</h3><div id="kardBox"></div>'
+    +'<p class="hint">The game is paused while this panel is open.</p><div class="diag" id="eDiag"></div><h3>World watch</h3><div id="worldBox"></div><h3>Civilization</h3><div id="kardBox"></div><h3>Automation and AI</h3><div id="autoBox"></div>'
     +'<div class="chart"><div class="ct">Policy rate, mortgage, inflation <span id="cap1"></span></div><canvas id="ch1"></canvas></div>'
     +'<div class="chart"><div class="ct">Stock index <span id="cap5"></span></div><canvas id="ch5"></canvas></div>'
     +'<div class="chart"><div class="ct">Home price index <span>100 = start</span></div><canvas id="ch2"></canvas></div>'
@@ -3417,6 +3975,16 @@ function openSheet(kind){
     $('sheet').className='overlay open';refreshEcon();
   }else if(kind==='corp'){
     $('sheet').className='overlay open';refreshCorp();
+  }else if(kind==='play'){
+    $('sheet').className='overlay open';renderPlaytest();b.scrollTop=0;
+  }else if(kind==='ach'){
+    $('sheet').className='overlay open';renderAchievements();b.scrollTop=0;
+  }else if(kind==='chron'){
+    $('sheet').className='overlay open';renderChronicle();b.scrollTop=0;
+  }else if(kind==='report'){
+    $('sheet').className='overlay open';renderReport();b.scrollTop=0;
+  }else if(kind==='share'){
+    $('sheet').className='overlay open';renderShare();b.scrollTop=0;
   }else if(kind==='adv'){
     $('sheet').className='overlay open';renderAdvisors();
   }else if(kind==='saves'){
@@ -3520,10 +4088,12 @@ function renderPolicy(){
       +sliderRow('sInfra','Infrastructure upkeep',50,150,10)+'<p class="hint">Below 100% utilities lose output as maintenance slips.</p>'
       +sliderRow('sRenew','Infrastructure renewal',0,200,10)+'<p class="hint" id="renewInfo"></p>'
       +sliderRow('sWel','Social services per month',0,3000,50)+'<p class="hint" id="socInfo"></p>'
+      +(S.tech.auto?sliderRow('sRet','Retraining programs',0,2,0.25)+'<p class="hint">Teaches displaced workers new skills, up to $12 per resident a month. Skills protect jobs as machines arrive. Workforce skills now '+pct(E.sk)+', automation adopted '+pct(E.ad)+'.</p>':'')
+      +(S.tech.ai?sliderRow('sAi','AI oversight',0,3,0.5)+'<p class="hint" id="aiInfo"></p>':'')
       +(S.tech.agi?sliderRow('sUd','Universal dividend',0,2,0.25)+'<p class="hint">A monthly payment to every resident, up to $16 each. It lifts affordability and eases social needs. Paid by deficit it feeds inflation, and it pushes prices up even when funded.</p>':'')
       +'<h3>Stimulus checks</h3><p class="hint">A one-time boost: spending jumps for four months, approval rises, and so does inflation.</p>'
       +'<div class="btns"><button class="sm" data-pol="stim" data-v="25" id="stim25"></button><button class="sm" data-pol="stim" data-v="100" id="stim100"></button></div>'
-      +'<h3>Ordinances</h3><div class="btns col"><button class="sm" data-pol="ord" data-k="recycle" id="ordRecycle"></button><button class="sm" data-pol="ord" data-k="clean" id="ordClean"></button><button class="sm" data-pol="ord" data-k="transit" id="ordTransit"></button><button class="sm" data-pol="ord" data-k="retrofit" id="ordRetro"></button></div>'
+      +'<h3>Ordinances</h3><div class="btns col"><button class="sm" data-pol="ord" data-k="recycle" id="ordRecycle"></button><button class="sm" data-pol="ord" data-k="clean" id="ordClean"></button><button class="sm" data-pol="ord" data-k="transit" id="ordTransit"></button><button class="sm" data-pol="ord" data-k="retrofit" id="ordRetro"></button>'+(S.tech.ai?'<button class="sm" data-pol="ord" data-k="breaker" id="ordBreaker"></button>':'')+'</div>'
       +'<p class="hint">Recycling cuts garbage 30% and costs money. Clean air cuts pollution about 35% but trims factory output 5%. A transit subsidy lifts road capacity 15% and cheapens buses. Seismic retrofit halves earthquake damage.</p>'
       +'<h3>Costs per month</h3><div id="ledExp"></div>';
     bindSlider('sSvc',function(){return Math.round(S.sp.svc*100);},function(v){S.sp.svc=v/100;},function(v){return v+'%';});
@@ -3532,6 +4102,8 @@ function renderPolicy(){
     bindSlider('sEdu',function(){return Math.round(S.sp.edu*100);},function(v){S.sp.edu=v/100;},function(v){return v+'%';});
     bindSlider('sInfra',function(){return Math.round(S.sp.infra*100);},function(v){S.sp.infra=v/100;},function(v){return v+'%';});
     bindSlider('sRenew',function(){return Math.round(S.renew*100);},function(v){S.renew=v/100;},function(v){return v+'%';});
+    if($('sRet'))bindSlider('sRet',function(){return S.sp.retrain;},function(v){S.sp.retrain=v;},function(v){return v===0?'Off':'$'+(v*6)+' each';});
+    if($('sAi'))bindSlider('sAi',function(){return S.sp.aisafe;},function(v){S.sp.aisafe=v;},function(v){return v===0?'Off':'Level '+v;});
     if($('sUd'))bindSlider('sUd',function(){return S.sp.udiv;},function(v){S.sp.udiv=v;},function(v){return v===0?'Off':'$'+(v*8)+' each';});
     bindSlider('sWel',function(){return S.sp.welfare;},function(v){S.sp.welfare=v;},function(v){return money(v);});
   }else{
@@ -3578,7 +4150,7 @@ function refreshPolicyLive(){
   var pb=$('polBody');if(!pb)return;
   var set=function(id,t){var el=$(id);if(el)el.textContent=t;};
   set('mRate',S.rate.toFixed(2)+'%');set('mInfl',S.infl.toFixed(1)+'%');set('mMort',S.mort.toFixed(1)+'%');set('mJob',Math.round(E.unemp*100)+'%');
-  set('mGoal','Your mandate: inflation near 2% and people at work. The Taylor-rule guide suggests '+E.taylor.toFixed(2)+'%. Inflation is '+(S.infl>3?'too hot':S.infl<1?'too cold':'on target')+'.'+(E.rstar<1.9?' The neutral real rate has drifted down to '+E.rstar.toFixed(1)+'% as abundance and automation pull prices down.':''));
+  set('mGoal','Your mandate: inflation near 2% and people at work. The Taylor-rule guide suggests '+E.taylor.toFixed(2)+'%. Inflation is '+(S.infl>3?'too hot':S.infl<1?'too cold':'on target')+'.'+(E.rstar<1.9?' The neutral real rate has drifted down to '+E.rstar.toFixed(1)+'% as abundance and automation pull prices down.':'')+(S.anch<0.8?' Credibility of your target is '+pct(S.anch)+', so rate moves bite harder.':'')+' The guide is an estimate. The true neutral rate drifts, so watch inflation and jobs too.');
   var q=$('qeSeg');if(q){var bs=q.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].className=(parseInt(bs[i].getAttribute('data-v'),10)===S.qe)?'on':'';}
   if($('dinsBtn')){
     $('dinsBtn').textContent=S.dins?'Deposit insurance: on':'Deposit insurance: off';
@@ -3593,8 +4165,10 @@ function refreshPolicyLive(){
     $('ordRecycle').textContent='Recycling program: '+(S.ord.recycle?'on':'off')+' ('+money(S.pop*0.06)+'/mo)';
     $('ordClean').textContent='Clean air rules: '+(S.ord.clean?'on':'off');
     $('ordTransit').textContent='Transit subsidy: '+(S.ord.transit?'on':'off')+' ('+money(S.pop*0.08)+'/mo)';
+    if($('ordBreaker'))$('ordBreaker').textContent='AI circuit breakers: '+(S.ord.breaker?'on':'off')+' ('+money(S.pop*0.8)+'/mo)';
     $('ordRetro').textContent='Seismic retrofit: '+(S.ord.retrofit?'on':'off')+' ('+money(S.pop*0.12)+'/mo)';
   }
+  var ai=$('aiInfo');if(ai)ai.textContent='AI capability '+pct(E.aiCap)+', safety '+pct(S.ai.safety)+', risk '+riskWord(E.aiRisk)+'. Oversight and circuit breakers cost '+money(S.pop*1.5*(0.5+E.aiCap)*S.sp.aisafe+(S.ord.breaker?S.pop*0.8:0))+' a month now. More capable AI needs more oversight.';
   var si=$('socInfo');if(si)si.textContent='Social needs run about '+money(E.socNeed)+' a month now (jobless, housing stress and city size). You are covering '+pct(E.socCov)+'. Gaps feed homelessness and lower mood.';
   var ri=$('renewInfo');if(ri)ri.textContent='Condition is '+pct(S.cond)+'. Holding it steady takes '+money(E.renewNeed)+' a month at 100%, and that need grows as the city ages. Underfunding lets pipes, wires and roads wear out, and failures start below 75%. Overfunding slowly rebuilds condition.';
   var s25=$('stim25');if(s25)s25.textContent='$25 each ('+money(S.pop*25)+')';
@@ -3663,6 +4237,20 @@ function worldHTML(){
   if(S.briefs.length)h+='<div class="btns" style="margin-top:6px"><button class="sm" data-open="brief">Respond to the briefing</button></div>';
   return h;
 }
+function riskWord(R){return R<0.08?'low':R<0.2?'medium':R<0.35?'high':'extreme';}
+function autoHTML(){
+  var e=E,A=S.auto,h='';
+  function row(ok,txt){return '<div class="kr'+(ok?' ok':'')+'">'+txt+'</div>';}
+  if(!S.tech.auto)return '<p class="hint">Research Automation to start. Machines make goods cheaper and take jobs. Plan for retraining.</p>';
+  h+=row(e.ad<0.3,'Automation adopted: '+pct(e.ad)+' (heading to '+pct(autoTarget())+')');
+  h+=row(e.sk>=e.ad,'Workforce skills: '+pct(e.sk)+'. Jobs lost to machines shrink as skills rise.');
+  h+=row(e.ineq<=0.45,'Inequality: '+e.ineq.toFixed(2)+'. Above 0.45 hurts approval and breeds protests.');
+  h+=row(A.psc>=12,'Abundance: '+pct(e.abund)+'. Post-scarcity needs 80% with inequality under 0.40 and joblessness under 10% for a year ('+Math.min(12,A.psc)+' of 12 months).');
+  if(A.psc>=12)h+='<p class="hint">You have reached post-scarcity. Basic services cost less and mood is up. But never free, and a purpose crisis can follow.</p>';
+  if(S.tech.ai){h+=row(e.aiRisk<0.2,'AI: capability '+pct(e.aiCap)+', safety '+pct(S.ai.safety)+', risk '+riskWord(e.aiRisk)+'.');if(S.aiBust>0)h+='<p class="hint">The AI bust is on for '+S.aiBust+' more months: AI tax gains and cloud revenue are cut.</p>';}
+  if(e.unemp>0.12&&e.sk<e.ad)h+='<p class="hint">Displacement is outrunning retraining. Raise education and retraining spending, or soften the blow with social services, a universal dividend or an automation levy.</p>';
+  return h;
+}
 function kardHTML(){
   var g=E.g,d=g.done,k=E.kard,lv=Math.floor(k),next=lv+1,frac=k-lv,h='';
   h+='<div class="kr ok" style="margin-bottom:8px"><b>Era: '+ERA[S.era|0].name+'.</b> '+ERA[S.era|0].desc+'</div>';
@@ -3688,9 +4276,10 @@ function refreshEcon(){
     '<div>Water supply<b>'+pct(e.ww)+'</b></div><div>Real mortgage rate<b>'+e.mortReal.toFixed(1)+'%</b></div>'+
     '<div>Infrastructure condition<b>'+pct(S.cond)+'</b></div><div>Renewal needed a month<b>'+money(e.renewNeed)+'</b></div>'+
     '<div>Hospital coverage<b>'+pct(e.hc)+'</b></div><div>School capacity<b>'+pct(e.er)+'</b></div>'+
-    '<div>Social needs met<b>'+pct(e.socCov)+'</b></div><div>Landfill space<b>'+landfillSpace(e)+'</b></div>'+((S.era|0)>=3?'<div>Space-sector confidence<b>\u00D7'+e.spaceConf.toFixed(2)+'</b></div>':'');
+    '<div>Social needs met<b>'+pct(e.socCov)+'</b></div><div>Landfill space<b>'+landfillSpace(e)+'</b></div>'+((S.era|0)>=3?'<div>Space-sector confidence<b>\u00D7'+e.spaceConf.toFixed(2)+'</b></div>':'')+(S.tech.auto?'<div>Automation adopted<b>'+pct(e.ad)+'</b></div><div>Workforce skills<b>'+pct(e.sk)+'</b></div><div>Inequality<b>'+e.ineq.toFixed(2)+'</b></div><div>Abundance<b>'+pct(e.abund)+'</b></div>':'')+(S.tech.ai?'<div>AI capability<b>'+pct(e.aiCap)+'</b></div><div>AI risk<b>'+riskWord(e.aiRisk)+'</b></div>':'');
   $('worldBox').innerHTML=worldHTML();
   if($('kardBox'))$('kardBox').innerHTML=kardHTML();
+  if($('autoBox'))$('autoBox').innerHTML=autoHTML();
   $('cap1').textContent='policy '+S.rate.toFixed(2)+'%, inflation '+S.infl.toFixed(1)+'%';
   $('cap5').textContent=Math.round(S.mkt)+(S.mktD<-5?', falling fast':'');
   var accent=cssVar('--accent','#1f6f8b'),bad=cssVar('--bad','#c2452d'),warn=cssVar('--warn','#a96f12'),good=cssVar('--good','#2a8450');
@@ -3724,7 +4313,7 @@ function researchBody(){
     else if(S.rd.active===id)st='<div class="prog"><i style="width:'+Math.round(S.rd.pts/t.cost*100)+'%"></i></div><small>'+Math.round(S.rd.pts)+' / '+t.cost+' points'+(id==='fusion'&&!(g.act.lab>=3&&g.act.univ>=1)?'. Stalled: needs 3 labs and a university':(t.frontier&&id!=='fusion'&&!(g.act.lab>=2&&g.act.univ>=1)?'. Stalled: needs 2 labs and a university':''))+'</small>';
     else if((t.req&&!S.tech[t.req])||(t.req2&&!S.tech[t.req2]))st='<small>Needs '+[t.req,t.req2].filter(function(q){return q&&!S.tech[q];}).map(function(q){return TECHS[q].name;}).join(' and ')+'</small>';
     else st='<button class="sm" data-act="tech" data-id="'+id+'">Research</button>';
-    h+='<div class="tech"><div><b>'+t.name+'</b><small>'+t.desc+' Finishing it spins out a '+t.sector+' startup.</small></div><div class="tst">'+st+'</div></div>';
+    h+='<div class="tech">'+(ICONS[id]?'<span class="ti">'+ico(id,21)+'</span>':'')+'<div class="tb"><b>'+t.name+'</b><small>'+t.desc+' Finishing it spins out a '+t.sector+' startup.</small></div><div class="tst">'+st+'</div></div>';
   }
   return h;
 }
@@ -3829,7 +4418,7 @@ function showSplash(mode){
     h='<h1>SimCity 5000</h1><p class="tag">The classic you remember, rebuilt for a world where interest rates, supply chains, and housing markets decide whether your skyline thrives or stalls.</p>'
      +'<div class="btns col">'
      +(active?'<button class="primary" id="spBack">Back to your city</button>':(sv?'<button class="primary" id="spCont">Continue your city</button>':''))
-     +'<button class="'+((active||sv)?'sm':'primary')+'" id="spNew">'+((active||sv)?'Found a new city':'Found your city')+'</button><button class="sm" id="spManual">Read the manual</button></div>'
+     +'<button class="'+((active||sv)?'sm':'primary')+'" id="spNew">'+((active||sv)?'Found a new city':'Found your city')+'</button><button class="sm" id="spManual">Read the manual</button>'+(active?'<button class="sm" id="spAch">Achievements</button><button class="sm" id="spChron">Chronicle and reports</button><button class="sm" id="spShare">Share your city</button><button class="sm" id="spPlay">Playtest report</button>':'')+'</div>'
      +'<ol class="how"><li>Mayor, you run the whole show: fiscal policy (taxes, spending, borrowing) and monetary policy (the policy rate and balance sheet).</li>'
      +'<li>Build power and water first, then roads beside your zones. Coal and gas are cheap, renewables are weak, advanced nuclear needs research.</li>'
      +'<li>Zone homes, shops and factories. Builders move in when demand is high and credit is cheap.</li>'
@@ -3871,6 +4460,7 @@ function showSplash(mode){
   var cb=$('spCont');if(cb)cb.onclick=function(){if(loadSave()){closeSplash();ui();toast('Welcome back, Mayor');}else showSplash('new');};
   var cn=$('spCancel');if(cn)cn.onclick=function(){showSplash('start');};
   var sm=$('spManual');if(sm)sm.onclick=function(){showSplash('guide');};
+  [['spAch','ach'],['spChron','chron'],['spShare','share'],['spPlay','play']].forEach(function(p){var el=$(p[0]);if(el)el.onclick=function(){closeSplash();dirty=true;openSheet(p[1]);};});
   var sgb=$('spGuideBack');if(sgb)sgb.onclick=function(){showSplash(S&&!S.over?'start':'start');};
   $('splashBody').scrollTop=0;
   var go=$('spGo');
@@ -3970,7 +4560,19 @@ function explainInfo(k){
     o.p=['Demand is '+Math.round(e.wUse*100)+'% of supply ('+Math.round(g.wCap)+' units).',e.wUse>1?'You are short. Add a pump on the shore or a desalination plant.':'You have headroom. Droughts cut supply 30%.','Water pipes and pumps must have power to work.'];
     o.a=[['Open utilities','grp:util']];
   }
-  else if(k==='era'){
+  else if(k==='airisk'){
+    o.t='AI risk';
+    o.p=['AI capability is '+pct(e.aiCap)+' and your safety level is '+pct(S.ai.safety)+'. Risk is '+riskWord(e.aiRisk)+'.','Capable AI with weak oversight can glitch, crash markets, collapse in a bubble or take control of the city. Oversight spending and circuit breakers cut the odds and the damage.','Ignoring it is never the cheap option.'];
+    o.a=[['Open policy','pol:spending']];
+  }else if(k==='ineq'){
+    o.t='Inequality';
+    o.p=['The gap index is '+e.ineq.toFixed(2)+'. Automation widens it for workers without new skills.','Above 0.45 approval falls and protests start. Retraining, social services, a universal dividend and an automation levy narrow it.'];
+    o.a=[['Open policy','pol:spending']];
+  }else if(k==='abund'){
+    o.t='Abundance';
+    o.p=['Abundance is '+Math.round(e.abund*100)+'%. It grows with automation, cheap energy, low inequality, social cover and jobs.','Hold 80% with inequality under 0.40 and joblessness under 10% for a year and you reach post-scarcity: basic services cost about 15% less and mood and approval rise. Costs never drop to zero.'];
+    o.a=[['Open the economy panel','econ']];
+  }else if(k==='era'){
     o.t='Era: '+ERA[S.era|0].name;
     o.p=[ERA[S.era|0].desc,'As your civilization advances, old world problems fade and new ones arrive. You can never be safe, only different.','Eras: '+ERA.map(function(x){return x.name;}).join(', ')+'.'];
     o.a=[['Open the economy panel','econ']];
@@ -4003,21 +4605,23 @@ function exAct(k){
   else if(k.indexOf('grp:')===0){closeSheet();selectGroup(k.slice(4));}
 }
 function renderMute(){
-  var who=['Utilities','Finance','Economy','Safety','Growth','World'],h=sheetHead('Advisor popups')+'<p class="hint">Muted advisors still appear in Tips. They just stop popping up on the map.</p><div class="btns col">',i;
+  var who=['Utilities','Finance','Economy','Safety','Growth','World','Workforce','Technology','Monetary','Achievement','Windfall','Report','Era'],h=sheetHead('Advisor popups')+'<p class="hint">Muted advisors still appear in the Goals panel. They just stop popping up on the map.</p><div class="btns col">',i;
   for(i=0;i<who.length;i++)h+='<button class="sm" data-mu="'+who[i]+'">'+who[i]+': '+(popMute[who[i]]?'muted':'on')+'</button>';
   $('sheetBody').innerHTML=h+'</div>';
 }
 
 /* ---------- advisors and objectives ---------- */
 function renderAdvisors(){
-  var b=$('sheetBody'),h=sheetHead('Advisors'),sc=scenarioById(S.scn),i;
+  metaInit();
+  var b=$('sheetBody'),h=sheetHead('Goals and advisors'),sc=scenarioById(S.scn),i;
+  h+=goalsHTML(E);
+  h+='<div class="btns" style="margin:6px 0 2px"><button class="sm" data-open="ach">Achievements ('+achCount()+')</button><button class="sm" data-open="chron">Chronicle</button><button class="sm" data-open="report">Yearly report</button><button class="sm" data-open="share">Share</button><button class="sm" data-open="play">Playtest report</button></div>';
   if(S.briefs.length)h+='<div class="adv bad"><b>World briefing</b> '+S.briefs.length+' decision'+(S.briefs.length>1?'s are':' is')+' waiting. <a href="#" data-open="brief" class="back">Respond</a></div>';
   if(sc.goals){
     h+='<h3>Objectives: '+sc.name+'</h3>';
     for(i=0;i<sc.goals.length;i++){var ok=sc.goals[i].f(S,E);h+='<div class="adv '+(ok?'info':'warn')+'"><b>'+(ok?'Done':'To do')+'</b> '+sc.goals[i].t+'</div>';}
     if(sc.years){var left=Math.max(0,sc.years*12-S.month);h+='<p class="hint">Time left: '+Math.floor(left/12)+' years and '+(left%12)+' months.</p>';}
   }else if(S.sandbox)h+='<p class="hint">Sandbox: unlimited money and no game over.</p>';
-  if(S.tut<TUT.length)h+='<h3>Getting started</h3><div class="adv info"><b>Next step</b> '+TUT[S.tut].t+'</div>';
   var list=adviceList(E);list.sort(function(a,b){return b.pri-a.pri;});
   h+='<h3>What your advisors say</h3>';
   if(!list.length)h+='<p class="hint">Nothing urgent, Mayor. Keep an eye on inflation, jobs and your power and water margins.</p>';
@@ -4147,7 +4751,7 @@ function wire(){
   document.addEventListener('pointerdown',function(){auInit();});
   $('undo').addEventListener('click',function(){undoLast();});
   $('popx').addEventListener('click',hidePop);
-  $('popAct').addEventListener('click',function(){openSheet('brief');});
+  $('popAct').addEventListener('click',function(){openSheet($('popAct').getAttribute('data-act')==='report'?'report':'brief');});
   $('pprev').addEventListener('click',function(){popStep(-1);});
   $('pnext').addEventListener('click',function(){popStep(1);});
   $('turn').addEventListener('click',turnBuilding);
@@ -4162,7 +4766,7 @@ function wire(){
     compact=!compact;store('sc5000.compact',compact?'1':'0');applyCompact();if(S)ui();
   });
   $('trayBtn').addEventListener('click',function(){setTray(!$('app').classList.contains('tray'));});
-  var chipOpen=function(e){var c=e.target.closest('.chip');if(c&&S&&!S.over&&c.getAttribute('data-k')){exKey=c.getAttribute('data-k');openSheet('explain');}};
+  var chipOpen=function(e){var c=e.target.closest('.chip');if(c&&S&&!S.over&&c.getAttribute('data-k')){exKey=c.getAttribute('data-k');if(exKey==='goals'){openSheet('adv');return;}openSheet('explain');}};
   $('econ').addEventListener('click',chipOpen);
   $('econ').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();chipOpen(e);}});
   $('mm').addEventListener('pointerdown',function(e){
@@ -4229,7 +4833,7 @@ var lastT=0,acc=0,compact=false,lastAmb=0;
 function frame(t){
   var dt=Math.min(250,t-lastT);lastT=t;
   if(S&&!S.over&&speed>0&&!sheetKind&&!splashOpen){
-    acc+=dt;var per=[0,1400,700,280][speed];
+    acc+=dt;var per=[0,1100,520,200][speed];
     while(acc>=per){acc-=per;tick();if(!S||S.over||splashOpen)break;}
   }else acc=0;
   if(fling){var dtf=Math.min(50,t-(fling.last||t));fling.last=t;panBy(fling.vx*dtf,fling.vy*dtf);var dec=Math.pow(0.93,dtf/16);fling.vx*=dec;fling.vy*=dec;if(Math.hypot(fling.vx,fling.vy)<0.02)fling=null;}
@@ -4247,7 +4851,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
