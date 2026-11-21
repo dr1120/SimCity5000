@@ -416,7 +416,7 @@ html[data-motion="reduce"] *{transition:none !important;animation:none !importan
 'use strict';
 /* ================= constants ================= */
 var MW=56,MH=56,N=MW*MH;
-var EMPTY=0,ROAD=1,RES=2,COM=3,IND=4,PLANT=5,PARK=6,PORT=7,PLINE=8,PIPE=9,PUMP=10,POLICE=11,FIRE=12,SCHOOL=13,LAB=14,SOLAR=15,FUSION=16,DESAL=17,DC=18,BIO=19,GAS=20,NUKE=21,HYDRO=22,WIND=23,STADIUM=24,AIRPORT=25,UNIV=26,CONV=27,METRO=28,EXCH=29,BATT=30,MRES=31,MCOM=32,BUS=33,SEW=34,LF=35,TIE=36,RAIL=37,STN=38,SUB=39,HOSP=40,LEVEE=41,RESV=42,RECY=43,WTE=44,SPACEPORT=45,YARD=46,ELEV=47,ARRAY=48,NODE=49,RELAY=50,UCABLE=51,LF_CAP=9000;
+var EMPTY=0,ROAD=1,RES=2,COM=3,IND=4,PLANT=5,PARK=6,PORT=7,PLINE=8,PIPE=9,PUMP=10,POLICE=11,FIRE=12,SCHOOL=13,LAB=14,SOLAR=15,FUSION=16,DESAL=17,DC=18,BIO=19,GAS=20,NUKE=21,HYDRO=22,WIND=23,STADIUM=24,AIRPORT=25,UNIV=26,CONV=27,METRO=28,EXCH=29,BATT=30,MRES=31,MCOM=32,BUS=33,SEW=34,LF=35,TIE=36,RAIL=37,STN=38,SUB=39,HOSP=40,LEVEE=41,RESV=42,RECY=43,WTE=44,SPACEPORT=45,YARD=46,ELEV=47,ARRAY=48,NODE=49,RELAY=50,UCABLE=51,TAP=52,FORGE=53,LF_CAP=9000;
 var GRASS=0,FOREST=1,WATER=2,ROCK=3;
 var RES_CAP=[0,6,15,30],COM_JOBS=[0,4,10,20],IND_JOBS=[0,6,14,26];
 var ZUSE={};ZUSE[RES]=2;ZUSE[COM]=1;ZUSE[IND]=2.5;
@@ -465,6 +465,8 @@ var OBJ={
   array:{t:ARRAY,cost:1500000,up:5000,tech:'orbsolar',build:48,req:3000,cat:'proj',size:[4,4],phased:true},
   node:{t:NODE,cost:14000000,up:40000,tech:'dyson',build:72,req:3000,kmin:1,cat:'proj',size:[4,4],phased:true},
   relay:{t:RELAY,cost:80000000,up:200000,tech:'wormhole',build:96,req:3000,kmin:2,cat:'proj',size:[4,4],phased:true},
+  tap:{t:TAP,cost:600000000,up:0,tech:'darkenergy',build:144,req:3000,kmin:3,cat:'proj',size:[4,4],phased:true,esc:1.25},
+  forge:{t:FORGE,cost:6000000000,up:0,tech:'universe',build:240,req:3000,kmin:4,cat:'proj',size:[4,4],phased:true,esc:1.3},
   spaceport:{t:SPACEPORT,cost:400000,up:3000,pu:30,tech:'rockets',build:24,req:3000,cat:'proj',size:[4,4]},
   yard:{t:YARD,cost:2500000,up:6000,pu:40,tech:'colony',build:48,req:3500,cat:'proj',size:[4,4]},
   hosp:{t:HOSP,cost:14000,up:0,pu:5,wu:6,cat:'civic',size:[2,2],jobs:30},
@@ -522,6 +524,8 @@ var TOOLS={
   array:{name:'Orbital array',sw:'#e8c35a',desc:'Orbital solar collectors beaming power down. Each one sells power and moves you up the Kardashev scale. Monthly installments over 48 months. Each one costs 15% more than the last.'},
   node:{name:'Dyson node',sw:'#ffb24a',desc:'A segment of a Dyson swarm around the sun. Needs a Type I civilization. Monthly installments over 72 months.'},
   relay:{name:'Galactic relay',sw:'#a77bff',desc:'A wormhole relay linking star systems. Needs a Type II civilization. Four of them make you a Type III civilization. Monthly installments over 96 months.'},
+  tap:{name:'Dark-energy tap',sw:'#6a5acd',desc:'A structure that draws power from the expansion of the universe itself. Needs a Type III civilization. Four of them make you Type IV. Monthly installments over 12 years, and each one costs 25% more than the last.'},
+  forge:{name:'Universe forge',sw:'#e0b84a',desc:'A machine that builds new universes. Needs a Type IV civilization. Four of them make you Type V. Monthly installments over 20 years, and each one costs 30% more than the last.'},
   spaceport:{name:'Spaceport',sw:'#dfe6f2',desc:'Capital project, 24 months. Launch contracts bring in big money and 150 jobs. Orbital manufacturing doubles the take. Needs Reusable rockets.'},
   yard:{name:'Colony ship yard',sw:'#b9c4e8',desc:'A milestone project: 48 months and $2.5 million to build a ship that carries humanity\u2019s next chapter. Adds to your Kardashev rating. Needs the colony ship program.'},
   hosp:{name:'Hospital',sw:'#e8e8ee',desc:'Serves 800 residents a month (more with higher healthcare funding). Cuts the damage of outbreaks and keeps people healthy. Needs power and water.'},
@@ -538,7 +542,7 @@ var GROUPS=[
   {id:'util',name:'Utilities',icon:'\u26A1',tools:['inspect','|Power','plant','gas','nuke','hydro','solar','wind','fusion','batt','pline','ucable','tie','|Water and waste','pump','desal','pipe','sew','landfill','recy','wte','|Resilience','resv','levee','bull']},
   {id:'serv',name:'Services',icon:'\u{1F6E1}',tools:['inspect','police','fire','hosp','school','park','bull']},
   {id:'trans',name:'Transport',icon:'\u{1F686}',tools:['inspect','road','bus','rail','stn','metro','port','airport','bull']},
-  {id:'growth',name:'Growth',icon:'\u{1F4C8}',tools:['inspect','|Research','lab','univ','dc','bio','|Business and culture','exch','stadium','conv','|Frontier','spaceport','yard','|Kardashev','elevator','array','node','relay','bull']}
+  {id:'growth',name:'Growth',icon:'\u{1F4C8}',tools:['inspect','|Research','lab','univ','dc','bio','|Business and culture','exch','stadium','conv','|Frontier','spaceport','yard','|Kardashev','elevator','array','node','relay','tap','forge','bull']}
 ];
 var TECHS={
   solar:{name:'Photovoltaics',cost:120,req:null,sector:'Solar',desc:'Solar farms produce 50% more.'},
@@ -571,13 +575,15 @@ FRONTIER.orbsolar={name:'Orbital solar power',cost:20000,req:'spaceelev',req2:'s
 FRONTIER.antimatter={name:'Antimatter production',cost:26000,req:'orbsolar',req2:'quantum',sector:'Antimatter',frontier:1,desc:'Research 20% faster and launch fees up 25%. The stepping stone to stellar engineering.'};
 FRONTIER.dyson={name:'Dyson swarm engineering',cost:45000,req:'antimatter',req2:'asteroid',sector:'Stellar engineering',frontier:1,tier:2,desc:'Unlocks Dyson nodes. Research stalls until you are a Type I civilization.'};
 FRONTIER.matrioshka={name:'Matrioshka brains',cost:60000,req:'dyson',req2:'agi',sector:'Computronium',frontier:1,tier:2,desc:'Dyson nodes earn double and research is 50% faster.'};
+FRONTIER.darkenergy={name:'Dark-energy harvesting',cost:200000,req:'wormhole',req2:'matrioshka',sector:'Vacuum engineering',frontier:1,tier:4,desc:'Unlocks Dark-energy taps. Research stalls until you are a Type III civilization.'};
+FRONTIER.universe={name:'Universe engineering',cost:350000,req:'darkenergy',sector:'Cosmogenesis',frontier:1,tier:5,desc:'Unlocks Universe forges. Research stalls until you are a Type IV civilization.'};
 FRONTIER.wormhole={name:'Traversable wormholes',cost:100000,req:'matrioshka',sector:'Galactic network',frontier:1,tier:3,desc:'Unlocks Galactic relays. Research stalls until you are a Type II civilization.'};
 TECHS.arterial={name:'Arterial roads',cost:520,sector:'Highways',desc:'Lots can sit up to two tiles from a road, so blocks can be twice as deep. Fewer streets, bigger parcels.'};
 TECHS.ugcable={name:'Underground cables',cost:780,sector:'Utilities',desc:'Power cables can run underground, beneath roads and buildings. Buried cables cannot burn and tornadoes cannot reach them.'};
 TECHS.robotics={name:'Industrial robotics',cost:2800,req:'auto',sector:'Robotics',desc:'Factory robots make goods cheaper and take over assembly work. Many workers will need retraining.'};
 TECHS.svcbot={name:'Service robots',cost:5200,req:'robotics',req2:'ai',sector:'Service robotics',desc:'Robots in shops, kitchens and clinics. Services get cheaper. More jobs are at risk.'};
 (function(){for(var k in FRONTIER){TECHS[k]=FRONTIER[k];TECHS[k].cost=Math.round(TECHS[k].cost*3);}})();
-var TECH_ORDER=['solar','fiber','water','arterial','ugcable','auto','bio','ai','fission','fusion','robotics','svcbot','genome','vaccine','autoveh','vfarm','materials','quantum','supercon','carbon','agi','rockets','orbital','asteroid','colony','spaceelev','orbsolar','antimatter','dyson','matrioshka','wormhole'];
+var TECH_ORDER=['solar','fiber','water','arterial','ugcable','auto','bio','ai','fission','fusion','robotics','svcbot','genome','vaccine','autoveh','vfarm','materials','quantum','supercon','carbon','agi','rockets','orbital','asteroid','colony','spaceelev','orbsolar','antimatter','dyson','matrioshka','wormhole','darkenergy','universe'];
 var NAME_A=['Nova','Helio','Quanta','Vertex','Aero','Lumen','Orbit','Kinetic','Zenith','Atlas','Cobalt','Ember','Fathom','Meridian','Pylon','Strata'];
 var NAME_B=['Cell','Labs','Dynamics','Systems','Works','Grid','Genomics','Robotics','Cloud','Energy','Materials','Logic','Networks','Therapeutics'];
 var BUYERS=['Meridian Capital','Apex Holdings','Northstar Group','Titan Industries','Blue Harbor Partners','Orion Global','Summit Corp'];
@@ -763,6 +769,7 @@ function mark(arr,x,y,r){
     for(var dx=-w;dx<=w;dx++){var xx=x+dx;if(xx>=0&&xx<MW)arr[yy*MW+xx]=1;}
   }
 }
+function sat(n,base,r){return n>0?base*(1-Math.pow(r,n))/(1-r):0;}
 function conducts(t){return t!==EMPTY&&t!==ROAD&&t!==PLINE&&t!==PIPE&&t!==RAIL&&t!==PORT;}
 function roadWithin2(i){
   var x=i%MW,y=(i/MW)|0,dx,dy;
@@ -994,15 +1001,17 @@ var ERA=[
  {id:'interplanetary',name:'Interplanetary',scale:1,desc:'Asteroid ore is an economic driver. Oil and shipping-lane crises are gone. Strange signals and alien pathogens are possible.'},
  {id:'planetary',name:'Planetary (Type I)',scale:50,desc:'You command planetary energy. Energy prices are history. Climate engineering can backfire. Time speeds up: one game year now counts as 50.'},
  {id:'stellar',name:'Stellar (Type II)',scale:1000,desc:'A star feeds your economy. Superflares and swarm cascades threaten it. One game year now counts as 1,000.'},
- {id:'galactic',name:'Galactic (Type III)',scale:10000,desc:'A galaxy of stars. Hostile civilizations and cosmic politics are your problems. One game year now counts as 10,000.'}
+ {id:'galactic',name:'Galactic (Type III)',scale:10000,desc:'A galaxy of stars. Hostile civilizations and cosmic politics are your problems. One game year now counts as 10,000.'},
+ {id:'universal',name:'Universal (Type IV)',scale:1000000,desc:'You draw on the expansion of the universe. Cosmic bureaucracy and dimensional accidents are your problems. One game year now counts as a million.'},
+ {id:'multiversal',name:'Multiversal (Type V)',scale:100000000,desc:'You build universes, and other branches of reality notice. One game year now counts as a hundred million.'}
 ];
 var ERA_W={
- energy:[1,1,0.6,0.45,0.3,0.1,0.05,0.05],
- freight:[1,1,0.9,0.8,0.7,0.5,0.4,0.3],
- materials:[1,1,1,0.9,0.6,0.4,0.2,0.1],
- food:[1,1,0.9,0.9,0.8,0.5,0.3,0.2],
- trade:[1,1,1,1,0.9,0.7,0.5,0.3],
- chips:[1,1.5,1.5,1.5,1,0.8,0.6,0.5]
+ energy:[1,1,0.6,0.45,0.3,0.1,0.05,0.05,0.03,0.02],
+ freight:[1,1,0.9,0.8,0.7,0.5,0.4,0.3,0.25,0.2],
+ materials:[1,1,1,0.9,0.6,0.4,0.2,0.1,0.08,0.05],
+ food:[1,1,0.9,0.9,0.8,0.5,0.3,0.2,0.15,0.1],
+ trade:[1,1,1,1,0.9,0.7,0.5,0.3,0.25,0.2],
+ chips:[1,1.5,1.5,1.5,1,0.8,0.6,0.5,0.4,0.3]
 };
 function eraW(ch){var e=S?S.era|0:0;return ERA_W[ch][e];}
 function eraOf(g,k){
@@ -1011,7 +1020,7 @@ function eraOf(g,k){
   if(S.tech.fusion||S.tech.supercon)e=2;
   if(g.done[SPACEPORT]>0)e=Math.max(e,3);
   if(S.tech.asteroid&&e>=3)e=4;
-  if(k>=1)e=5;if(k>=2)e=6;if(k>=3)e=7;
+  if(k>=1)e=5;if(k>=2)e=6;if(k>=3)e=7;if(k>=4)e=8;if(k>=5)e=9;
   return e;
 }
 function calYear(m){
@@ -1022,9 +1031,9 @@ function calYear(m){
 /* Kardashev rating: city power sets a small base, megaprojects do the rest */
 function kardashev(g){
   var P=Math.max(1,(g.pCap||0)*1e6),kb=clamp((Math.log10(P)-6)/10,0,0.4),d=g.done;
-  return kb+0.15*(d[ELEV]>0?1:0)+0.1*(d[YARD]>0?1:0)+0.2*Math.min(3,d[ARRAY]||0)+0.25*Math.min(4,d[NODE]||0)+0.25*Math.min(4,d[RELAY]||0)+0.05*Math.max(0,(d[ARRAY]||0)-3)+0.05*Math.max(0,(d[NODE]||0)-4)+0.05*Math.max(0,(d[RELAY]||0)-4);
+  return kb+0.15*(d[ELEV]>0?1:0)+0.1*(d[YARD]>0?1:0)+0.2*Math.min(3,d[ARRAY]||0)+0.25*Math.min(4,d[NODE]||0)+0.25*Math.min(4,d[RELAY]||0)+0.25*Math.min(4,d[TAP]||0)+0.25*Math.min(4,d[FORGE]||0)+0.05*Math.max(0,(d[TAP]||0)-4)+0.05*Math.max(0,(d[FORGE]||0)-4)+0.05*Math.max(0,(d[ARRAY]||0)-3)+0.05*Math.max(0,(d[NODE]||0)-4)+0.05*Math.max(0,(d[RELAY]||0)-4);
 }
-function kLabel(k){return k>=4?'Type IV':k>=3?'Type III':k>=2?'Type II':k>=1?'Type I':'Type 0';}
+function kLabel(k){return k>=5?'Type V':k>=4?'Type IV':k>=3?'Type III':k>=2?'Type II':k>=1?'Type I':'Type 0';}
 function countType(t){var n=0;for(var i=0;i<N;i++){if(T[i]===t)n++;}return n;}
 /* general supply stress = old one-off shock plus the world channels (energy, freight, materials, chips, food, trade) */
 function shk(){var m=S.mc,T2=S.tech;return S.shock+m.energy*0.30*eraW('energy')+m.freight*0.25*eraW('freight')+m.materials*0.25*eraW('materials')+(m.ore||0)*0.08+m.chips*0.06*eraW('chips')*(T2.quantum?0.7:1)*(T2.orbital?0.5:1)+m.food*0.10*eraW('food')*(T2.vfarm?0.5:1)+m.trade*0.08*eraW('trade')-(S.auto?0.10*S.auto.adopt:0)-(T2.asteroid?0.15:0);}
@@ -1033,7 +1042,7 @@ function terrainCost(i){return (TER[i]===FOREST?1.35:1)*(1+0.12*Math.max(0,EL[i]
 function costFor(id,i){
   if(id==='inspect')return 0;if(id==='bull')return 10;
   var c=OBJ[id].cost*mult();
-  if(OBJ[id].phased)c*=Math.pow(1.15,countType(OBJ[id].t));
+  if(OBJ[id].phased){c*=Math.pow(OBJ[id].esc||1.15,countType(OBJ[id].t));c*=1+0.3*Math.max(0,Math.log10(Math.max(1,((S&&S.cash>0)?S.cash:0)+((S&&S.fund)?S.fund.bal:0))/5e6));}
   if(id==='lab'||id==='dc'||id==='bio'||id==='fusion')c*=1+0.5*Math.max(0,S.mc.chips)*(S.tech.quantum?0.7:1)*(S.tech.orbital?0.5:1);
   if(i!==undefined&&i>=0)c*=terrainCost(i);
   return Math.ceil(c);
@@ -1098,22 +1107,23 @@ function computeEconomy(){
   var cloud=A.dc*600*(S.tech.ai?1.5:1)*(S.tech.quantum?1.5:1)*(S.aiBust>0?0.5:1);
   var spaceConf=clamp(0.75+0.25*S.mkt/100-0.06*Math.max(0,S.rate-S.infl-2),0.5,1.3)*(S.recession>0?0.85:1),humanF=clamp(Math.sqrt(S.pop/1200),0.15,1);
   var botTax=(tx.bot||0)/100*employed*wage*ashare*1.5;
-  var spaceEcon=(d[ELEV]*20000+d[ARRAY]*120000+d[NODE]*1200000*(S.tech.matrioshka?2:1)+d[RELAY]*8000000)*(1-Math.min(0.8,Math.max(0,mc.orbit||0)*0.5))*spaceConf*humanF;
+  var spaceEcon=(d[ELEV]*20000+sat(d[ARRAY],120000,0.9)+sat(d[NODE],1200000,0.88)*(S.tech.matrioshka?2:1)+sat(d[RELAY],8000000,0.86)+sat(d[TAP],15000000,0.85)+sat(d[FORGE],120000000,0.85))*(1-Math.min(0.8,Math.max(0,mc.orbit||0)*0.5))*spaceConf*humanF;
   var orb=Math.max(0,mc.orbit||0),launch=A.spaceport*2500*(S.tech.orbital?2:1)*(S.tech.antimatter?1.25:1)*(d[ELEV]>0?3:1)*(1-Math.min(0.9,orb*0.8))*spaceConf*humanF,mining=S.tech.asteroid?A.spaceport*1500*clamp(1+(mc.ore||0),0.2,2)*spaceConf*humanF:0,fundPay=S.fund.bal*S.fund.payout/1200;
   var fares=Math.min(S.pop*0.12,A.stn*220)*1.5;
   var tradeIn=expMW*6*npx+expW*2.5*npx,tradeOut=impMW*40*npx+impW*8*npx;
   var revenue=incTax+saleTax+propTax+bizTax+exports+dividends+tourism+cloud+tradeIn+fares+recySales+launch+mining+fundPay+spaceEcon+botTax;
   var fuelC=Math.max(0.5,1+0.9*mc.energy+0.5*S.shock),fuelG=Math.max(0.5,1+1.4*mc.energy+0.8*S.shock),fuelN=Math.max(0.7,1+0.1*mc.energy+0.1*S.shock),infCost=1+Math.max(0,S.infl-3)*0.012;
-  var creep=(1+0.0012*Math.min(S.month,480))*dm('cost'),wear=1+(1-S.cond)*1.2;
+  var wealthF=Math.min(2,1+0.22*Math.max(0,Math.log10(Math.max(1,revenue/Math.max(1,S.pop))/12)));
+  var creep=(1+0.0012*Math.min(S.month,480))*dm('cost')*wealthF,wear=1+(1-S.cond)*1.2;
   var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1)*creep*(1+0.1*clamp(mc.health,0,1.5))*Math.max(0.55,1-0.3*ad)*((S.auto&&S.auto.psc>=12)?0.85:1);
   var bridges=0;for(k=0;k<N;k++){if(T[k]===ROAD&&B[k])bridges++;}
   var roadUp=(d[ROAD]*0.4+bridges*1.2+d[PLINE]*0.2+d[PIPE]*0.3+g.ugW*0.35+g.ugP*0.5)*sp.infra*infCost*wear;
   var legacy=1+0.3*Math.max(0,(S.era|0)-2),powerUp=(d[PLANT]*35*fuelC*legacy+d[GAS]*45*fuelG*legacy+d[NUKE]*160*fuelN+d[HYDRO]*15+d[SOLAR]*10+d[WIND]*12+d[FUSION]*60+d[BATT]*40)*sp.infra*wear;
   var waterUp=(d[PUMP]*25+d[DESAL]*70)*sp.infra*wear;
   var civicUp=(d[POLICE]*60*sp.safety+d[FIRE]*50*sp.safety+d[SCHOOL]*70*sp.edu+d[LAB]*120+d[DC]*80+d[BIO]*90)*creep*wear;
-  var projUp=(d[STADIUM]*400+d[AIRPORT]*900+d[UNIV]*600+d[CONV]*450+d[METRO]*700+d[EXCH]*500+d[SPACEPORT]*3000+d[YARD]*6000+d[ELEV]*20000+d[ARRAY]*5000+d[NODE]*40000+d[RELAY]*200000)*creep;
+  var projUp=(d[STADIUM]*400+d[AIRPORT]*900+d[UNIV]*600+d[CONV]*450+d[METRO]*700+d[EXCH]*500+d[SPACEPORT]*3000+d[YARD]*6000)*creep+(d[ELEV]*20000+d[ARRAY]*18000+d[NODE]*300000+d[RELAY]*2400000+d[TAP]*5000000+d[FORGE]*40000000)*dm('cost')*Math.min(1,spaceConf*humanF*(1-Math.min(0.8,Math.max(0,mc.orbit||0)*0.5)));
   var parkUp=d[PARK]*2+d[PORT]*40,importCost=imported*1.2*Math.max(0.6,1+0.9*mc.freight+0.5*S.shock+0.2*mc.materials),welfare=sp.welfare,udivCost=S.pop*8*(sp.udiv||0),retrainCost=S.pop*6*(sp.retrain||0),aiCost=S.pop*1.5*(0.5+aiCap())*(sp.aisafe||0)+(ord.breaker?S.pop*0.8:0),outage=((S.fail.power>0?1:0)+(S.fail.water>0?1:0))*ad*revenue*0.08;
-  var assets=d[ROAD]*45+d[PLINE]*20+d[PIPE]*25+d[RAIL]*30+g.ugW*30+g.ugP*45,tk;
+  var assets=d[ROAD]*45+d[PLINE]*20+d[PIPE]*25+d[RAIL]*30+g.ugW*30+g.ugP*45+d[SPACEPORT]*4e5+d[YARD]*2.5e6+d[ELEV]*2e6+d[ARRAY]*1.5e6+d[NODE]*1.4e7+d[RELAY]*8e7+d[TAP]*6e8+d[FORGE]*6e9,tk;
   for(tk in BYT){var ob=BYT[tk],tn=parseInt(tk,10);if(!ob.cat||ob.cat==='zone'||tn===ROAD||tn===PLINE||tn===PIPE||tn===RAIL)continue;assets+=d[tn]*ob.cost*0.8;}
   var renewNeed=assets*(0.0012+0.00001*Math.min(S.month,420))*(S.tech.materials?0.75:1),renewSpend=renewNeed*S.renew;
   var pension=S.pop*0.8*Math.min(2.5,S.month/120)*infCost;
@@ -1122,13 +1132,14 @@ function computeEconomy(){
   var insurance=S.dins?S.pop*0.5:0;
   var wasteUp=(d[SEW]*50+d[LF]*25+d[RECY]*90+d[WTE]*160)*sp.infra+(ord.recycle?S.pop*0.06:0);
   var transitUp=d[BUS]*25*(ord.transit?0.7:1)+d[TIE]*80+d[RAIL]*0.8*sp.infra*(ord.transit?0.7:1)+d[STN]*120*(ord.transit?0.7:1)+(ord.transit?S.pop*0.08:0);
-  var hcCreep=(1+0.0015*Math.min(S.month,420))*dm('cost'),healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad);
+  var hcCreep=(1+0.0015*Math.min(S.month,420))*dm('cost')*wealthF,healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad);
   var crimeIdx=clamp((1-g.polCov)*0.6+unemp*0.8,0,1),overtime=S.pop*0.05*crimeIdx*creep;
   var resilUp=(d[LEVEE]*3+d[RESV]*30)*sp.infra+(ord.retrofit?S.pop*0.12:0);
   var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+retrainCost+aiCost+outage+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend;
   var wfFrac=Math.min(1,welfare/(S.pop*3+200));
   var afQ=clamp(1.55-0.55*S.hpi/100*mort/5.5,0.15,1.15),socNeed=S.pop*(0.04+0.9*unemp+0.5*Math.max(0,1-afQ))*creep*(1+0.8*Math.max(0,ineq-0.3))*(1-0.15*Math.min(1,sp.udiv||0)),socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
-  var h=0.72+0.25*g.parkCov+(sp.svc-1)*0.4+0.10*g.polCov*Math.min(1.3,sp.safety)+0.06*g.schCov*sp.edu+(S.tech.bio?0.03:0)
+  var prosp=Math.min(0.2,0.05*Math.max(0,Math.log10(Math.max(1,revenue/Math.max(1,S.pop))/20)));
+  var h=0.72+prosp+0.25*g.parkCov+(sp.svc-1)*0.4+0.10*g.polCov*Math.min(1.3,sp.safety)+0.06*g.schCov*sp.edu+(S.tech.bio?0.03:0)
         -(1-socCov)*0.08*wasteF-(1-hc)*0.12*wasteF-(1-er)*0.06*wasteF+(A.stadium?0.06:0)+(A.metro?0.04:0)+0.03*Math.min(1,A.stn/2)-(A.airport?0.03:0)-0.2*Math.min(1,g.pollAvg)-0.12*Math.max(0,cong-1)
         -(1-sw)*0.3*wasteF-(1-gb)*0.25*wasteF+(ord.recycle?0.02:0)
         -Math.max(0,tx.inc-9)*0.04+Math.max(0,9-tx.inc)*0.01-Math.max(0,tx.sales-8)*0.02-Math.max(0,tx.prop-1.3)*0.1
@@ -1157,7 +1168,7 @@ function computeEconomy(){
   e.rev=[['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax],['Exports',exports],['Dividends',dividends],['Tourism',tourism],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
   e.exp=[['Public services',services],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop)*dm('infl');
@@ -1336,6 +1347,10 @@ var MACRO=[
  {id:'swarmcascade',minEra:6,warn:'Swarm controllers report drifting nodes and near misses.',chain:[],w:1,name:'Swarm collision cascade',region:'The star',head:'Nodes in the swarm collide and the wreckage sets off a chain reaction.',end:'The wreckage has been swept up and the swarm is stable again.',ch:{orbit:1.0},dur:10,mkt:-0.1,opts:['o1','o3']},
  {id:'council',minEra:7,warn:'Envoys from neighbouring star systems are requesting an audience.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1,name:'The Galactic Council demands tribute',region:'Galactic',head:'The Galactic Council informs you that your relays now carry a toll. They expect payment.',end:'The Council has moved on to a new dispute.',ch:{trade:0.6},dur:10,opts:['g1','g2']},
  {id:'darkforest',minEra:7,warn:'Relay operators report systems going dark with no explanation.',chain:[{id:'x:crash',p:0.5,d:[2,4]},{id:'x:recession',p:0.6,d:[3,6]}],w:0.8,name:'Something is hunting civilizations',region:'Galactic',head:'A civilization that never speaks is erasing star systems. Your relays are going dark one by one.',end:'The silent hunter has moved on. Nobody knows if it will return.',ch:{orbit:1.0,trade:0.8},dur:14,mkt:-0.25,rec:0.7,opts:['a3','a4']},
+ {id:'cosmicaudit',minEra:8,warn:'Auditors from the Universal Standards Body are asking for your books.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1,name:'Universal Standards audit',region:'Cosmic',head:'The Universal Standards Body audits your energy extraction and fines the city 5% of its reserves.',end:'The audit is closed. Nobody is quite sure what the findings meant.',ch:{trade:0.5},dur:8,fn:function(){S.cash*=0.95;},opts:['g1','g2']},
+ {id:'entropy',minEra:8,warn:'Engineers report that machines are running slightly worse than they should.',chain:[{id:'x:recession',p:0.3,d:[2,5]}],w:1,name:'Entropy surge',region:'Cosmic',head:'A surge in local entropy makes every machine run a little worse. Output and prices wobble.',end:'Entropy has settled back to its usual level.',ch:{orbit:0.8,energy:0.5},dur:10,mkt:-0.1,rec:0.4,opts:['o1','o3']},
+ {id:'brane',minEra:9,warn:'Instruments detect another universe drifting close.',chain:[{id:'x:crash',p:0.5,d:[1,3]},{id:'x:recession',p:0.6,d:[2,5]}],w:0.9,name:'Brane collision',region:'Cosmic',head:'Another universe brushes against yours. Instruments scream and markets panic.',end:'The other universe has drifted away, probably.',ch:{orbit:1.0,trade:0.8},dur:12,mkt:-0.25,rec:0.8,opts:['a3','a4']},
+ {id:'parallel',minEra:9,warn:'A message arrives from a city that does not exist in your universe.',chain:[{id:'x:bubble',p:0.4,d:[2,5]}],w:0.9,name:'A parallel city proposes trade',region:'Cosmic',head:'A parallel version of your city proposes trade. Exports and research both jump.',end:'Trade with the parallel city has become routine.',ch:{trade:-0.6,materials:-0.3},dur:24,mkt:0.15,good:true},
  {id:'vacuum',minEra:7,warn:'Physicists are arguing about the stability of a relay experiment.',chain:[],w:0.6,name:'Vacuum stability scare',region:'Galactic',head:'Physicists warn that a relay experiment may have destabilised the vacuum. Markets panic. Then the warning is retracted.',end:'The vacuum is fine. The physicists are embarrassed.',ch:{},dur:4,mkt:-0.3,rec:0.8},
  {id:'aiglitch',chainOnly:true,warn:'Logs show the civic AI making odd decisions.',chain:[],w:1,name:'Civic AI glitch',region:'City hall',head:'The civic AI misroutes services for a few days. Nothing is broken, but nobody is sure why.',end:'The glitch has been patched and services are back to normal.',ch:{chips:0.2},dur:4,fn:function(){S.approval=clamp(S.approval-2,0,100);},opts:['v1','v2']},
  {id:'aiflash',chainOnly:true,warn:'Trading desks report algorithms behaving strangely.',chain:[{id:'x:crash',p:0.6,d:[1,3]},{id:'x:recession',p:0.3,d:[3,6]}],w:1,name:'Algorithmic flash crash',region:'Markets',head:'Trading algorithms feed on each other and markets plunge in minutes. Regulators scramble.',end:'Markets have steadied and trading has resumed.',ch:{chips:0.2},dur:5,mkt:-0.2,rec:0.4,opts:['v1','v3']},
@@ -1426,7 +1441,7 @@ function applyBrief(cid,oi){
 function stepInfra(e){
   var r=S.renew;
   if(r<1)S.cond-=0.008*(1-r)*Math.min(1,e.assets/15000);
-  else if(r>1)S.cond+=0.005*(r-1);
+  else S.cond+=0.002+0.005*Math.max(0,r-1);
   S.cond=clamp(S.cond,0.2,1);
   var kinds=['water','power','road'],msgs={water:'A water main bursts and a district loses pressure.',power:'Aging transformers fail and part of the grid goes dark.',road:'A bridge and several roads close for emergency repairs.'},i;
   for(i=0;i<3;i++){
@@ -1576,7 +1591,9 @@ function stepKard(e){
     S.kmax=lv;sfx('cash');chron('kard','Kardashev milestone: Type '+['0','I','II','III'][Math.min(3,lv)]+' civilization.');
     if(lv===1)addNews('Kardashev milestone: '+S.city+' is now a Type I civilization. You command the energy of a whole planet. Dyson swarm engineering can begin.','good');
     else if(lv===2)addNews('Kardashev milestone: a Type II civilization. A swarm of collectors wraps your star. Galactic relays are within reach.','good');
-    else if(lv>=3){S.kmax=Math.max(S.kmax,lv);addNews('Kardashev milestone: a Type III civilization. The galaxy answers to you. The game goes on.','good');if(!S.kardWin){S.kardWin=true;showSplash('galactic');}}
+    else if(lv===3){S.kmax=Math.max(S.kmax,lv);addNews('Kardashev milestone: a Type III civilization. The galaxy answers to you. The game goes on.','good');if(!S.kardWin){S.kardWin=true;showSplash('galactic');}}
+    else if(lv===4){S.kmax=Math.max(S.kmax,lv);addNews('Kardashev milestone: a Type IV civilization. You draw power from the expansion of the universe itself.','good');}
+    else if(lv>=5){S.kmax=Math.max(S.kmax,lv);addNews('Kardashev milestone: a Type V civilization. You build universes. The game still goes on.','good');}
   }
 }
 function stepConstruction(){
@@ -1821,7 +1838,8 @@ function stepPlanners(e){
   }
   var pShort=e.pw<0.97||(built>0&&noP/built>0.12),wShort=e.ww<0.97||(built>0&&noW/built>0.12);
   P.p=pShort?P.p+1:0;P.w=wShort?P.w+1:0;
-  if(S.month-P.m<4||(P.p<3&&P.w<3))return;
+  P.s=(S.pop>=150&&e.sw<0.85)?(P.s|0)+1:0;P.gb=(S.pop>=150&&e.gb<0.85)?(P.gb|0)+1:0;
+  if(S.month-P.m<4||(P.p<3&&P.w<3&&P.s<3&&P.gb<3))return;
   var c=planCentroid();
   if(P.p>=3){
     var need=(g.pwDemand+unP)*1.15-g.pCap,tries=0;
@@ -1844,6 +1862,24 @@ function stepPlanners(e){
       var ws=planSite(wid,c,3,12,true,g);if(!ws)break;
       if(placeBuilding(ws[0],ws[1],wid,0)){var wa=ws[1]*MW+ws[0];L[wa]=Math.min(L[wa],2);wneed-=(BYT[OBJ[wid].t].wc||80);made++;msgs.push(TOOLS[wid].name.toLowerCase());}
       else break;
+    }
+  }
+  if(P.s>=3){
+    var sdem=e.sw>0.01?g.sewCap/e.sw:S.pop*0.25,sneed=sdem*1.1-g.sewCap,st=0;
+    while(sneed>0&&made<5&&st<4){
+      st++;var scost=costFor('sew',0);
+      if(S.cash<scost*3&&!S.sandbox)break;
+      var ss=planSite('sew',c,3,12,true,g);if(!ss)break;
+      if(placeBuilding(ss[0],ss[1],'sew',0)){var sa=ss[1]*MW+ss[0];L[sa]=Math.min(L[sa],2);sneed-=150;made++;msgs.push('sewage plant');}else break;
+    }
+  }
+  if(P.gb>=3){
+    var gdem=e.gb>0.01?(g.garbCap+g.act.recy*120+g.act.wte*200)/e.gb:S.pop*0.04,gneed=gdem*1.1-(g.garbCap+g.act.recy*120+g.act.wte*200),gt=0;
+    while(gneed>0&&made<6&&gt<4){
+      gt++;var gcost=costFor('landfill',0);
+      if(S.cash<gcost*3&&!S.sandbox)break;
+      var gs=planSite('landfill',c,5,13,false,g);if(!gs)break;
+      if(placeBuilding(gs[0],gs[1],'landfill',0)){var ga=gs[1]*MW+gs[0];L[ga]=Math.min(L[ga],L[ga]);gneed-=150;made++;msgs.push('landfill');}else break;
     }
   }
   if(made){
@@ -2082,8 +2118,9 @@ function tick(){
   checkScenario(e);advisorTick(e);prunePop();
   if(S.sandbox){S.cash=Math.max(S.cash,50000000);}
   if(S.approval<25&&!S.sandbox)S.lowApproval++;else S.lowApproval=0;
-  if(S.cash<-4000&&!S.sandbox)S.lowCash++;else S.lowCash=0;
-  if(!S.sandbox&&S.cash<0&&S.cash>=-4000&&S.month%3===0)toast('Overdrawn. Borrow, raise taxes or cut costs.');
+  var cashFloor=(e.costs>100000)?-e.costs*1.5:-4000;
+  if(S.cash<cashFloor&&!S.sandbox)S.lowCash++;else S.lowCash=0;
+  if(!S.sandbox&&S.cash<0&&S.cash>=cashFloor&&S.month%3===0)toast('Overdrawn. Borrow, raise taxes or cut costs.');
   if(S.lowApproval>=8)return endGame('recall');
   if(S.lowCash>=2)return endGame('bankrupt');
   if(S.month%6===0)save();
@@ -2425,6 +2462,10 @@ var ICONS={
   fission:icAtom(),
   ugcable:'<path d="M2.5 8.5h19"/><path d="M5 8.5v-2M9 8.5v-3M13 8.5v-2M17 8.5v-3M20 8.5v-2" opacity=".55"/><path d="M3 17c3.5-4.5 6 4.5 9.5 0s6 3 8.5-.5"/><path d="M13 11.2l-2.2 3.4h3l-2.2 3.4"/>',
   ucable:'<path d="M2.5 8.5h19"/><path d="M5 8.5v-2M9 8.5v-3M13 8.5v-2M17 8.5v-3M20 8.5v-2" opacity=".55"/><path d="M3 17c3.5-4.5 6 4.5 9.5 0s6 3 8.5-.5"/><path d="M13 11.2l-2.2 3.4h3l-2.2 3.4"/>',
+  darkenergy:'<ellipse cx="12" cy="12" rx="10" ry="4.4"/><ellipse cx="12" cy="12" rx="5.4" ry="2.2"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><path d="M12 2v3M12 19v3M2.5 12h2M19.5 12h2"/>',
+  tap:'<ellipse cx="12" cy="12" rx="10" ry="4.4"/><ellipse cx="12" cy="12" rx="5.4" ry="2.2"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><path d="M12 2v3M12 19v3M2.5 12h2M19.5 12h2"/>',
+  universe:'<path d="M12 2l3.2 6.5L12 22 8.8 8.5z"/><path d="M5 10.5c4 1.6 10 1.6 14 0M4.2 15c4.4 1.8 11.2 1.8 15.6 0" opacity=".7"/><circle cx="12" cy="6" r="1.1" fill="currentColor"/>',
+  forge:'<path d="M12 2l3.2 6.5L12 22 8.8 8.5z"/><path d="M5 10.5c4 1.6 10 1.6 14 0M4.2 15c4.4 1.8 11.2 1.8 15.6 0" opacity=".7"/><circle cx="12" cy="6" r="1.1" fill="currentColor"/>',
   arterial:'<path d="M3.5 22L9 3h6l5.5 19"/><path d="M12 5v2.4M12 10.6v3M12 17v4"/><path d="M6.2 14.2h11.6" opacity=".5"/>',
   robotics:'<path d="M4 21.5h9M8.5 21.5v-6"/><circle cx="8.5" cy="13.2" r="2"/><path d="M9.9 11.8L14.8 7"/><circle cx="15.8" cy="6" r="1.6"/><path d="M17.2 6.8l3.6 1.2M17 5.2l3.2-1.4"/>',
   svcbot:'<rect x="5.5" y="8" width="13" height="10.5" rx="2.5"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1.2"/><circle cx="9.3" cy="12.6" r="1.3"/><circle cx="14.7" cy="12.6" r="1.3"/><path d="M9.5 16h5M3.5 12v3M20.5 12v3"/>',
@@ -2819,6 +2860,8 @@ var ACH=[
  {id:'friends',tier:3,name:'Friends in high places',desc:'Sign an interstellar trade agreement.',f:function(e){return S.alien==='friend';}},
  {id:'typeI',tier:3,name:'Type I civilization',desc:'Reach Kardashev 1.0.',f:function(e){return e.kard>=1;},p:function(e){return prog(e.kard,1);}},
  {id:'typeII',tier:3,name:'Type II civilization',desc:'Reach Kardashev 2.0.',f:function(e){return e.kard>=2;},p:function(e){return prog(e.kard,2);}},
+ {id:'typeIV',tier:3,name:'Type IV civilization',desc:'Reach Kardashev 4.0.',f:function(e){return e.kard>=4;},p:function(e){return prog(e.kard,4);}},
+ {id:'typeV',tier:3,name:'Type V civilization',desc:'Reach Kardashev 5.0.',f:function(e){return e.kard>=5;},p:function(e){return prog(e.kard,5);}},
  {id:'typeIII',tier:3,name:'Type III civilization',desc:'Reach Kardashev 3.0.',f:function(e){return e.kard>=3;},p:function(e){return prog(e.kard,3);}},
  /* automation and AI */
  {id:'retrained',tier:2,name:'Retrained and ready',desc:'Reach 80% workforce skills while half the work is automated.',f:function(e){return S.auto.skill>=0.8&&S.auto.adopt>=0.5;},p:function(e){return prog(Math.min(S.auto.skill/0.8,S.auto.adopt/0.5),1);}},
@@ -2947,7 +2990,7 @@ function nextUps(e){
   var ri=rankIdx(S.pop);
   if(ri<RANKS.length-1&&S.tut>=TUT.length)list.push({i:'rank',t:'Grow to a '+RANKS[ri+1][1].toLowerCase(),p:Math.min(1,(S.pop-RANKS[ri][0])/(RANKS[ri+1][0]-RANKS[ri][0])),note:Math.round(S.pop)+' of '+RANKS[ri+1][0].toLocaleString('en-US')+' people',kind:'rank'});
   if(S.tech.rockets||e.kard>0.45){
-    var lv=Math.floor(e.kard);list.push({i:'kard',t:'Reach Type '+['I','II','III','IV'][Math.min(3,lv)],p:Math.min(1,e.kard-lv),note:'rating '+e.kard.toFixed(2)+' of '+(lv+1)+'.0',kind:'kard'});
+    var lv=Math.floor(e.kard);list.push({i:'kard',t:'Reach Type '+['I','II','III','IV','V','VI'][Math.min(5,lv)],p:Math.min(1,e.kard-lv),note:'rating '+e.kard.toFixed(2)+' of '+(lv+1)+'.0',kind:'kard'});
   }
   if(S.tech.auto&&e.abund>0.55&&S.auto.psc<12)list.push({i:'psc',t:'Reach post-scarcity',p:Math.min(1,e.abund/0.8),note:'abundance '+Math.round(e.abund*100)+'% of 80%',kind:'psc'});
   var near=[];
@@ -3063,7 +3106,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-21 17:28';
+var BUILD_ID='2026-11-21 17:58';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -3388,7 +3431,9 @@ var GUIDE=[
  '<tr><td>Antimatter production</td><td>Research 20% faster, launch fees up 25%. Needs Orbital solar power and Quantum computing.</td></tr>'+
  '<tr><td>Dyson swarm engineering</td><td>Unlocks Dyson nodes. Stalls until you are Type I. Needs Antimatter and Asteroid mining.</td></tr>'+
  '<tr><td>Matrioshka brains</td><td>Dyson nodes earn double, research 50% faster. Stalls until Type I. Needs Dyson swarms and General-purpose AI.</td></tr>'+
- '<tr><td>Traversable wormholes</td><td>Unlocks Galactic relays. Stalls until you are Type II. Needs Matrioshka brains.</td></tr></table>'+
+ '<tr><td>Traversable wormholes</td><td>Unlocks Galactic relays. Stalls until you are Type II. Needs Matrioshka brains.</td></tr>'+
+ '<tr><td>Dark-energy harvesting</td><td>Unlocks Dark-energy taps. Stalls until you are Type III. Needs Traversable wormholes and Matrioshka brains.</td></tr>'+
+ '<tr><td>Universe engineering</td><td>Unlocks Universe forges. Stalls until you are Type IV. Needs Dark-energy harvesting.</td></tr></table>'+
  '<p><b>Sovereign wealth fund</b> (Corp, Fund tab): park surplus cash in a fund that invests in stocks, bonds and cash. Stocks follow the market and crash with it, bonds earn a bit above cash when rates are high. You can set a yearly payout into the budget (3% is the classic rule), withdraw any time, and let the fund auto-cover cash shortfalls. If the fund grows beyond about two years of revenue while income tax is above 9%, voters grumble.</p>'+
  '<p><b>Data centers</b> are 3 by 3, must touch water for closed-loop cooling that uses none, and draw a lot of power. They bring construction work, 70 high-wage jobs, cloud revenue and faster research.</p>'+
  '<p><b>Ventures:</b> each startup shows its value, runway and your stake. Invest to raise your stake and extend its runway. A startup lists when it passes $70,000 after at least a year if the market is calm. At the IPO you sell 35% of your stake and the city collects listing fees. Listed firms pay dividends, bring jobs and can be bought, sold, merged or taken over.</p>'+
@@ -3407,7 +3452,9 @@ var GUIDE=[
  '<tr><td>Space elevator</td><td>3,000 and Space elevator tech</td><td>Launch fees triple, +$20,000 a month, +0.15 Kardashev. Monthly installments.</td></tr>'+
  '<tr><td>Orbital array</td><td>3,000 and Orbital solar power</td><td>Sells power, +$120,000 a month each, +0.20 Kardashev each (three count). Monthly installments.</td></tr>'+
  '<tr><td>Dyson node</td><td>3,000, Dyson swarm engineering and Type I</td><td>+$1.2 million a month each (double with Matrioshka brains), +0.25 Kardashev each (four count).</td></tr>'+
- '<tr><td>Galactic relay</td><td>3,000, Traversable wormholes and Type II</td><td>+$8 million a month each, +0.25 Kardashev each (four count).</td></tr></table>'+
+ '<tr><td>Galactic relay</td><td>3,000, Traversable wormholes and Type II</td><td>+$8 million a month each, +0.25 Kardashev each (four count).</td></tr>'+
+ '<tr><td>Dark-energy tap</td><td>3,000, Dark-energy harvesting and Type III</td><td>$600 million to start, each one 25% dearer. Monthly installments over 12 years. +0.25 Kardashev each (four count). Pays about $15 million a month for the first, less for each after.</td></tr>'+
+ '<tr><td>Universe forge</td><td>3,000, Universe engineering and Type IV</td><td>$6 billion to start, each one 30% dearer. Monthly installments over 20 years. +0.25 Kardashev each (four count). Pays about $120 million a month for the first, less for each after.</td></tr></table>'+
  '<p>All need power, and some need water. They cost upkeep every month, so make sure the payoff is worth it.</p>'},
 {id:'g-kard',title:'The Kardashev scale (keeping score)',
  brief:'The long game is to climb the Kardashev scale: Type I commands the energy of a planet, Type II a star, Type III a galaxy. There is no final victory. It is an infinite game and the scale is how you keep score. Your rating shows in the Economy panel and as a chip once you start on space.',
@@ -3415,7 +3462,9 @@ var GUIDE=[
  '<table class="gt"><tr><th>Step</th><th>What you need</th><th>Rating</th></tr>'+
  '<tr><td>Type I</td><td>A Space elevator (+0.15) and three Orbital arrays (+0.20 each) add 0.75. You also need a grid base of about 0.25, which means roughly 320 MW of power (a nuclear plant does it). The colony ship (+0.10) lowers that to 0.15.</td><td>1.0</td></tr>'+
  '<tr><td>Type II</td><td>Research Dyson swarm engineering, then four Dyson nodes (+0.25 each).</td><td>2.0</td></tr>'+
- '<tr><td>Type III</td><td>Research Traversable wormholes, then four Galactic relays (+0.25 each). The game does not end here.</td><td>3.0</td></tr></table>'+
+ '<tr><td>Type III</td><td>Research Traversable wormholes, then four Galactic relays (+0.25 each). The game does not end here.</td><td>3.0</td></tr>'+
+ '<tr><td>Type IV</td><td>Research Dark-energy harvesting, then four Dark-energy taps (+0.25 each).</td><td>4.0</td></tr>'+
+ '<tr><td>Type V</td><td>Research Universe engineering, then four Universe forges (+0.25 each).</td><td>5.0</td></tr></table>'+
  '<p><b>Monthly installments.</b> Megaprojects are not paid up front. Placing one pays the first installment, and then each month the same amount is taken from your cash. If cash runs short, work stops until you can pay. Each extra project of the same kind costs 15% more than the last.</p>'+
  '<p><b>They pay for themselves.</b> Finished megaprojects bring in a large monthly income, listed in the capital projects table, so each step funds the next. A sovereign wealth fund, steady research and a healthy city are how you get there. Expect this to take well over a century of game time. Run the game at fast speed.</p>'+
  '<p>Dyson and wormhole research will not progress until you reach the earlier Type, so plan the order.</p>'},
@@ -3429,11 +3478,22 @@ var GUIDE=[
  '<tr><td>Interplanetary</td><td>Asteroid mining.</td><td>Ore price booms and gluts drive mining income. Shipping-lane and grain crises stop. Strange signals, first contact and alien pathogens become possible.</td></tr>'+
  '<tr><td>Planetary (Type I)</td><td>Kardashev 1.0.</td><td>Energy prices barely matter. Climate engineering can backfire. Each game year counts as 50.</td></tr>'+
  '<tr><td>Stellar (Type II)</td><td>Kardashev 2.0.</td><td>Stellar superflares and swarm collision cascades. Each game year counts as 1,000.</td></tr>'+
- '<tr><td>Galactic (Type III)</td><td>Kardashev 3.0.</td><td>The Galactic Council, a silent hunter of civilizations, and vacuum scares. Each game year counts as 10,000.</td></tr></table>'+
+ '<tr><td>Galactic (Type III)</td><td>Kardashev 3.0.</td><td>The Galactic Council, a silent hunter of civilizations, and vacuum scares. Each game year counts as 10,000.</td></tr>'+
+ '<tr><td>Universal (Type IV)</td><td>Kardashev 4.0.</td><td>Universal Standards audits and entropy surges. Each game year counts as a million.</td></tr>'+
+ '<tr><td>Multiversal (Type V)</td><td>Kardashev 5.0.</td><td>Brane collisions and offers from parallel cities. Each game year counts as a hundred million.</td></tr></table>'+
  '<p><b>New world channels.</b> Orbital hazard cuts launch fees and space income. Ore prices swing mining income and nudge construction costs.</p>'+
  '<p><b>Aliens.</b> A mysterious signal may lead to first contact. If you open talks the visitors are usually friendly: an interstellar trade deal lifts exports 30%, speeds research 20% and gives a research windfall. If you do not, the visitors choose. Hostile probes jam satellites and you can build a planetary shield. An extraterrestrial pathogen can arrive in asteroid ore and strains public health for a year.</p>'+
  '<p><b>The city looks the part.</b> Buildings change colour with the era: warm and cream in the Industrial era, glassy cyan in the Digital era, pale green and teal in the Fusion era, silver in the Orbital era, copper in the Interplanetary era, pearl and green in the Planetary era, then violet and finally crystal. Rooftop solar panels appear from the Fusion era, tall towers get glowing beacons from the Orbital era, factories stop smoking, roads get glowing lane lines, cars become pods and later hover, and the ground turns lusher.</p>'+
  '<p><b>The cosmic calendar.</b> After you reach Type I the calendar speeds up, because real civilizations take millennia to climb the scale. The date shows as a year only. Events and construction still run in game months.</p>'},
+{id:'g-sinks',title:'Where the money goes in the far future',
+ brief:'A civilization that earns billions also spends billions. Space income saturates, megastructures need upkeep and renewal, prices rise with wealth, the public expects more, and the next rung of the ladder costs more than the last.',
+ more:'<p><b>Saturation.</b> Each extra project of the same kind earns less than the one before: arrays 10% less, nodes 12%, relays 14%, taps and forges 15%. Four relays earn well under four times one.</p>'+
+ '<p><b>Upkeep follows income.</b> A megaproject costs roughly a quarter to a third of what it earns to run, so a bad year for the space economy cannot bankrupt you through upkeep alone. Upkeep shrinks if income does.</p>'+
+ '<p><b>Renewal follows value.</b> The value of your megaprojects counts toward the infrastructure that ages. Renewal is a share of that value every month, and the share grows with the age of the city, so a bigger empire needs a bigger maintenance bill. Fund renewal at 100% and the condition of your infrastructure slowly heals after disasters.</p>'+
+ '<p><b>Rising expectations.</b> When the city earns more per resident, public services cost more per resident: up to twice as much. A richer public also expects, and enjoys, a better public realm, so mood rises by up to 0.2.</p>'+
+ '<p><b>Contractors charge what you can pay.</b> The price of every megaproject goes up with your treasury, counting the sovereign fund. A very rich civilization pays about 1.5 to 2 times the base price.</p>'+
+ '<p><b>Credit and bankruptcy scale with the economy.</b> The most you can borrow is at least a year of revenue, and bankruptcy only comes when you are about a month and a half of costs overdrawn for two months. A small city still goes bankrupt at about $4,000.</p>'+
+ '<p><b>Past Type III.</b> Dark-energy taps (Type IV) and Universe forges (Type V) are the new sinks. They cost hundreds of millions to billions, take twelve to twenty years to build, and each one costs more than the last. Beyond the first four, every extra one adds a little to your rating forever.</p>'},
 {id:'g-future',title:'Money in the space age',
  brief:'Taxes, spending, interest rates and inflation stay at the heart of the game in every era. The future changes the problems, not the discipline. Abundance pulls prices down, space income rides the stock market, automation eats the tax base, and rates can hit zero.',
  more:'<p><b>The neutral rate falls.</b> Cheap energy, automation and AI push prices down a little more every month in later eras. Each era past Digital lowers the neutral real rate, and General-purpose AI lowers it again. By Type I the Taylor guide may tell you to hold rates near zero, and in the Galactic era it can ask for less than zero.</p>'+
@@ -3471,7 +3531,7 @@ var GUIDE=[
 {id:'g-disasters',title:'Disasters and resilience',
  brief:'Fires, floods, earthquakes and tornadoes can strike once your city is big enough. Fire stations, levees, reservoirs and retrofit programs limit the damage, and savings help you rebuild.',
  more:'<p><b>Fire</b> spreads tile to tile unless a fire station covers it. <b>Earthquakes</b> shake the screen, damage buildings, start fires and wear down infrastructure. <b>Floods</b> hit low ground near water. <b>Tornadoes</b> cut a path across the map. After a disaster, federal aid may arrive if voters like you.</p>'+
- '<p><b>Utility planners</b> (Policy, Spending, ordinances; on by default). If power or water stays short for a few months, or lots lose service altogether, the planners quietly add plants, pumps or desalination near the city, using the best technology you have, and fast-track them. They only act when the treasury can comfortably afford it. Switch them off if you want to run every plant yourself.</p>'+
+ '<p><b>Utility planners</b> (Policy, Spending, ordinances; on by default). If power or water stays short for a few months, or lots lose service altogether, or sewage or garbage treatment falls below 85%, the planners quietly add plants, pumps, desalination, sewage plants or landfills near the city, using the best technology you have, and fast-track them. They only act when the treasury can comfortably afford it. Switch them off if you want to run every plant yourself.</p>'+
  '<p><b>Repair crews</b> (Policy, Spending, ordinances; on by default). After a disaster the crews rebuild the roads, power lines, pipes and public buildings that were destroyed, starting with roads. They show up about two months later, rebuild a few pieces a month and charge the normal price. Rebuilt plants and pumps are back in service within a month or two, not after their full construction time. Megaprojects, buried pipes and buried cables cannot be destroyed by fire, quakes or tornadoes. Switch them off if you want to rebuild everything yourself. Lots and homes are not on the list, because builders replace them as demand allows. Your own bulldozing is never undone.</p>'+
  '<p><b>Resilience</b> (Utilities tab): a <b>levee</b> is a cheap wall that protects the 3 tiles around it from flooding. A <b>reservoir</b> is water storage that softens droughts. The <b>seismic retrofit</b> ordinance (Policy, Spending) halves earthquake damage for a monthly fee.</p>'+
  '<p>Battery storage can also burn on its own, more often in a heatwave. You can turn random disasters off in the Menu, or trigger one in the Disaster lab to test your city.</p>'},
@@ -3518,9 +3578,9 @@ var GUIDE=[
  '<tr><td>Failures begin</td><td>Condition below 75%</td></tr>'+
  '<tr><td>Hospital / school capacity</td><td>800 / 700 residents each</td></tr>'+
  '<tr><td>Landfill space</td><td>9,000 units</td></tr>'+
- '<tr><td>Eras</td><td>8, from Industrial to Galactic</td></tr>'+
+ '<tr><td>Eras</td><td>10, from Industrial to Multiversal</td></tr>'+
  '<tr><td>Max R&D budget</td><td>$20,000 a month</td></tr>'+
- '<tr><td>Kardashev ratings</td><td>Type I at 1.0, Type II at 2.0, Type III at 3.0</td></tr>'+
+ '<tr><td>Kardashev ratings</td><td>Type I at 1.0, then 2.0, 3.0, 4.0 and 5.0 for Types II to V</td></tr>'+
  '<tr><td>Recycling plant / waste-to-energy</td><td>120 / 200 units a month</td></tr>'+
  '<tr><td>Levee / reservoir effect</td><td>Protects 3 tiles / softens drought 8 points</td></tr>'+
  '<tr><td>Pensions</td><td>About 0.8 dollars a month per resident after 25 years</td></tr>'+
@@ -3530,6 +3590,7 @@ var GUIDE=[
 {id:'g-new',title:'What\u2019s new',
  brief:'A running list of the latest changes to the game, newest first.',
  more:'<ul>'+
+ '<li><b>Beyond Type III, and money that does not pile up forever.</b> Types IV and V with Dark-energy taps and Universe forges, megaproject income that saturates, upkeep that follows income, renewal that follows value, public costs that rise with wealth, contractors who charge a rich treasury more, a mood bonus for prosperity, and credit and bankruptcy lines that scale with the economy. Funded renewal now heals infrastructure, and utility planners also add sewage and garbage capacity.</li>'+
  '<li><b>Underground pipes and cables.</b> Water pipes now run underground, beneath roads and buildings. Underground power cables are an upgrade (Underground cables). Buried lines cannot burn or be torn out by a tornado.</li>'+
  '<li><b>Utility planners and quicker repairs.</b> Power and water keep pace with the city on their own, rebuilt plants return within a couple of months, and a sudden loss can no longer empty a city in a few months. In my 75-year test games the collapses went from about 1 in 2 to none in 16.</li>'+
  '<li><b>Fixing the late-game collapse.</b> A disaster could wreck roads, lines and pipes, and nothing rebuilt them, so coverage vanished, buildings decayed and the population melted away while space income kept piling up. Repair crews now rebuild what disasters destroy, buildings pass power and water along to their neighbours, and space income scales with how many people live in the city. In my simulations the collapse went from 3 in 8 long games to 0 in 8.</li>'+
@@ -3690,10 +3751,12 @@ var ERA_V=0,ERAC=null,ERA_PALS=[
  {cream:'#f0e2cf',brick:'#d9a77d',tower:'#efe3d2',office:'#e0a66a',glass:'#c9803f',shop:'#d98f55',shed:'#d9b07a',fact:'#b98a58'},
  {cream:'#f5f2e8',brick:'#e6dcc3',tower:'#f6f3ea',office:'#8fd0c0',glass:'#4fb3a0',shop:'#7cc9b4',shed:'#e8dfae',fact:'#cdbf7a'},
  {cream:'#f1ecf7',brick:'#d6c9ea',tower:'#f2eefb',office:'#a9b8f0',glass:'#7c8fe0',shop:'#9aa9ee',shed:'#e0d8f0',fact:'#bdb0dc'},
- {cream:'#e7f6f6',brick:'#bfe3e8',tower:'#e9f8f8',office:'#8fe6f0',glass:'#5cc9e6',shop:'#78d6ea',shed:'#cdeef2',fact:'#9fd8e2'}
+ {cream:'#e7f6f6',brick:'#bfe3e8',tower:'#e9f8f8',office:'#8fe6f0',glass:'#5cc9e6',shop:'#78d6ea',shed:'#cdeef2',fact:'#9fd8e2'},
+ {cream:'#e9e4f7',brick:'#c2b6e6',tower:'#ece8fa',office:'#b49af0',glass:'#7a5fd6',shop:'#a88ce8',shed:'#d9d0f2',fact:'#aa9ad6'},
+ {cream:'#fbf0d8',brick:'#f1d9a0',tower:'#fcf4e0',office:'#f5cf72',glass:'#e0a93a',shop:'#f2c15a',shed:'#f6e6bd',fact:'#e3c27a'}
 ],ERA_PALC={};
 var ROOF_BASE={a:'#8f3f2b',l:'#b5523b',r:'#7d3624',t:'#c9654b'},
- ROOF_ERA=[null,null,{a:'#35568f',l:'#4a6fae',r:'#2c4777',t:'#5b82c4'},{a:'#4b6aa0',l:'#6283b9',r:'#3d5886',t:'#7497cf'},{a:'#8a5a3c',l:'#a8714c',r:'#6e472f',t:'#bf8760'},{a:'#4d8a57',l:'#62a56c',r:'#3d7046',t:'#79bb83'},{a:'#7d6ab8',l:'#9482d0',r:'#65559a',t:'#a999e0'},{a:'#3f9eb0',l:'#58bacc',r:'#31808f',t:'#74d0e0'}];
+ ROOF_ERA=[null,null,{a:'#35568f',l:'#4a6fae',r:'#2c4777',t:'#5b82c4'},{a:'#4b6aa0',l:'#6283b9',r:'#3d5886',t:'#7497cf'},{a:'#8a5a3c',l:'#a8714c',r:'#6e472f',t:'#bf8760'},{a:'#4d8a57',l:'#62a56c',r:'#3d7046',t:'#79bb83'},{a:'#7d6ab8',l:'#9482d0',r:'#65559a',t:'#a999e0'},{a:'#3f9eb0',l:'#58bacc',r:'#31808f',t:'#74d0e0'},{a:'#5a4aa8',l:'#7664c8',r:'#443788',t:'#9482e0'},{a:'#c99a30',l:'#e5b648',r:'#a77d22',t:'#f2cc6a'}];
 function eraPalette(e){
   if(!ERA_PALC[e]){var o={},k;for(k in CL)o[k]=CL[k];var p=ERA_PALS[e]||{};for(k in p)o[k]=tri(p[k]);ERA_PALC[e]=o;}
   return ERA_PALC[e];
@@ -3706,7 +3769,7 @@ function mixHex(a,b,t){
   var pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16),ch=[16,8,0].map(function(s){var x=(pa>>s)&255,y=(pb>>s)&255;return Math.round(x+(y-x)*t);});
   return '#'+ch.map(function(v){return ('0'+v.toString(16)).slice(-2);}).join('');
 }
-var ERA_GRASS=[null,null,'#7fc27a','#7fc27a','#7fc27a','#6fcab0','#8fc6e0','#7fd8d0'],ERA_MIX=[0,0,0.14,0.18,0.2,0.24,0.28,0.32];
+var ERA_GRASS=[null,null,'#7fc27a','#7fc27a','#7fc27a','#6fcab0','#8fc6e0','#7fd8d0','#a590e8','#e8c870'],ERA_MIX=[0,0,0.14,0.18,0.2,0.24,0.28,0.32,0.36,0.4];
 var ZC={};ZC[RES]='#38a169';ZC[COM]='#3b82d6';ZC[IND]='#d9a520';
 
 function groundColor(i,x,y){
@@ -3830,7 +3893,7 @@ function bHeight0(i,t,l){
   if(t===LAB||t===DC||t===POLICE||t===PUMP)return 1.1;if(t===FIRE)return 1.8;if(t===SCHOOL)return 1.5;
   if(t===PORT)return 1.8;if(t===PARK)return 0.9;if(t===DESAL||t===BIO)return 1.0;
   if(t===GAS)return 1.7;if(t===NUKE)return 2.2;if(t===HYDRO)return 1.0;if(t===WIND)return 2.8;if(t===STADIUM)return 1.0;if(t===AIRPORT)return 1.5;
-  if(t===STN)return 0.8;if(t===ELEV)return 9;if(t===ARRAY)return 1.4;if(t===NODE)return 3.2;if(t===RELAY)return 3.6;if(t===SPACEPORT)return 4.2;if(t===YARD)return 2.2;if(t===HOSP)return 1.3;if(t===LEVEE)return 0.45;if(t===RESV)return 0.7;if(t===RECY)return 1.0;if(t===WTE)return 2.0;if(t===BATT)return 0.95;if(t===MRES)return 6.5;if(t===MCOM)return 8.5;if(t===BUS)return 0.5;if(t===SEW)return 0.7;if(t===LF)return 0.6;if(t===TIE)return 1.0;if(t===UNIV)return 1.6;if(t===CONV)return 1.1;if(t===METRO)return 1.2;if(t===EXCH)return 1.3;
+  if(t===STN)return 0.8;if(t===TAP)return 3.2;if(t===FORGE)return 5.2;if(t===ELEV)return 9;if(t===ARRAY)return 1.4;if(t===NODE)return 3.2;if(t===RELAY)return 3.6;if(t===SPACEPORT)return 4.2;if(t===YARD)return 2.2;if(t===HOSP)return 1.3;if(t===LEVEE)return 0.45;if(t===RESV)return 0.7;if(t===RECY)return 1.0;if(t===WTE)return 2.0;if(t===BATT)return 0.95;if(t===MRES)return 6.5;if(t===MCOM)return 8.5;if(t===BUS)return 0.5;if(t===SEW)return 0.7;if(t===LF)return 0.6;if(t===TIE)return 1.0;if(t===UNIV)return 1.6;if(t===CONV)return 1.1;if(t===METRO)return 1.2;if(t===EXCH)return 1.3;
   return 0;
 }
 function drawConstruction(left,total){
@@ -3903,6 +3966,21 @@ function drawObject(i,t,l,detail,x,y,g){
       quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#5b6168');
       cyl(0.5,0.5,0.25,0.05,0.5,'#8c949e');dome(0.5,0.5,0.5,0.3,'#ffb24a','rgba(255,170,60,.45)');
       ctx.strokeStyle='rgba(255,210,120,.85)';ctx.lineWidth=2*gS;ctx.beginPath();ctx.ellipse(PX(0.5,0.5),PY(0.5,0.5,2.4),0.5*1.414*gHW*gS,0.5*1.414*gHH*gS*0.7,0,0,6.283);ctx.stroke();
+      break;
+    case TAP:
+      quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#3f3a5e');
+      cyl(0.5,0.5,0.34,0.05,0.5,'#241f3d');
+      ctx.strokeStyle='rgba(170,150,255,.9)';ctx.lineWidth=3*gS;ctx.beginPath();ctx.ellipse(PX(0.5,0.5),PY(0.5,0.5,1.7),0.44*1.414*gHW*gS,0.44*1.414*gHH*gS*0.7,0,0,6.283);ctx.stroke();
+      ctx.strokeStyle='rgba(120,100,230,.8)';ctx.lineWidth=2*gS;ctx.beginPath();ctx.ellipse(PX(0.5,0.5),PY(0.5,0.5,1.7),0.26*1.414*gHW*gS,0.26*1.414*gHH*gS*0.7,0,0,6.283);ctx.stroke();
+      ctx.fillStyle='rgba(210,190,255,.95)';ctx.beginPath();ctx.arc(PX(0.5,0.5),PY(0.5,0.5,1.7),Math.max(2,gHW*0.09*gS),0,6.283);ctx.fill();
+      boxL(0.08,0.08,0.16,0.16,0,2.4,CL.metal);boxL(0.84,0.08,0.92,0.16,0,2.4,CL.metal);boxL(0.08,0.84,0.16,0.92,0,2.4,CL.metal);boxL(0.84,0.84,0.92,0.92,0,2.4,CL.metal);
+      break;
+    case FORGE:
+      quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#5a4a2a');
+      cyl(0.5,0.5,0.36,0.05,0.6,'#3a2f1a');
+      boxL(0.4,0.4,0.6,0.6,0.6,5.2,CL.metal);
+      for(k=0;k<3;k++){ctx.strokeStyle='rgba(255,210,110,'+(0.9-k*0.2)+')';ctx.lineWidth=2.4*gS;ctx.beginPath();ctx.ellipse(PX(0.5,0.5),PY(0.5,0.5,1.6+k*1.2),(0.42-k*0.06)*1.414*gHW*gS,(0.42-k*0.06)*1.414*gHH*gS*0.7,0,0,6.283);ctx.stroke();}
+      ctx.fillStyle='rgba(255,236,170,.95)';ctx.beginPath();ctx.arc(PX(0.5,0.5),PY(0.5,0.5,5.4),Math.max(2.4,gHW*0.1*gS),0,6.283);ctx.fill();
       break;
     case RELAY:
       quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#4b4f6a');
@@ -4595,7 +4673,7 @@ function welMax(){
   return clamp(Math.ceil(Math.max(need*2,cur,500)/500)*500,1000,40000);
 }
 function udMax(){return 2+2*Math.max(0,(S.era|0)-1);}
-function creditLimit(){return Math.round((12000+S.pop*25)*(1+0.75*(S.era|0)));}
+function creditLimit(){return Math.round(Math.max((12000+S.pop*25)*(1+0.75*(S.era|0)),(E&&E.revenue>0)?E.revenue*12:0));}
 function borrow(kind){
   var amt=5000;
   if(S.fixedAmt+S.varAmt+amt>creditLimit()){toast('Credit limit reached. Lenders want a bigger city.');return;}
@@ -4849,13 +4927,15 @@ function kardHTML(){
   var g=E.g,d=g.done,k=E.kard,lv=Math.floor(k),next=lv+1,frac=k-lv,h='';
   h+='<div class="kr ok" style="margin-bottom:8px"><b>Era: '+ERA[S.era|0].name+'.</b> '+ERA[S.era|0].desc+'</div>';
   function row(ok,txt){return '<div class="kr'+(ok?' ok':'')+'">'+(ok?'\u2713 ':'\u25CB ')+txt+'</div>';}
-  h+='<div class="kmeter"><div class="kv">Kardashev <b>'+k.toFixed(2)+'</b> <span>'+kLabel(k)+'</span></div><div class="kbar"><i style="width:'+Math.round(clamp(k/3,0,1)*100)+'%"></i><u style="left:33.3%"></u><u style="left:66.6%"></u></div><div class="kscale"><span>0</span><span>I</span><span>II</span><span>III</span></div></div>';
-  if(k>=3)h+='<p class="hint">You are a Type III civilization. The game never ends. Extra projects keep nudging the rating higher, and a bigger universe brings bigger problems.</p>';
+  h+='<div class="kmeter"><div class="kv">Kardashev <b>'+k.toFixed(2)+'</b> <span>'+kLabel(k)+'</span></div><div class="kbar"><i style="width:'+Math.round(clamp(k/5,0,1)*100)+'%"></i><u style="left:20%"></u><u style="left:40%"></u><u style="left:60%"></u><u style="left:80%"></u></div><div class="kscale"><span>0</span><span>I</span><span>II</span><span>III</span><span>IV</span><span>V</span></div></div>';
+  if(k>=5)h+='<p class="hint">You are a Type V civilization. The game never ends. Extra projects keep nudging the rating higher, and every step makes the next one cost more.</p>';
   else{
-    h+='<p class="hint">Next step: Type '+['I','II','III'][lv]+' (rating '+next+'.0). Your power grid gives a small base. Megaprojects do the rest. Only finished projects count.</p>';
+    h+='<p class="hint">Next step: Type '+['I','II','III','IV','V'][Math.min(4,lv)]+' (rating '+next+'.0). Your power grid gives a small base. Megaprojects do the rest. Only finished projects count.</p>';
     if(lv===0){h+=row(d[ELEV]>0,'Space elevator ('+(d[ELEV]>0?'built':'not built')+')')+row(d[ARRAY]>=3,'Orbital arrays '+Math.min(3,d[ARRAY])+' of 3');}
     else if(lv===1){h+=row(S.tech.dyson,'Research Dyson swarm engineering')+row(d[NODE]>=4,'Dyson nodes '+Math.min(4,d[NODE])+' of 4');}
-    else{h+=row(S.tech.wormhole,'Research Traversable wormholes')+row(d[RELAY]>=4,'Galactic relays '+Math.min(4,d[RELAY])+' of 4');}
+    else if(lv===2){h+=row(S.tech.wormhole,'Research Traversable wormholes')+row(d[RELAY]>=4,'Galactic relays '+Math.min(4,d[RELAY])+' of 4');}
+    else if(lv===3){h+=row(S.tech.darkenergy,'Research Dark-energy harvesting')+row(d[TAP]>=4,'Dark-energy taps '+Math.min(4,d[TAP])+' of 4');}
+    else{h+=row(S.tech.universe,'Research Universe engineering')+row(d[FORGE]>=4,'Universe forges '+Math.min(4,d[FORGE])+' of 4');}
   }
   h+='<p class="hint">Rating from power grid: '+clamp((Math.log10(Math.max(1,g.pCap*1e6))-6)/10,0,0.4).toFixed(2)+' of 0.40. Bonus from the colony ship: '+(d[YARD]>0?'+0.10':'not yet')+'.</p>';
   return h;
@@ -5462,7 +5542,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
