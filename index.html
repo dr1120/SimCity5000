@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skyline 5000</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#e8edf0; --panel:#f7f9fa; --panel2:#e9eef1; --ink:#13202a; --muted:#566673; --line:#c9d3da;
+  --accent:#1f6f8b; --good:#2a8450; --bad:#c2452d; --warn:#a96f12;
+  --btn:#ffffff; --btnOn:#13202a; --btnOnInk:#f7f9fa; --scrim:rgba(10,20,30,.5);
+  --font:"Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0c1620; --panel:#13222e; --panel2:#1a2d3b; --ink:#e8f0f5; --muted:#8fa3b1; --line:#26394a;
+    --accent:#5bb5d6; --good:#4fc083; --bad:#f0715a; --warn:#e2ad4b;
+    --btn:#1a2d3b; --btnOn:#e8f0f5; --btnOnInk:#0c1620; --scrim:rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0c1620; --panel:#13222e; --panel2:#1a2d3b; --ink:#e8f0f5; --muted:#8fa3b1; --line:#26394a;
+  --accent:#5bb5d6; --good:#4fc083; --bad:#f0715a; --warn:#e2ad4b;
+  --btn:#1a2d3b; --btnOn:#e8f0f5; --btnOnInk:#0c1620; --scrim:rgba(0,0,0,.6);
+}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;overflow:hidden;touch-action:manipulation;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.35;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+#app{max-width:480px;margin:0 auto;padding:6px 10px 8px;display:flex;flex-direction:column;gap:6px;height:calc(var(--app-h,100vh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:0;overflow-x:hidden;overflow-y:auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
+.brand{display:flex;flex-direction:column;line-height:1.1}
+.brand b{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.brand span{font-size:12.5px}
+.ghost{background:transparent;border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-weight:600;font-size:14px}
+.stats{flex:none;display:grid;grid-template-columns:1.25fr 1fr 1fr 1.1fr;gap:6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;min-width:0}
+.stat .lab{font-size:11.5px;color:var(--muted)}
+.stat .val{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.neg{color:var(--bad)} .pos{color:var(--good)}
+.ticker{display:flex;gap:8px;align-items:flex-start;background:var(--panel2);border-radius:10px;padding:6px 10px;font-size:12.5px;line-height:1.3;height:40px;overflow:hidden;flex:none}
+.dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;background:var(--muted)}
+.dot.good{background:var(--good)} .dot.bad{background:var(--bad)} .dot.warn{background:var(--warn)} .dot.info{background:var(--accent)}
+.econ{display:flex;gap:5px;overflow-x:auto;flex:none;-webkit-overflow-scrolling:touch;scrollbar-width:none}.econ::-webkit-scrollbar{display:none}
+.chip{flex:none;min-width:74px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px 8px}
+.chip .lab{display:block;font-size:11px;color:var(--muted);white-space:nowrap}
+.chip .val{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip .tr{font-size:9px;margin-left:3px}
+.board{position:relative;flex:1 1 auto;min-height:170px}
+#cv{display:block;position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;border:1px solid var(--line);touch-action:none;background:var(--panel)}
+#mm{position:absolute;left:8px;bottom:8px;width:84px;height:84px;border-radius:8px;border:2px solid rgba(255,255,255,.85);image-rendering:pixelated;box-shadow:0 1px 6px rgba(0,0,0,.3)}
+.navbtns{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
+.navbtns button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--btn);font-size:19px;font-weight:700;line-height:1;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.toast{position:absolute;left:50%;top:8px;transform:translateX(-50%);max-width:70%;background:var(--btnOn);color:var(--btnOnInk);
+  padding:7px 12px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;text-align:center}
+.toast.show{opacity:1}
+.info{font-size:12.5px;color:var(--muted);height:34px;overflow:hidden;line-height:1.3;flex:none}
+.groups{align-self:flex-start;flex:none;max-width:100%;overflow-x:auto}
+.tools{flex:none;display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.tool{flex:none;min-width:68px;scroll-snap-align:start;background:var(--btn);border:1px solid var(--line);border-radius:12px;padding:7px 6px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tool .sw{width:14px;height:14px;border-radius:4px;margin-bottom:2px}
+.tool .nm{font-size:13px;font-weight:600;white-space:nowrap}
+.tool .ct{font-size:11.5px;opacity:.7;font-variant-numeric:tabular-nums}
+.tool.on{background:var(--btnOn);color:var(--btnOnInk);border-color:var(--btnOn)}
+.tool.lock{opacity:.55}
+.bar{flex:none;display:flex;gap:6px;align-items:center;justify-content:space-between}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--btn)}
+.seg button{background:transparent;border:0;padding:8px 9px;font-weight:700;min-width:36px;display:flex;align-items:center;justify-content:center}
+.seg button.on{background:var(--btnOn);color:var(--btnOnInk)}
+.seg svg{width:14px;height:14px;fill:currentColor}
+.groups button{font-size:13px;padding:6px 11px;flex:none}
+.tabs{margin:8px 0 10px}
+.tabs button{flex:1;font-size:14px}
+.navbtns button.on{background:var(--btnOn);color:var(--btnOnInk)}
+.act{position:relative;background:var(--btn);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:700;font-size:13px}
+.act.badge::after{content:"";position:absolute;right:-3px;top:-3px;width:11px;height:11px;border-radius:50%;background:var(--bad);border:2px solid var(--bg)}
+.overlay{position:fixed;inset:0;background:var(--scrim);display:none;z-index:20}
+.overlay.open{display:flex}
+.overlay{align-items:flex-end;justify-content:center}
+.overlay.center{align-items:center;padding:16px}
+.sheet,.card{width:100%;max-width:480px;background:var(--panel);color:var(--ink);overflow:auto;-webkit-user-select:none;user-select:none}
+.sheet{border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh}
+.card{border-radius:18px;padding:20px;max-height:92vh;border:1px solid var(--line)}
+.sh-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+h1{margin:0 0 6px;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1}
+h2{margin:0;font-size:22px;font-weight:800}
+h3{margin:16px 0 6px;font-size:15px;font-weight:800}
+p{margin:6px 0}
+.tag{font-size:15px;color:var(--muted);margin:8px 0 14px}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 10px}
+.row{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.row label{display:flex;justify-content:space-between;font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent);height:32px}
+.debt{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+.debt .meta{display:flex;flex-direction:column;font-size:13px}
+.debt .meta b{font-size:15px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btns.col{flex-direction:column}
+.btns button,.primary,.sm{background:var(--btn);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:700;font-size:13.5px}
+button.primary{background:var(--btnOn);color:var(--btnOnInk);border-color:var(--btnOn);font-size:16px;padding:12px}
+button:disabled{opacity:.4;cursor:default}
+.ln{display:flex;justify-content:space-between;padding:3px 0;font-size:14px;font-variant-numeric:tabular-nums}
+.ln.tot{font-weight:800;border-top:1px solid var(--line);margin-top:3px;padding-top:6px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.diag{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.diag div{background:var(--panel2);border-radius:10px;padding:7px 10px;font-size:13px;display:flex;flex-direction:column}
+.diag b{font-size:17px;font-variant-numeric:tabular-nums}
+.chart{margin-top:12px}
+.chart .ct{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;margin-bottom:3px}
+.chart .ct span{font-weight:400;color:var(--muted);text-align:right}
+.chart canvas{width:100%;height:92px;display:block;background:var(--panel2);border-radius:10px}
+.news{margin:0;padding:0;list-style:none}
+.news li{display:flex;gap:8px;font-size:13px;padding:5px 0;border-top:1px solid var(--line)}
+.news time{flex:none;width:62px;color:var(--muted);font-size:12px}
+.how{margin:16px 0 0;padding-left:20px;font-size:14px}
+.how li{margin:6px 0}
+.best{font-size:13px;color:var(--muted);margin-top:12px}
+.tech{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);align-items:center}
+.tech small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.tst{flex:none;width:112px;text-align:right}
+.prog{height:8px;border-radius:5px;background:var(--panel2);overflow:hidden;margin-bottom:3px}
+.prog i{display:block;height:100%;background:var(--accent)}
+.firm{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--panel2)}
+.fh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fh b{font-size:15.5px}
+.tagc{font-size:12px;color:var(--muted)}
+.stg{margin-left:auto;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}
+.stg.public{color:var(--good)} .stg.acquired{color:var(--warn)}
+.fs{font-size:13px;margin:6px 0 8px}
+@media (prefers-reduced-motion: reduce){ .toast{transition:none} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="brand"><b>Skyline 5000</b><span id="date" class="muted"></span></div>
+    <button class="ghost" id="btnMenu">Menu</button>
+  </header>
+  <section class="stats">
+    <div class="stat"><span class="lab">Cash</span><span class="val" id="cash">$0</span></div>
+    <div class="stat"><span class="lab">People</span><span class="val" id="pop">0</span></div>
+    <div class="stat"><span class="lab">Approval</span><span class="val" id="appr">70%</span></div>
+    <div class="stat"><span class="lab">Per month</span><span class="val" id="net">$0</span></div>
+  </section>
+  <div class="ticker"><i class="dot" id="tdot"></i><span id="ttext"></span></div>
+  <section class="econ" id="econ"></section>
+  <div class="board" id="board">
+    <canvas id="cv"></canvas>
+    <canvas id="mm" width="112" height="112"></canvas>
+    <div class="navbtns">
+      <button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">&minus;</button>
+      <button id="rotL" aria-label="Rotate left">&#8634;</button><button id="rotR" aria-label="Rotate right">&#8635;</button>
+      <button id="hand" aria-label="Toggle pan or paint">&#9995;</button>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <div class="info" id="info"></div>
+  <div class="seg groups" id="groups"></div>
+  <nav class="tools" id="tools" aria-label="Build tools"></nav>
+  <div class="bar">
+    <div class="seg" id="speed">
+      <button data-s="0" aria-label="Pause"><svg viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button>
+      <button data-s="1" aria-label="Normal speed">1&times;</button>
+      <button data-s="2" aria-label="Fast">2&times;</button>
+      <button data-s="3" aria-label="Fastest">3&times;</button>
+    </div>
+    <button class="act" id="btnPolicy">Policy</button>
+    <button class="act" id="btnEcon">Economy</button>
+    <button class="act" id="btnCorp">Corp</button>
+  </div>
+</div>
+<div id="sheet" class="overlay"><div class="sheet" id="sheetBody"></div></div>
+<div id="splash" class="overlay center open"><div class="card" id="splashBody"></div></div>
+<script>
+(function(){
+'use strict';
+/* ================= constants ================= */
+var MW=56,MH=56,N=MW*MH;
+var EMPTY=0,ROAD=1,RES=2,COM=3,IND=4,PLANT=5,PARK=6,PORT=7,PLINE=8,PIPE=9,PUMP=10,POLICE=11,FIRE=12,SCHOOL=13,LAB=14,SOLAR=15,FUSION=16,DESAL=17,DC=18,BIO=19,GAS=20,NUKE=21,HYDRO=22,WIND=23,STADIUM=24,AIRPORT=25,UNIV=26,CONV=27,METRO=28,EXCH=29,BATT=30,SUB=39;
+var GRASS=0,FOREST=1,WATER=2,ROCK=3;
+var RES_CAP=[0,6,15,30],COM_JOBS=[0,4,10,20],IND_JOBS=[0,6,14,26];
+var ZUSE={};ZUSE[RES]=2;ZUSE[COM]=1;ZUSE[IND]=2.5;
+var RANKS=[[0,'Hamlet'],[150,'Village'],[600,'Town'],[1500,'City'],[3500,'Metropolis']];
+var SAVE_KEY='skyline5000.save.v3',BEST_KEY='skyline5000.best';
+var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* object table: cost, monthly upkeep, power made (mw) and radius, water made (wc), power use (pu), water use (wu) */
+var OBJ={
+  road:{t:ROAD,cost:15,cat:'road'},
+  pline:{t:PLINE,cost:6,up:0.2,cat:'road'},
+  pipe:{t:PIPE,cost:8,up:0.3,cat:'water'},
+  res:{t:RES,cost:100},com:{t:COM,cost:150},ind:{t:IND,cost:150},
+  plant:{t:PLANT,cost:3200,up:35,mw:60,rad:8,cat:'power',size:[2,2],jobs:20},
+  gas:{t:GAS,cost:5200,up:45,mw:85,rad:8,cat:'power',size:[2,2],jobs:12},
+  nuke:{t:NUKE,cost:60000,up:160,mw:420,rad:14,cat:'power',tech:'fission',build:10,size:[3,3],jobs:90},
+  hydro:{t:HYDRO,cost:9000,up:15,mw:26,rad:6,cat:'power',shore:true,build:5,size:[2,1],jobs:10},
+  solar:{t:SOLAR,cost:3500,up:10,mw:12,rad:5,cat:'power',size:[3,3],jobs:6},
+  wind:{t:WIND,cost:3000,up:12,mw:14,rad:5,cat:'power',size:[3,3],jobs:5},
+  batt:{t:BATT,cost:12000,up:40,cat:'power',size:[2,2],jobs:3},
+  fusion:{t:FUSION,cost:90000,up:60,mw:650,rad:16,cat:'power',tech:'fusion',build:14,size:[4,4],jobs:120},
+  pump:{t:PUMP,cost:1200,up:25,wc:100,rad:8,pu:1,shore:true,cat:'water',jobs:4},
+  desal:{t:DESAL,cost:5000,up:70,wc:80,rad:8,pu:6,tech:'water',cat:'water',size:[2,2],jobs:15},
+  park:{t:PARK,cost:300,up:2,cat:'park'},
+  port:{t:PORT,cost:6000,up:40,shore:true,cat:'park',size:[3,2],jobs:40},
+  police:{t:POLICE,cost:1500,up:60,pu:2,cat:'civic',jobs:8},
+  fire:{t:FIRE,cost:1500,up:50,pu:2,cat:'civic',jobs:8},
+  school:{t:SCHOOL,cost:2200,up:70,pu:2,wu:4,cat:'civic',size:[2,2],jobs:12},
+  lab:{t:LAB,cost:5000,up:120,pu:4,wu:4,cat:'civic',size:[2,2]},
+  dc:{t:DC,cost:22000,up:160,pu:22,tech:'fiber',shore:true,cat:'civic',size:[3,3],build:8},
+  bio:{t:BIO,cost:12000,up:90,pu:6,wu:8,tech:'bio',cat:'civic',size:[2,2]},
+  stadium:{t:STADIUM,cost:45000,up:400,pu:8,build:8,req:600,cat:'proj',size:[3,3]},
+  airport:{t:AIRPORT,cost:90000,up:900,pu:12,build:12,req:1500,cat:'proj',size:[4,4]},
+  univ:{t:UNIV,cost:65000,up:600,pu:8,wu:6,build:10,req:900,cat:'proj',size:[3,3]},
+  conv:{t:CONV,cost:55000,up:450,pu:6,wu:5,build:8,req:1000,cat:'proj',size:[3,2]},
+  metro:{t:METRO,cost:70000,up:700,pu:10,build:12,req:1200,cat:'proj',size:[2,1]},
+  exch:{t:EXCH,cost:80000,up:500,pu:8,build:10,req:1400,cat:'proj',size:[2,2]}
+};
+var BYT={};(function(){for(var k in OBJ){OBJ[k].id=k;BYT[OBJ[k].t]=OBJ[k];}})();
+var TOOLS={
+  inspect:{name:'Move',sw:'#8a98a3',desc:'Drag to pan the map. Tap a tile to see what it does and needs.'},
+  road:{name:'Road',sw:'#59666f',desc:'Zones need a road beside them. Bridges over water cost 4×.'},
+  res:{name:'Homes',sw:'#38a169',desc:'Zone homes. Builders move in when housing is scarce and credit is cheap.'},
+  com:{name:'Shops',sw:'#3b82d6',desc:'Zone shops. They employ people and sell goods from factories or ports.'},
+  ind:{name:'Factory',sw:'#d9a520',desc:'Zone factories. They employ people and make the goods shops sell.'},
+  park:{name:'Park',sw:'#4f9d5e',desc:'Parks lift mood. Tall housing needs about one park per 15 home lots.'},
+  plant:{name:'Coal',sw:'#6b7785',desc:'Cheap 60 MW baseload, reaches 8 tiles. Dirty, and the fuel bill follows supply shocks.'},
+  batt:{name:'Battery',sw:'#8a8f4a',desc:'Lithium storage: evens out solar and wind swings by up to 8 MW a tile, loses 15% going in and out, costs a fortune per MW, and can catch fire. Fire stations barely help.'},
+  gas:{name:'Gas',sw:'#c98a3a',desc:'85 MW dispatchable power, cleaner than coal. Fuel prices swing hard in supply shocks.'},
+  nuke:{name:'Nuclear',sw:'#8d6fd1',desc:'Advanced fission: 420 MW on one tile of clean, steady baseload with passive safety. Fuel is cheap and shocks barely touch it, so your whole grid holds prices steadier. 10 months to build. Needs Advanced fission.'},
+  hydro:{name:'Hydro',sw:'#3d8fd1',desc:'About 26 MW, needs a waterfront tile, 5 months to build, and drought halves it.'},
+  solar:{name:'Solar',sw:'#2a4f9a',desc:'Only about 12 MW and weaker in winter and under cloud. Photovoltaics research boosts it 50%.'},
+  wind:{name:'Wind',sw:'#7fa8c9',desc:'About 14 MW but gusty and unreliable. Better on hills and coasts.'},
+  fusion:{name:'Fusion',sw:'#26b6c9',desc:'650 MW, reaches 16 tiles, 14 months to build. The holy grail: needs Fusion power, which takes a huge research effort.'},
+  pline:{name:'Power line',sw:'#c9a227',desc:'Carries power from a plant. Powered lines reach 4 tiles around them.'},
+  pump:{name:'Pump',sw:'#3d8fd1',desc:'100 water, reaches 8 tiles. Must touch water and needs power.'},
+  desal:{name:'Desalination',sw:'#2f9fb5',desc:'80 water anywhere, reaches 8 tiles. Needs Water recycling research.'},
+  pipe:{name:'Water pipe',sw:'#5aa9e6',desc:'Carries water from a pump. Wet pipes reach 4 tiles around them.'},
+  police:{name:'Police',sw:'#2c4a9a',desc:'Covers 8 tiles. Safer streets lift mood. Needs power.'},
+  fire:{name:'Fire station',sw:'#c0392b',desc:'Covers 8 tiles. Stops fires from spreading. Needs power.'},
+  school:{name:'School',sw:'#a8683a',desc:'Covers 9 tiles. Lifts mood, wages and research. Needs power and water.'},
+  lab:{name:'Research lab',sw:'#8fa8c4',desc:'Speeds up R&D and spins out startups. Needs power and water.'},
+  port:{name:'Port',sw:'#2a9d8f',desc:'Must touch water and a road. Imports goods when factories fall short.'},
+  dc:{name:'Data center',sw:'#4b5563',desc:'Advanced computing campus. Sits on the waterfront for closed-loop cooling that uses no water, draws lots of power (nuclear pairs well), and brings construction work, 70 high-wage jobs, cloud revenue and faster research. Needs Fiber and cloud.'},
+  bio:{name:'Biotech',sw:'#3fa796',desc:'40 high-wage jobs. Needs Biotech research, power and water.'},
+  stadium:{name:'Stadium',sw:'#d98c3a',desc:'Capital project, 8 months. Lifts mood and approval and brings in tourism money.'},
+  airport:{name:'Airport',sw:'#7a8da3',desc:'Capital project, 12 months. Boosts exports and business demand. Noisy.'},
+  univ:{name:'University',sw:'#b0733f',desc:'Capital project, 10 months. Speeds research 60% and lifts wages.'},
+  conv:{name:'Convention',sw:'#4a7bc4',desc:'Capital project, 8 months. Lifts retail sales and brings in visitors.'},
+  metro:{name:'Metro',sw:'#c0463a',desc:'Capital project, 12 months. Eases traffic, lifts mood and housing demand.'},
+  exch:{name:'Exchange',sw:'#9a8456',desc:'Capital project, 10 months. Doubles IPO fees and makes listings far more likely.'},
+  bull:{name:'Bulldoze',sw:'#c2452d',desc:'Clears tiles or cuts down forest.'}
+};
+var GROUPS=[
+  {id:'zones',name:'Zones',tools:['inspect','road','res','com','ind','park','bull']},
+  {id:'power',name:'Power',tools:['inspect','plant','gas','nuke','hydro','solar','wind','batt','fusion','pline','bull']},
+  {id:'water',name:'Water',tools:['inspect','pump','desal','pipe','bull']},
+  {id:'civic',name:'Civic',tools:['inspect','police','fire','school','lab','port','dc','bio','bull']},
+  {id:'projects',name:'Projects',tools:['inspect','stadium','airport','univ','conv','metro','exch','bull']}
+];
+var TECHS={
+  solar:{name:'Photovoltaics',cost:120,req:null,sector:'Solar',desc:'Solar farms produce 50% more.'},
+  fiber:{name:'Fiber and cloud',cost:120,req:null,sector:'Cloud',desc:'Unlocks data centers and lifts shop sales 10%.'},
+  water:{name:'Water recycling',cost:160,req:null,sector:'Water tech',desc:'Cuts water demand 30% and unlocks desalination.'},
+  auto:{name:'Factory automation',cost:220,req:'fiber',sector:'Robotics',desc:'Factories make 30% more goods.'},
+  bio:{name:'Biotech',cost:260,req:null,sector:'Biotech',desc:'Unlocks biotech campuses with high-wage jobs.'},
+  ai:{name:'Applied AI',cost:380,req:'fiber',sector:'AI',desc:'Trims service costs 15% and speeds research 25%.'},
+  fission:{name:'Advanced fission',cost:450,req:null,sector:'Nuclear',desc:'Unlocks Gen IV nuclear plants: 420 MW of steady clean power.'},
+  fusion:{name:'Fusion power',cost:9000,req:'fission',req2:'ai',sector:'Fusion',desc:'The holy grail. Needs Advanced fission and Applied AI, plus at least 3 working labs and a university. Plasma instabilities keep setting the program back.'}
+};
+var TECH_ORDER=['solar','fiber','water','auto','bio','ai','fission','fusion'];
+var NAME_A=['Nova','Helio','Quanta','Vertex','Aero','Lumen','Orbit','Kinetic','Zenith','Atlas','Cobalt','Ember','Fathom','Meridian','Pylon','Strata'];
+var NAME_B=['Cell','Labs','Dynamics','Systems','Works','Grid','Genomics','Robotics','Cloud','Energy','Materials','Logic','Networks','Therapeutics'];
+var BUYERS=['Meridian Capital','Apex Holdings','Northstar Group','Titan Industries','Blue Harbor Partners','Orion Global','Summit Corp'];
+
+/* ================= state ================= */
+var T=new Array(N).fill(0),L=new Array(N).fill(0),B=new Array(N).fill(0),TER=new Array(N).fill(0),EL=new Array(N).fill(1);
+var F=new Uint8Array(N),FLD=new Uint8Array(N),SHORE=new Uint8Array(N),PAR=new Int32Array(N).fill(-1);
+var S=null,E=null,tool='plant',group='zones',speed=1,sheetKind=null,corpTab='research',splashOpen=true,dirty=true,mmDirty=true;
+var toastTimer=0,shakeUntil=0;
+
+function $(id){return document.getElementById(id);}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function rnd(n){return Math.floor(Math.random()*n);}
+function pick(a){return a[rnd(a.length)];}
+function gauss(){return Math.random()+Math.random()+Math.random()-1.5;}
+function money(n){var r=Math.round(n);return (r<0?'\u2212':'')+'$'+Math.abs(r).toLocaleString('en-US');}
+function dateLabel(m){return MONTHS[m%12]+' '+(2027+Math.floor(m/12));}
+function rankIdx(p){var r=0;for(var i=0;i<RANKS.length;i++){if(p>=RANKS[i][0])r=i;}return r;}
+function store(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function fetchStore(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function isDark(){
+  var t=document.documentElement.getAttribute('data-theme');
+  if(t==='dark')return true;if(t==='light')return false;
+  return !!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+function nb4(i){
+  var x=i%MW,y=(i/MW)|0,r=[];
+  if(x>0)r.push(i-1);if(x<MW-1)r.push(i+1);if(y>0)r.push(i-MW);if(y<MH-1)r.push(i+MW);
+  return r;
+}
+
+/* ================= terrain ================= */
+function hash2(x,y,s){
+  var h=Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(s,982451653)|0;
+  h=Math.imul(h^(h>>>13),1274126177);h=h^(h>>>16);
+  return (h>>>0)%10000/10000;
+}
+function vnoise(x,y,s){
+  var xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+  var a=hash2(xi,yi,s),b=hash2(xi+1,yi,s),c=hash2(xi,yi+1,s),d=hash2(xi+1,yi+1,s);
+  return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;
+}
+function fbm(x,y,s){
+  var t=0,a=0.5,f=1,n=0;
+  for(var o=0;o<4;o++){t+=a*vnoise(x*f,y*f,s+o*17);n+=a;a*=0.5;f*=2;}
+  return t/n;
+}
+function genTerrain(){
+  var seed=rnd(100000),phase=Math.random()*6.28,x,y,i,k;
+  var sx=Math.round(MW*0.5)+rnd(3)-1,sy=Math.round(MH*0.48)+rnd(3)-1;
+  function coastAt(yy){return 8+4*Math.sin(yy*0.2+phase)+2.2*Math.sin(yy*0.47+phase*2);}
+  TER=new Array(N).fill(GRASS);EL=new Array(N).fill(1);
+  for(y=0;y<MH;y++){
+    var coast=coastAt(y);
+    for(x=0;x<MW;x++){
+      i=y*MW+x;
+      if(x<coast){TER[i]=WATER;EL[i]=0;continue;}
+      var v=fbm(x*0.08,y*0.08,seed)+(x-coast)*0.0085;
+      if(v<0.36){TER[i]=WATER;EL[i]=0;continue;}
+      EL[i]=clamp(Math.round((v-0.36)*9)+1,1,7);
+    }
+  }
+  for(var pass=0;pass<2;pass++){
+    var ne=EL.slice();
+    for(y=0;y<MH;y++)for(x=0;x<MW;x++){
+      i=y*MW+x;if(TER[i]===WATER)continue;
+      var sum=EL[i]*2,cnt=2;
+      for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){
+        var xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=MW||yy>=MH)continue;
+        var j=yy*MW+xx;if(TER[j]===WATER)continue;sum+=EL[j];cnt++;
+      }
+      ne[i]=clamp(Math.round(sum/cnt),1,7);
+    }
+    EL=ne;
+  }
+  for(y=0;y<MH;y++)for(x=0;x<MW;x++){
+    i=y*MW+x;var d=Math.sqrt((x-sx)*(x-sx)+(y-sy)*(y-sy));
+    if(d<=9){TER[i]=GRASS;EL[i]=2;}
+    else if(d<14){
+      var t=(d-9)/5;
+      if(TER[i]===WATER&&d<12){TER[i]=GRASS;EL[i]=2;}
+      else if(TER[i]!==WATER)EL[i]=Math.round(EL[i]*t+2*(1-t));
+    }
+  }
+  var pts=[[sx+8+rnd(10),0],[sx+8+rnd(3),sy-11],[sx+7,sy+1],[sx-1-rnd(2),sy+12],[coastAt(sy+18)+1,sy+18+rnd(3)]];
+  for(k=0;k<pts.length-1;k++){
+    var a=pts[k],b=pts[k+1],len=Math.max(Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]));
+    for(var s=0;s<=len*2;s++){
+      var tt=s/(len*2),px=a[0]+(b[0]-a[0])*tt+Math.sin(tt*9+k*2+phase)*1.1,py=a[1]+(b[1]-a[1])*tt;
+      var rx=Math.round(px),ry=Math.round(py);
+      if(rx<0||ry<0||rx>=MW||ry>=MH)continue;
+      i=ry*MW+rx;TER[i]=WATER;EL[i]=0;
+      if(k>=2&&rx+1<MW){TER[i+1]=WATER;EL[i+1]=0;}
+    }
+  }
+  for(y=0;y<MH;y++)for(x=0;x<MW;x++){
+    i=y*MW+x;if(TER[i]===WATER)continue;
+    var wet=false;
+    for(var ey=-1;ey<=1&&!wet;ey++)for(var ex=-1;ex<=1;ex++){
+      var x2=x+ex,y2=y+ey;if(x2<0||y2<0||x2>=MW||y2>=MH)continue;
+      if(TER[y2*MW+x2]===WATER){wet=true;break;}
+    }
+    if(wet)EL[i]=Math.min(EL[i],2);
+  }
+  for(y=0;y<MH;y++)for(x=0;x<MW;x++){
+    i=y*MW+x;if(TER[i]===WATER)continue;
+    if(EL[i]>=6)TER[i]=ROCK;
+    else{
+      var moist=fbm(x*0.14+50,y*0.14+50,seed+99),d2=Math.sqrt((x-sx)*(x-sx)+(y-sy)*(y-sy));
+      if(moist>0.56&&EL[i]<=4&&d2>8)TER[i]=FOREST;
+    }
+  }
+  for(i=0;i<N;i++){
+    SHORE[i]=0;if(TER[i]===WATER)continue;
+    var nn=nb4(i);for(k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}
+  }
+  return {x:sx,y:sy};
+}
+
+/* ================= footprints ================= */
+function sizeOf(id){var o=OBJ[id];return (o&&o.size)||[1,1];}
+function anchorFor(i,sz){return [(i%MW)-Math.floor(sz[0]/2),((i/MW)|0)-Math.floor(sz[1]/2)];}
+function footTiles(ax,ay,sz){var r=[];for(var dy=0;dy<sz[1];dy++)for(var dx=0;dx<sz[0];dx++)r.push((ay+dy)*MW+ax+dx);return r;}
+function rootOf(i){return (T[i]===SUB&&PAR[i]>=0)?PAR[i]:i;}
+function footOfAnchor(a){var o=BYT[T[a]],sz=(o&&o.size)||[1,1];return footTiles(a%MW,(a/MW)|0,sz);}
+function centerIdx(a){var o=BYT[T[a]],sz=(o&&o.size)||[1,1];return (((a/MW)|0)+Math.floor(sz[1]/2))*MW+(a%MW)+Math.floor(sz[0]/2);}
+function clearAt(i){
+  var a=rootOf(i);
+  if(a===i&&T[i]!==SUB&&!(BYT[T[i]]&&BYT[T[i]].size)){T[i]=EMPTY;L[i]=0;B[i]=0;PAR[i]=-1;F[i]=0;return;}
+  var tiles=(T[a]===SUB)?[i]:footOfAnchor(a);
+  for(var k=0;k<tiles.length;k++){var t=tiles[k];T[t]=EMPTY;L[t]=0;B[t]=0;PAR[t]=-1;F[t]=0;}
+}
+function nearWaterTile(i){var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)return true;}return false;}
+function checkSite(ax,ay,id){
+  var o=OBJ[id],sz=sizeOf(id);
+  if(ax<0||ay<0||ax+sz[0]>MW||ay+sz[1]>MH)return 'That does not fit on the map.';
+  var tiles=footTiles(ax,ay,sz),mn=99,mx=-1,wet=false,k;
+  for(k=0;k<tiles.length;k++){
+    var i=tiles[k];
+    if(TER[i]===WATER)return 'Part of that site is water.';
+    if(TER[i]===ROCK)return 'Part of that site is too steep.';
+    if(T[i]!==EMPTY)return 'Something is already there. Bulldoze it first.';
+    mn=Math.min(mn,EL[i]);mx=Math.max(mx,EL[i]);
+    if(nearWaterTile(i))wet=true;
+  }
+  if(mx-mn>2)return 'The ground is too uneven. Pick flatter land.';
+  if(o.shore&&!wet)return 'The '+TOOLS[id].name.toLowerCase()+' must touch the water.';
+  return '';
+}
+
+/* ================= state ================= */
+function freshState(start){
+  return {month:0,cash:22000,fixedAmt:0,fixedRate:0,varAmt:0,
+    tax:{inc:9,sales:6,prop:1,corp:6},sp:{svc:1,edu:1,infra:1,welfare:0},stim:0,qe:0,
+    rate:4.0,prevRate:4.0,mort:5.2,infl:2.0,sunF:1,windF:1,
+    hpi:100,hpiMom:0,shock:0,bubble:0,recession:0,remote:0,heat:0,drought:0,
+    mkt:100,mktD:0,mktBubble:0,panic:0,crash:0,crunch:0,pop:0,approval:70,shopFill:1,lowApproval:0,lowCash:0,lastEvent:0,news:[],
+    dins:false,rd:{budget:0,active:'solar',pts:0},tech:{},firms:[],offers:[],fid:1,disasters:true,tor:null,start:start,
+    hist:{rate:[],mort:[],hpi:[],supply:[],pop:[],mkt:[],infl:[]},peak:0,rank:0,won:false,over:null};
+}
+
+/* ================= utilities scan ================= */
+function mark(arr,x,y,r){
+  for(var dy=-r;dy<=r;dy++){
+    var yy=y+dy;if(yy<0||yy>=MH)continue;
+    var w=r-Math.abs(dy);
+    for(var dx=-w;dx<=w;dx++){var xx=x+dx;if(xx>=0&&xx<MW)arr[yy*MW+xx]=1;}
+  }
+}
+function cover(arr,srcs,lineType,lineRad){
+  var seen=new Uint8Array(N),q=[],k,head=0;
+  for(k=0;k<srcs.length;k++){
+    var s=srcs[k],ci=centerIdx(s),ft=footOfAnchor(s);
+    mark(arr,ci%MW,(ci/MW)|0,BYT[T[s]].rad);
+    for(var q2=0;q2<ft.length;q2++)q.push(ft[q2]);
+  }
+  while(head<q.length){
+    var c=q[head++],nn=nb4(c);
+    for(k=0;k<nn.length;k++){
+      var n=nn[k];
+      if(T[n]===lineType&&!seen[n]){seen[n]=1;q.push(n);mark(arr,n%MW,(n/MW)|0,lineRad);}
+    }
+  }
+}
+function mwEff(t,i){
+  var m=BYT[t].mw;
+  if(t===SOLAR)m*=(S&&S.tech.solar?1.5:1)*(S?S.sunF:1);
+  else if(t===WIND)m*=(S?S.windF:1)*(EL[i]>=3?1.3:1)*(SHORE[i]?1.15:1);
+  else if(t===HYDRO)m*=(S&&S.drought>0?0.5:1);
+  return m;
+}
+function mwMean(t,i){
+  var m=BYT[t].mw;
+  if(t===SOLAR)m*=(S&&S.tech.solar?1.5:1);
+  else if(t===WIND)m*=(EL[i]>=3?1.3:1)*(SHORE[i]?1.15:1);
+  return m;
+}
+function scan(){
+  var g={cnt:new Array(40).fill(0),done:new Array(40).fill(0),resCap:0,jobsC:0,jobsI:0,jobsT:0,jobsB:0,pwDemand:0,wDemand:0,builtRes:0,propVal:0,pCap:0,wCap:0,
+    flags:new Uint8Array(N),pc:new Uint8Array(N),wc:new Uint8Array(N),polC:new Uint8Array(N),fireC:new Uint8Array(N),schC:new Uint8Array(N),
+    active:new Uint8Array(N),act:{lab:0,school:0,police:0,fire:0,dc:0,bio:0,stadium:0,airport:0,univ:0,conv:0,metro:0,exch:0},
+    polCov:0,fireCov:0,schCov:0,parkCov:0,pollution:0};
+  var inf=S?(0.85+0.15*Math.min(1,S.sp.infra)):1;
+  var pSrc=[],wAll=[],i,t,o,k,volAct=0,volMean=0,nukeMW=0;
+  for(i=0;i<N;i++){
+    t=T[i];if(!t)continue;o=BYT[t];g.cnt[t]++;
+    var constr=!!(o&&o.build&&L[i]>0);
+    if(!constr)g.done[t]++;
+    if(o&&constr){var szc=o.size||[1,1];g.jobsB+=14*szc[0]*szc[1];}
+    else if(o&&o.jobs)g.jobsB+=o.jobs;
+    if(o&&o.mw&&!constr){
+      pSrc.push(i);var mwv=mwEff(t,i)*inf;g.pCap+=mwv;
+      if(t===NUKE)nukeMW+=mwv;
+      if(t===SOLAR||t===WIND){volAct+=mwv;volMean+=mwMean(t,i)*inf;}
+    }
+    if(o&&o.wc&&!constr)wAll.push(i);
+  }
+  var battCap=g.done[BATT]*8,dev=volMean-volAct;
+  if(g.done[BATT]>0&&dev!==0){var off=clamp(dev,-battCap,battCap);g.pCap+=off>0?off:off*0.85;}
+  g.nukeShare=g.pCap>0?nukeMW/g.pCap:0;
+  cover(g.pc,pSrc,PLINE,4);
+  var wSrc=[];
+  for(k=0;k<wAll.length;k++){if(g.pc[centerIdx(wAll[k])]){wSrc.push(wAll[k]);g.wCap+=BYT[T[wAll[k]]].wc*inf;}}
+  cover(g.wc,wSrc,PIPE,4);
+  for(i=0;i<N;i++){
+    t=T[i];o=BYT[t];if(!o||!(o.pu||o.wu||o.mw||o.wc))continue;
+    var cons=!!(o.build&&L[i]>0);
+    if(o.mw){g.active[i]=cons?0:1;continue;}
+    var ci=centerIdx(i),pOK=g.pc[ci],wOK=!o.wu||g.wc[ci];
+    g.flags[i]=(pOK?2:0)|(g.wc[ci]?4:0);
+    if(cons)continue;
+    if(o.wc){if(pOK)g.active[i]=1;continue;}
+    if(pOK&&wOK){
+      g.active[i]=1;g.pwDemand+=o.pu||0;g.wDemand+=o.wu||0;
+      if(t===POLICE){g.act.police++;mark(g.polC,ci%MW,(ci/MW)|0,8);}
+      else if(t===FIRE){g.act.fire++;mark(g.fireC,ci%MW,(ci/MW)|0,8);}
+      else if(t===SCHOOL){g.act.school++;mark(g.schC,ci%MW,(ci/MW)|0,9);}
+      else if(t===LAB){g.act.lab++;g.jobsT+=12;}
+      else if(t===DC){g.act.dc++;g.jobsT+=70;}
+      else if(t===BIO){g.act.bio++;g.jobsT+=40;}
+      else if(t===STADIUM){g.act.stadium++;g.jobsT+=20;}
+      else if(t===AIRPORT){g.act.airport++;g.jobsT+=40;}
+      else if(t===UNIV){g.act.univ++;g.jobsT+=30;}
+      else if(t===CONV){g.act.conv++;g.jobsT+=25;}
+      else if(t===METRO){g.act.metro++;g.jobsT+=15;}
+      else if(t===EXCH){g.act.exch++;g.jobsT+=35;}
+    }
+  }
+  var resBuilt=0,polN=0,fireN=0,schN=0;
+  for(i=0;i<N;i++){
+    t=T[i];if(t!==RES&&t!==COM&&t!==IND&&t!==PORT)continue;
+    var x=i%MW,y=(i/MW)|0,f=0;
+    if(t===PORT){
+      var pf=footOfAnchor(i),pk,pn,pj;
+      for(pk=0;pk<pf.length&&!(f&1);pk++){pn=nb4(pf[pk]);for(pj=0;pj<pn.length;pj++){if(T[pn[pj]]===ROAD){f|=1;break;}}}
+      f|=6;g.flags[i]=f;continue;
+    }
+    if((x>0&&T[i-1]===ROAD)||(x<MW-1&&T[i+1]===ROAD)||(y>0&&T[i-MW]===ROAD)||(y<MH-1&&T[i+MW]===ROAD))f|=1;
+    if(g.pc[i])f|=2;if(g.wc[i])f|=4;
+    g.flags[i]=f;
+    if(t===RES&&L[i]>0){resBuilt++;if(g.polC[i])polN++;if(g.fireC[i])fireN++;if(g.schC[i])schN++;}
+    if(L[i]>0&&f===7){
+      g.pwDemand+=L[i]*2;g.wDemand+=L[i]*ZUSE[t];
+      if(t===RES){g.resCap+=RES_CAP[L[i]];g.builtRes++;g.propVal+=RES_CAP[L[i]]*60*(1+0.1*SHORE[i]+0.05*Math.max(0,EL[i]-2));}
+      else if(t===COM)g.jobsC+=COM_JOBS[L[i]];
+      else g.jobsI+=IND_JOBS[L[i]];
+    }
+  }
+  g.polCov=resBuilt?polN/resBuilt:0;g.fireCov=resBuilt?fireN/resBuilt:0;g.schCov=resBuilt?schN/resBuilt:0;
+  g.parkCov=g.builtRes>0?Math.min(1,g.cnt[PARK]/(g.builtRes/5)):(g.cnt[PARK]>0?1:0);
+  g.pollution=g.done[PLANT]*1+g.done[GAS]*0.35;
+  g.portsOK=0;
+  for(i=0;i<N;i++){if(T[i]===PORT&&(g.flags[i]&1))g.portsOK++;}
+  return g;
+}
+
+/* ================= economy ================= */
+function mult(){return (1+S.pop/4000)*(1+S.shock)*(1+Math.max(0,S.infl-2)*0.015);}
+function terrainCost(i){return (TER[i]===FOREST?1.35:1)*(1+0.12*Math.max(0,EL[i]-2));}
+function costFor(id,i){
+  if(id==='inspect')return 0;if(id==='bull')return 10;
+  var c=OBJ[id].cost*mult();
+  if(i!==undefined&&i>=0)c*=terrainCost(i);
+  return Math.ceil(c);
+}
+function firmJobsTotal(){
+  var j=0;for(var k=0;k<S.firms.length;k++){var f=S.firms[k];if(f.stage==='public'||f.stage==='acquired')j+=f.jobs;}return j;
+}
+function rdRate(g){
+  var labs=g.act.lab,labF=labs===0?0.25:(1+0.4*(labs-1));
+  return S.rd.budget/30*labF*(1+0.06*g.act.school)*(S.tech.ai?1.25:1)*(g.act.univ?1.6:1)*(1+0.2*Math.min(4,g.act.dc))*(0.9+0.1*S.sp.edu);
+}
+function inflTarget(tight,shock,fiscal,stim,rec,rate,qe){
+  return 2.0+2.6*Math.max(tight,-0.6)+2.2*shock+0.30*(4.5-rate)+1.0*fiscal+(qe>0?0.35:qe<0?-0.3:0)+(stim?0.6:0)+(rec?-0.8:0);
+}
+function computeEconomy(){
+  var g=scan(),e={g:g},supply=1+S.shock,mort=S.mort,k,tx=S.tax,sp=S.sp,A=g.act,d=g.done;
+  var heat=S.heat>0?1.2:1,dry=S.drought>0?0.7:1;
+  var pwD=g.pwDemand*heat,pw=pwD>0?Math.min(1,g.pCap/pwD):1;
+  var wD=g.wDemand*(S.tech.water?0.7:1),ww=wD>0?Math.min(1,g.wCap*dry/wD):1;
+  var ef=pw*(0.6+0.4*ww);
+  var firmJobs=firmJobsTotal(),dividends=0;
+  for(k=0;k<S.firms.length;k++){var fm=S.firms[k];if(fm.stage==='public')dividends+=fm.stake*fm.val*0.0022*(A.exch?1.1:1);}
+  var jobsT=g.jobsT+firmJobs,workforce=S.pop*0.6;
+  var jobsRaw=g.jobsC*(0.4+0.6*S.shopFill)+g.jobsI+g.jobsB+jobsT,jobsEff=jobsRaw*ef;
+  var fill=jobsEff>0?Math.min(1,workforce/jobsEff):0,employed=Math.min(workforce,jobsEff);
+  var unemp=workforce>0?1-employed/workforce:0;
+  var empT=jobsEff>0?employed*jobsT*ef/jobsEff:0;
+  var produced=g.jobsI*ef*fill*9/(1+(supply-1)*0.8)*(S.tech.auto?1.3:1);
+  var need=g.jobsC*ef*fill*6,imported=Math.min(g.portsOK*80,Math.max(0,need-produced));
+  var sold=Math.min(need,produced+imported),shopFill=need>0?sold/need:1;
+  var exports=Math.max(0,produced-need)*3.5*(S.recession>0?0.5:1)*(A.airport?1.35:1);
+  var wage=90*(S.recession>0?0.85:1);
+  var incTax=tx.inc/100*((employed-empT)*wage+empT*wage*1.8)*(1+0.05*g.schCov*sp.edu)*(A.univ?1.04:1);
+  var salesVol=sold*clamp(1-0.025*(tx.sales-6),0.6,1.15)*(S.stim>0?1.12:1);
+  var saleTax=tx.sales/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);
+  var propVal=g.propVal+g.jobsC*50+g.jobsI*40+jobsT*80,propTax=propVal*0.006*tx.prop;
+  var bizTax=tx.corp/100*(sold*8*0.3+produced*2.5+empT*wage*0.7);
+  var tourism=A.stadium*350+A.conv*300+A.airport*600;
+  var cloud=A.dc*600*(S.tech.ai?1.5:1);
+  var revenue=incTax+saleTax+propTax+bizTax+exports+dividends+tourism+cloud;
+  var fuelC=1+(supply-1)*0.8,fuelG=1+(supply-1)*1.6,fuelN=1+(supply-1)*0.15,infCost=1+Math.max(0,S.infl-3)*0.012;
+  var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1);
+  var bridges=0;for(k=0;k<N;k++){if(T[k]===ROAD&&B[k])bridges++;}
+  var roadUp=(d[ROAD]*0.4+bridges*1.2+d[PLINE]*0.2+d[PIPE]*0.3)*sp.infra*infCost;
+  var powerUp=(d[PLANT]*35*fuelC+d[GAS]*45*fuelG+d[NUKE]*160*fuelN+d[HYDRO]*15+d[SOLAR]*10+d[WIND]*12+d[FUSION]*60+d[BATT]*40)*sp.infra;
+  var waterUp=(d[PUMP]*25+d[DESAL]*70)*sp.infra;
+  var civicUp=d[POLICE]*60*sp.svc+d[FIRE]*50*sp.svc+d[SCHOOL]*70*sp.edu+d[LAB]*120+d[DC]*80+d[BIO]*90;
+  var projUp=d[STADIUM]*400+d[AIRPORT]*900+d[UNIV]*600+d[CONV]*450+d[METRO]*700+d[EXCH]*500;
+  var parkUp=d[PARK]*2+d[PORT]*40,importCost=imported*1.2*supply,welfare=sp.welfare;
+  var interest=S.fixedAmt*S.fixedRate/1200+S.varAmt*(S.rate+1)/1200;
+  var rdSpend=S.rd.active?S.rd.budget:0;
+  var insurance=S.dins?S.pop*0.5:0;
+  var costs=insurance+services+welfare+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend;
+  var wfFrac=Math.min(1,welfare/(S.pop*3+200));
+  var pol=Math.min(0.2,0.025*d[PLANT]+0.008*d[GAS]);
+  var h=0.72+0.25*g.parkCov+(sp.svc-1)*0.4+0.10*g.polCov*Math.min(1.3,sp.svc)+0.06*g.schCov*sp.edu+(S.tech.bio?0.03:0)
+        +0.08*wfFrac+(A.stadium?0.06:0)+(A.metro?0.04:0)-(A.airport?0.03:0)-pol
+        -Math.max(0,tx.inc-9)*0.04+Math.max(0,9-tx.inc)*0.01-Math.max(0,tx.sales-8)*0.02-Math.max(0,tx.prop-1.3)*0.1
+        -(1-shopFill)*0.3-(1-pw)*0.5-(1-ww)*0.4-unemp*0.6*Math.min(1,workforce/30)*(1-0.3*wfFrac)
+        -Math.max(0,S.infl-4)*0.035-Math.max(0,-S.infl)*0.02;
+  h+=0.04*g.nukeShare;h=clamp(h,0.15,1.25);
+  var payIdx=S.hpi/100*mort/5.5,af=clamp(1.55-0.55*payIdx,0.15,1.15);
+  var jf=workforce>0?clamp(jobsEff/workforce,0.3,1):1;
+  var target=g.resCap*Math.min(1,af*Math.min(h,1)*(0.5+0.5*jf)*1.15);
+  var occ=g.resCap>0?S.pop/g.resCap:1;
+  var appetite=clamp(1.25-(mort-4)*0.15,0.05,1.25)/Math.pow(supply,0.7)*(1-Math.max(0,tx.inc-10)*0.04)*(1-Math.max(0,tx.corp-10)*0.015)
+        *(S.recession>0?0.85:1)*(A.metro?1.05:1)*(S.infl<0?0.8:1);
+  var jobsGap=clamp((jobsEff-workforce)/(workforce+20),-1,1),wfGap=clamp((workforce-jobsEff)/(workforce+20),-1,1);
+  var occEff=S.pop<30?1:occ;
+  var Rdem=clamp(3.5*(occEff-0.72)+0.5*jobsGap+(S.remote>0?0.25:0)+clamp((S.hpi-100)/250,-0.1,0.2)+clamp((S.mkt-100)/600,-0.1,0.15)
+        -0.1*(tx.prop-1)+(S.stim>0?0.1:0)+(A.metro?0.08:0)-(S.infl<0?0.15:0),-1,1);
+  var Cdem=clamp((S.pop*0.42-g.jobsC)/(S.pop*0.42+10),-1,1)-(S.remote>0?0.2:0)-(S.recession>0?0.2:0)-0.03*(tx.sales-6)-0.02*(tx.corp-8)
+        +(A.stadium?0.05:0)+(A.airport?0.08:0);
+  var goodsGap=need>0?clamp((need-produced-imported)/(need+10),-1,1):0;
+  var Idem=clamp(0.6*wfGap+0.6*goodsGap+0.2-(S.recession>0?0.3:0)-0.02*(tx.corp-8)+(A.airport?0.05:0),-1,1);
+  var apprTarget=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,tx.sales-9)-Math.max(0,S.infl-5)*2+(A.stadium?3:0)-(S.cash<0?10:0),0,100);
+  e.supply=supply;e.mort=mort;e.pw=pw;e.ww=ww;e.workforce=workforce;e.employed=employed;e.unemp=unemp;e.tight=jobsGap;e.mortReal=mort-(S.infl-2);
+  e.produced=produced;e.need=need;e.imported=imported;e.sold=sold;e.shopFill=shopFill;e.exports=exports;
+  e.pwUse=g.pCap>0?pwD/g.pCap:(pwD>0?9.99:0);e.wUse=g.wCap>0?wD/(g.wCap*dry):(wD>0?9.99:0);
+  e.rev=[['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax],['Exports',exports],['Dividends',dividends],['Tourism',tourism],['Cloud services',cloud]];
+  e.exp=[['Public services',services],['Welfare',welfare],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
+         ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance]];
+  e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
+  var gapProxy=clamp(4*jobsGap-20*Math.max(0,unemp-0.05),-6,6);
+  e.taylor=clamp(2+S.infl+0.5*(S.infl-2)+0.5*gapProxy,0,15);
+  return e;
+}
+
+/* ================= inflation outlook ================= */
+function forecastInflation(n,rate){
+  var infl=S.infl,shock=S.shock,e=E||{tight:0,costs:0,revenue:1};
+  var fiscal=clamp((e.costs-e.revenue)/(e.revenue+500),-0.3,0.6),mean=[],sd=[];
+  if(rate===undefined)rate=S.rate;
+  for(var t=1;t<=n;t++){
+    shock*=0.93;
+    var tg=inflTarget(e.tight||0,shock*(1-0.4*(e.g?e.g.nukeShare:0)),fiscal,t<=S.stim,t<=S.recession,rate,S.qe);
+    infl+=(tg-infl)*0.10;mean.push(infl);sd.push(0.16*Math.sqrt(t)+0.02*t);
+  }
+  return {mean:mean,sd:sd};
+}
+
+/* ================= headlines ================= */
+function addNews(text,tone){
+  S.news.unshift({m:S.month,text:text,tone:tone||'info'});
+  if(S.news.length>30)S.news.length=30;
+  updateTicker();
+}
+function toast(msg){
+  var t=$('toast');t.textContent=msg;t.className='toast show';
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.className='toast';},2600);
+}
+function updateTicker(){
+  var n=S.news[0];if(!n)return;
+  $('ttext').textContent=n.text;$('tdot').className='dot '+n.tone;
+}
+
+/* ================= macro: rates, supply, housing, stock market ================= */
+var handMode=true;
+function setRate(r){
+  r=clamp(Math.round(r*4)/4,0,15);
+  if(Math.abs(r-S.rate)<0.01){toast('Policy rate is already '+r.toFixed(2)+'%.');return;}
+  var diff=r-S.rate;S.rate=r;
+  addNews('You '+(diff>0?'raised':'cut')+' the policy rate by '+Math.abs(diff).toFixed(2)+' points to '+r.toFixed(2)+'%.',diff>0?'warn':'info');
+  toast('Policy rate set to '+r.toFixed(2)+'%');
+}
+function setQE(v){
+  S.qe=v;
+  addNews(v>0?'You launched asset purchases. Long rates fall and stocks rally, but inflation and bubble risk rise.':v<0?'You started shrinking the balance sheet. Long rates and the dollar rise, and risk assets suffer.':'You put the balance sheet on hold.','info');
+}
+function sendStimulus(per){
+  var c=Math.round(S.pop*per);
+  if(S.pop<10){toast('Not enough residents yet.');return;}
+  if(S.cash<c){toast('Not enough cash. Checks cost '+money(c)+'.');return;}
+  S.cash-=c;S.stim=4;S.approval=Math.min(100,S.approval+Math.min(6,per/8));
+  addNews('Stimulus checks of '+money(per)+' per resident went out. Spending jumps, and so do price pressures.','info');
+  toast('Stimulus sent: '+money(c));
+}
+function bailout(){
+  if(S.crash<=0&&S.crunch<=0&&S.panic<=0){toast('There is no crisis to fight right now.');return;}
+  var c=Math.max(2000,Math.round(S.pop*30));
+  if(S.cash<c){toast('Not enough cash. A bailout costs '+money(c)+'.');return;}
+  S.cash-=c;S.panic=0;S.crunch=Math.min(S.crunch,3);S.crash=Math.min(S.crash,4);S.mktBubble+=0.8;S.infl+=0.3;
+  addNews('You backstopped the banks for '+money(c)+'. Panic ends and credit reopens, but traders now expect rescues next time.','warn');
+  toast('Bailout done');
+}
+function setDeposit(on){
+  S.dins=on;
+  addNews(on?'Deposit insurance is now funded. Crashes will hit softer, but it costs money every month and encourages risk taking.':'Deposit insurance ended. Savers and banks are on their own.','info');
+}
+function stepMacro(e){
+  var prev=S.prevRate;
+  S.shock*=0.93;if(S.shock<0.01)S.shock=0;
+  S.bubble*=0.9;if(S.bubble<0.02)S.bubble=0;
+  if(S.recession>0)S.recession--;if(S.remote>0)S.remote--;if(S.heat>0)S.heat--;if(S.drought>0)S.drought--;if(S.stim>0)S.stim--;
+  S.sunF=clamp(1+0.35*Math.sin((S.month-3)*Math.PI/6)+gauss()*0.25,0.4,1.4);
+  S.windF=clamp(1+gauss()*0.8,0.15,1.8);
+  /* inflation reacts to labour tightness, supply shocks, policy stance and deficits */
+  var fiscal=clamp((e.costs-e.revenue)/(e.revenue+500),-0.3,0.6);
+  var tg=inflTarget(e.tight,S.shock*(1-0.4*e.g.nukeShare),fiscal,S.stim>0,S.recession>0,S.rate,S.qe);
+  S.infl=clamp(S.infl+(tg-S.infl)*0.10+gauss()*0.12,-3,25);
+  /* mortgage rates follow the policy rate with a lag and a spread */
+  var mt=S.rate+1.2+Math.max(0,S.infl-6)*0.15+(S.qe>0?-0.7:S.qe<0?0.6:0)+(e.unemp>0.2?0.4:0)+(S.crunch>0?1.5:0);
+  S.mort+=(mt-S.mort)*0.25;
+  if(S.qe>0)S.bubble+=0.05;
+  if(S.dins)S.mktBubble+=0.03;
+  var realMort=S.mort-(S.infl-2);
+  var d=(e.g.resCap>0&&S.pop>=30?(e.occ-0.82)*6:0)-(realMort-5.5)*0.35+S.hpiMom*0.5+S.bubble
+        -Math.max(0,S.hpi-150)*0.02+Math.max(0,85-S.hpi)*0.04-(S.tax.prop-1)*0.15+(S.qe>0?0.15:S.qe<0?-0.1:0)+(Math.random()-0.5)*0.8;
+  d=clamp(d,-5,5);S.hpiMom=d;S.hpi=clamp(S.hpi*(1+d/100),40,260);
+  var md=0.5-(S.rate-4.5)*0.12-(S.rate-prev)*6+S.mktBubble+(S.recession>0?-1.2:0)-Math.max(0,S.infl-5)*0.15
+        +(S.qe>0?0.4:S.qe<0?-0.3:0)-(S.tax.corp-8)*0.03+gauss()*3.2;
+  md=clamp(md,-22,14);
+  if(S.crash>0)md-=0.8;
+  if(S.panic>0){md=-(10+rnd(9))*(1-(exchOn()?0.3:0)-(S.dins?0.25:0));S.panic--;}
+  else{
+    var hz=0.003+0.010*Math.max(0,(S.mkt-150)/100)+0.012*S.mktBubble+(S.rate-prev>0.5?0.03:0)+(S.infl>6?0.01:0);
+    if(S.crash===0&&Math.random()<hz)startCrash();
+  }
+  if(S.crash>0)S.crash--;if(S.crunch>0)S.crunch--;
+  S.mktD=md;S.mkt=clamp(S.mkt*(1+md/100),20,600);S.mktBubble*=0.88;if(S.mktBubble<0.05)S.mktBubble=0;
+  S.prevRate=S.rate;
+}
+function exchOn(){return !!(E&&E.g&&E.g.act.exch);}
+function startCrash(){
+  S.panic=3;S.crash=exchOn()?7:10;S.crunch=S.dins?6:12;S.mktBubble=0;
+  addNews('Stock market crash: panic selling wipes out a third of the market. Startups lose funding, IPOs freeze and banks tighten credit.','bad');
+  toast('Market crash!');
+  if(Math.random()<0.6){S.recession=Math.max(S.recession,12);}
+}
+function stepBatteries(g){
+  if(S.disasters===false)return;
+  for(var i=0;i<N;i++){
+    if(T[i]!==BATT||F[i]>0)continue;
+    if(Math.random()<(S.heat>0?0.015:0.004)){
+      F[i]=8;
+      addNews('A battery storage tile has gone into thermal runaway. Lithium fires burn for weeks and fire crews can only keep it from spreading.','bad');
+    }
+  }
+}
+function stepConstruction(){
+  for(var i=0;i<N;i++){
+    var o=BYT[T[i]];
+    if(o&&o.build&&L[i]>0){
+      L[i]--;
+      if(L[i]===0){addNews(TOOLS[o.id].name+' is finished and open for business.','good');S.approval=Math.min(100,S.approval+1);}
+    }
+  }
+}
+function mktSentiment(){
+  var h=S.hist.mkt;if(h.length<6)return 0;
+  var s=0;for(var i=h.length-6;i<h.length;i++)s+=h[i];
+  return S.mkt/(s/6)-1;
+}
+
+/* ================= R&D, startups, IPOs, M&A ================= */
+function firmName(sector){
+  for(var tries=0;tries<20;tries++){
+    var n=pick(NAME_A)+pick(NAME_B),clash=false;
+    for(var k=0;k<S.firms.length;k++){if(S.firms[k].name===n)clash=true;}
+    if(!clash)return n;
+  }
+  return pick(NAME_A)+pick(NAME_B)+' '+S.fid;
+}
+function spawnFirm(sector,why){
+  var val=Math.round((9000+rnd(7000))/100)*100;
+  var f={id:S.fid++,name:firmName(sector),sector:sector,stage:'seed',val:val,stake:0,runway:16+rnd(8),
+    burn:Math.round(val*0.012/10)*10,age:0,jobs:0,acq:0};
+  S.firms.push(f);
+  addNews(why==='lab'?f.name+' ('+sector+') spins out of a local lab and is looking for seed money.':f.name+' ('+sector+') launches a startup in your city.','info');
+  return f;
+}
+function nextTech(){
+  for(var i=0;i<TECH_ORDER.length;i++){
+    var id=TECH_ORDER[i],t=TECHS[id];
+    if(!S.tech[id]&&(!t.req||S.tech[t.req])&&(!t.req2||S.tech[t.req2]))return id;
+  }
+  return null;
+}
+function stepResearch(e){
+  var id=S.rd.active;
+  if(!id){S.rd.active=nextTech();return;}
+  if(id==='fusion'){
+    if(!(e.g.act.lab>=3&&e.g.act.univ>=1)){if(S.month%12===0)addNews('Fusion research is stalled. It needs at least 3 working labs and a university.','warn');return;}
+    if(Math.random()<0.04){S.rd.pts*=0.85;addNews('Plasma instability forces the fusion team to redo months of work.','bad');}
+  }
+  S.rd.pts+=rdRate(e.g);
+  if(S.rd.pts>=TECHS[id].cost){
+    S.tech[id]=true;S.rd.pts=0;S.rd.active=nextTech();
+    addNews('Breakthrough: '+TECHS[id].name+' is ready. '+TECHS[id].desc,'good');
+    toast(TECHS[id].name+' researched');
+    spawnFirm(TECHS[id].sector,'tech');
+  }
+}
+function ipo(f){
+  f.stage='public';f.val*=1.25;f.jobs=18+rnd(14);
+  var proceeds=f.stake*0.35*f.val*0.96,fees=f.val*0.01*(E&&E.g&&E.g.act.exch?2.5:1);
+  S.cash+=proceeds+fees;f.stake*=0.65;
+  addNews(f.name+' goes public at a '+money(f.val)+' valuation. '+(proceeds>0?'Your stake raised '+money(proceeds)+'. ':'')+'Listing fees added '+money(fees)+'.','good');
+  toast(f.name+' IPO!');
+}
+function killFirm(f,msg){
+  f.stage='dead';f.val=0;f.jobs=0;
+  addNews(msg,'bad');
+}
+function stepFirms(){
+  var sent=mktSentiment(),k,f,seeds=0,exch=!!(E&&E.g&&E.g.act.exch);
+  for(k=0;k<S.firms.length;k++){
+    f=S.firms[k];
+    if(f.stage==='seed'){
+      seeds++;f.age++;f.runway--;
+      var g=clamp(1.5*S.mktD/100,-0.3,0.3)+0.045-Math.max(0,S.tax.corp-8)*0.002+(Math.random()-0.5)*0.16;
+      if(Math.random()<0.018)g-=0.35;
+      f.val=Math.max(500,f.val*(1+g));
+      if(f.runway<=0){
+        if(S.mkt>=95&&Math.random()<0.55){f.runway+=10;f.stake*=0.85;f.val*=1.1;addNews(f.name+' raises a bridge round. Existing investors are diluted.','info');}
+        else killFirm(f,f.name+' runs out of cash and shuts down.'+(f.stake>0?' Your stake is worthless.':''));
+      }else if(f.val<=1200&&Math.random()<0.5)killFirm(f,f.name+' collapses after a failed product launch.');
+      else if(f.age>=12&&f.val>=70000&&sent>-0.01&&Math.random()<0.2*(exch?1.5:1))ipo(f);
+    }else if(f.stage==='public'){
+      var gp=clamp(S.mktD/100,-0.25,0.25)+0.004+(Math.random()-0.5)*0.06;
+      f.val=Math.max(3000,f.val*(1+gp));
+      f.jobs=clamp(16+Math.round(f.val/15000),16,140);
+      var hasOffer=false;for(var j=0;j<S.offers.length;j++){if(S.offers[j].fid===f.id)hasOffer=true;}
+      if(!hasOffer&&S.month>12&&Math.random()<0.012*(S.mkt>110?1.5:1)){
+        var prem=0.2+Math.random()*0.4,buyer=pick(BUYERS);
+        S.offers.push({id:S.fid++,fid:f.id,buyer:buyer,prem:prem,expires:S.month+3});
+        addNews(buyer+' bids '+Math.round(prem*100)+'% above market for '+f.name+'. Check Corp > Deals.','warn');
+      }
+    }else if(f.stage==='acquired'){
+      f.acq++;if(f.acq===12)f.jobs=Math.round(f.jobs*0.6);
+      if(f.acq===30){f.jobs=Math.round(f.jobs*0.67);}
+    }
+  }
+  var labs=E&&E.g?E.g.act.lab:0;
+  if(labs>0&&seeds<3&&Math.random()<Math.min(0.08,0.03*labs)){
+    var sec=S.tech&&Object.keys(S.tech).length&&Math.random()<0.7?TECHS[pick(Object.keys(S.tech))].sector:pick(['Software','Materials','Mobility','Health']);
+    spawnFirm(sec,'lab');
+  }
+  for(var q=S.offers.length-1;q>=0;q--){
+    if(S.offers[q].expires<=S.month){addNews('The bid for '+firmById(S.offers[q].fid).name+' was withdrawn.','info');S.offers.splice(q,1);}
+  }
+}
+function firmById(id){for(var i=0;i<S.firms.length;i++){if(S.firms[i].id===id)return S.firms[i];}return {name:'a firm',val:0,stake:0};}
+function invest(id,amt){
+  var f=firmById(id);if(f.stage!=='seed')return;
+  if(S.cash<amt){toast('Not enough cash.');return;}
+  S.cash-=amt;
+  var post=f.val+amt;f.stake=(f.stake*f.val+amt)/post;f.val=post;f.runway+=Math.max(1,Math.round(amt/f.burn*0.9));
+  toast('Invested '+money(amt)+' in '+f.name);
+}
+function buyShares(id,frac){
+  var f=firmById(id);if(f.stage!=='public')return;
+  frac=Math.min(frac,1-f.stake);if(frac<=0.0001){toast('You already own all of it.');return;}
+  var c=frac*f.val*1.01;
+  if(S.cash<c){toast('Not enough cash. You need '+money(c)+'.');return;}
+  S.cash-=c;f.stake+=frac;
+}
+function sellShares(id,frac){
+  var f=firmById(id);if(f.stage!=='public'&&f.stage!=='seed')return;
+  frac=Math.min(frac,f.stake);if(frac<=0.0001)return;
+  S.cash+=frac*f.val*0.99;f.stake-=frac;
+}
+function acceptOffer(oid){
+  for(var i=0;i<S.offers.length;i++){
+    var o=S.offers[i];if(o.id!==oid)continue;
+    var f=firmById(o.fid),price=f.val*(1+o.prem),got=f.stake*price*0.98+price*0.012;
+    S.cash+=got;f.stage='acquired';f.val=price;f.stake=0;f.acq=0;
+    addNews(o.buyer+' completes its takeover of '+f.name+' for '+money(price)+'. The city collected '+money(got)+'. Expect headquarters job cuts.','warn');
+    S.offers.splice(i,1);return;
+  }
+}
+function rejectOffer(oid){
+  for(var i=0;i<S.offers.length;i++){if(S.offers[i].id===oid){addNews('You turned down the bid for '+firmById(S.offers[i].fid).name+'.','info');S.offers.splice(i,1);return;}}
+}
+function buyout(id){
+  var f=firmById(id);if(f.stage!=='public')return;
+  var c=f.val*1.2*(1-f.stake);
+  if(S.cash<c){toast('Not enough cash. A buyout costs '+money(c)+'.');return;}
+  S.cash-=c;f.stake=1;toast('The city now owns '+f.name+' outright');
+}
+function mergePartner(f){
+  var best=null;
+  for(var i=0;i<S.firms.length;i++){var o=S.firms[i];if(o.id!==f.id&&o.stage==='public'&&(!best||o.val>best.val))best=o;}
+  return best;
+}
+function mergeFirms(id){
+  var a=firmById(id),b=mergePartner(a);if(!b||a.stage!=='public')return;
+  var val=(a.val+b.val)*1.15,stake=(a.stake*a.val+b.stake*b.val)/(a.val+b.val);
+  var fee=val*0.01;S.cash+=fee;
+  var m={id:S.fid++,name:a.name.split(' ')[0]+'-'+b.name.split(' ')[0],sector:a.sector,stage:'public',val:val,stake:stake,runway:0,burn:0,age:0,jobs:Math.round((a.jobs+b.jobs)*0.75),acq:0};
+  a.stage='dead';b.stage='dead';a.jobs=0;b.jobs=0;a.val=0;b.val=0;
+  S.firms.push(m);
+  addNews(a.name+' and '+b.name+' merge into '+m.name+' at a '+money(val)+' valuation. Synergies cut headcount 25%. Deal taxes: '+money(fee)+'.','info');
+}
+
+/* ================= disasters ================= */
+function flammable(i){return (T[i]!==EMPTY&&T[i]!==ROAD&&T[i]!==PIPE)||TER[i]===FOREST;}
+function igniteAt(i,ttl){if(F[i]===0)F[i]=ttl||4;}
+function damageTile(i,n){
+  var t=T[i];
+  if(t===RES||t===COM||t===IND)L[i]=Math.max(0,L[i]-n);
+}
+function relief(){
+  if(S.approval>45){var c=Math.round(2500+S.pop*2.5);S.cash+=c;addNews('Disaster relief: federal aid sends '+money(c)+' to the treasury.','good');}
+}
+function startFire(i){
+  if(i===undefined){
+    var c=[],k;for(k=0;k<N;k++){if(flammable(k)&&(T[k]!==EMPTY||TER[k]===FOREST))c.push(k);}
+    if(!c.length)return;i=pick(c);
+  }
+  igniteAt(i,4);dirty=true;
+  addNews('A fire has broken out and is spreading. Fire stations stop it from jumping tiles.','bad');
+}
+function quake(){
+  var c=[],k,i;for(k=0;k<N;k++){if(T[k]!==EMPTY)c.push(k);}
+  if(!c.length)c.push(rnd(N));
+  var ep=pick(c),ex=ep%MW,ey=(ep/MW)|0,hit=0;
+  for(i=0;i<N;i++){
+    var d=Math.abs(i%MW-ex)+Math.abs(((i/MW)|0)-ey);
+    if(d>9||T[i]===EMPTY)continue;
+    var p=0.7*(1-d/10);
+    if(Math.random()>p)continue;
+    hit++;
+    if(T[i]===ROAD&&Math.random()<0.3){T[i]=EMPTY;B[i]=0;}
+    else if(T[i]===RES||T[i]===COM||T[i]===IND)L[i]=Math.max(0,L[i]-1-(Math.random()<0.4?1:0));
+    else if(T[i]!==ROAD&&Math.random()<0.25)clearAt(i);
+  }
+  for(k=0;k<2+rnd(3);k++){
+    var fx=clamp(ex+rnd(9)-4,0,MW-1),fy=clamp(ey+rnd(9)-4,0,MH-1),fi=fy*MW+fx;
+    if(flammable(fi))igniteAt(fi,4);
+  }
+  shakeUntil=performance.now()+1500;dirty=true;
+  addNews('Earthquake! Buildings are damaged and fires have started. '+hit+' tiles were hit.','bad');relief();
+}
+function flood(){
+  var n=0,i;
+  for(i=0;i<N;i++){
+    if(TER[i]===WATER||EL[i]>2)continue;
+    var x=i%MW,y=(i/MW)|0,near=false;
+    for(var dy=-2;dy<=2&&!near;dy++)for(var dx=-2;dx<=2;dx++){
+      var xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=MW||yy>=MH)continue;
+      if(TER[yy*MW+xx]===WATER){near=true;break;}
+    }
+    if(!near||Math.random()>0.7)continue;
+    FLD[i]=2+rnd(2);n++;
+    if(Math.random()<0.6)damageTile(i,1);
+  }
+  dirty=true;addNews('Flooding along the water. '+n+' low-lying tiles are under water and homes are damaged.','bad');relief();
+}
+function tornado(){
+  var side=rnd(4),x,y,dx,dy;
+  if(side===0){x=0;y=rnd(MH);dx=1;dy=rnd(3)-1;}
+  else if(side===1){x=MW-1;y=rnd(MH);dx=-1;dy=rnd(3)-1;}
+  else if(side===2){x=rnd(MW);y=0;dx=rnd(3)-1;dy=1;}
+  else{x=rnd(MW);y=MH-1;dx=rnd(3)-1;dy=-1;}
+  S.tor={x:x,y:y,dx:dx,dy:dy,steps:16};dirty=true;
+  addNews('A tornado touched down and is tearing across the map.','bad');
+}
+function stepDisasters(g){
+  var i,k,list=[];
+  for(i=0;i<N;i++){if(F[i]>0)list.push(i);if(FLD[i]>0)FLD[i]--;}
+  for(k=0;k<list.length;k++){
+    i=list[k];var covered=g.fireC[i];
+    if(covered&&Math.random()<(T[i]===BATT?0.12:0.5)){F[i]=0;damageTile(i,1);continue;}
+    F[i]--;
+    var nn=nb4(i);
+    for(var q=0;q<nn.length;q++){
+      var n=nn[q];
+      if(F[n]===0&&flammable(n)&&Math.random()<(g.fireC[n]?0.08:(T[i]===BATT?0.55:0.3)))F[n]=3+rnd(2);
+    }
+    if(F[i]===0){
+      if(T[i]===EMPTY&&TER[i]===FOREST)TER[i]=GRASS;
+      else if(T[i]===RES||T[i]===COM||T[i]===IND)L[i]=0;
+      else if(T[i]!==EMPTY)clearAt(i);
+    }
+  }
+  if(S.tor){
+    var tr=S.tor;
+    for(var s=0;s<2;s++){
+      tr.x+=tr.dx;tr.y+=tr.dy;if(Math.random()<0.4)tr.y+=rnd(3)-1;if(Math.random()<0.2)tr.x+=rnd(3)-1;
+      if(tr.x<0||tr.y<0||tr.x>=MW||tr.y>=MH){tr.steps=0;break;}
+      var ti=tr.y*MW+tr.x,tn=[ti].concat(nb4(ti));
+      for(k=0;k<tn.length;k++){
+        var t2=tn[k];
+        if(T[t2]===RES||T[t2]===COM||T[t2]===IND){if(Math.random()<0.7)L[t2]=0;else L[t2]=Math.max(0,L[t2]-1);}
+        else if(T[t2]!==EMPTY&&T[t2]!==ROAD&&Math.random()<0.6)clearAt(t2);
+        if(TER[t2]===FOREST&&Math.random()<0.5)TER[t2]=GRASS;
+      }
+      tr.steps--;
+    }
+    if(tr.steps<=0){S.tor=null;addNews('The tornado has dissipated.','info');relief();}
+    dirty=true;
+  }
+}
+function triggerDisaster(kind){
+  if(!S||S.over)return;
+  if(kind==='fire')startFire();else if(kind==='quake')quake();else if(kind==='flood')flood();else if(kind==='tornado')tornado();
+  ui();
+}
+function animOn(){
+  if(S&&S.tor)return true;
+  if(performance.now()<shakeUntil)return true;
+  for(var i=0;i<N;i++){if(F[i]>0||FLD[i]>0)return true;}
+  return false;
+}
+
+/* ================= events ================= */
+var EVENTS=[
+  {w:3,tone:'bad',text:'Port strike shuts the docks. Materials cost more and goods run short.',fn:function(){S.shock+=0.7;}},
+  {w:2,tone:'bad',text:'Chip shortage hits factories and construction crews.',fn:function(){S.shock+=0.45;}},
+  {w:2,tone:'bad',text:'Fuel prices spike. Power plants cost more to run.',fn:function(){S.shock+=0.5;}},
+  {w:2,tone:'bad',text:'A blocked shipping lane delays every container in the world.',fn:function(){S.shock+=0.85;}},
+  {w:2,tone:'warn',text:'Housing frenzy: bidding wars push home prices up fast.',fn:function(){S.bubble+=1.3;}},
+  {w:2,tone:'bad',text:'Recession: exports fall and wages soften.',fn:function(){S.recession=14;S.mkt*=0.9;}},
+  {w:2,tone:'info',text:'Remote work boom: families want space and offices empty out.',fn:function(){S.remote=18;}},
+  {w:2,tone:'good',text:'A federal infrastructure grant lands in the treasury.',fn:function(){S.cash+=Math.round(4000+S.pop*3);}},
+  {w:1.5,tone:'good',text:'A tech firm moves its headquarters here and workers follow.',fn:function(){var g=scan();S.pop=Math.round(Math.min(g.resCap,S.pop+0.15*g.resCap));}},
+  {w:1,tone:'bad',fn:function(){if(S.crash===0)startCrash();}},
+  {w:1.5,tone:'warn',text:'Tech euphoria: investors pile into anything with a pitch deck.',fn:function(){S.mktBubble+=1.6;}},
+  {w:1.5,tone:'warn',text:'Inflation scare: households brace for higher prices and demand wage hikes.',fn:function(){S.infl+=1.5;}},
+  {w:1.5,tone:'bad',text:'Heatwave: air conditioners push power demand up.',fn:function(){S.heat=4;}},
+  {w:1.2,tone:'bad',text:'Drought: reservoirs fall and water supply drops 30%.',fn:function(){S.drought=8;}},
+  {w:2,tone:'bad',dis:true,fn:function(){startFire();}},
+  {w:1.2,tone:'bad',dis:true,fn:function(){flood();}},
+  {w:1,tone:'bad',dis:true,fn:function(){quake();}},
+  {w:1,tone:'bad',dis:true,fn:function(){tornado();}}
+];
+function fireEvent(){
+  var pool=EVENTS.filter(function(ev){return S.disasters!==false||!ev.dis;}),tot=0,i;
+  for(i=0;i<pool.length;i++)tot+=pool[i].w;
+  var r=Math.random()*tot,ev=pool[0];
+  for(i=0;i<pool.length;i++){r-=pool[i].w;if(r<=0){ev=pool[i];break;}}
+  ev.fn();if(ev.text)addNews(ev.text,ev.tone);S.lastEvent=S.month;
+}
+
+/* ================= development ================= */
+function develop(e){
+  var g=e.g,f=g.flags,kinds=[[RES,e.Rdem],[COM,e.Cdem],[IND,e.Idem]],i;
+  for(var q=0;q<3;q++){
+    var type=kinds[q][0],dem=kinds[q][1],elig=[],built=[];
+    for(i=0;i<N;i++){
+      if(T[i]!==type)continue;
+      if(L[i]>0)built.push(i);
+      if(f[i]===7&&L[i]<3&&F[i]===0&&FLD[i]===0){
+        if(type===RES&&L[i]===2&&g.parkCov<0.3)continue;
+        elig.push(i);
+      }
+    }
+    if(dem>0.03&&elig.length){
+      var n=Math.round(dem*e.appetite*(1+elig.length*0.14)*(0.5+Math.random()*1.5));
+      if(n<1&&dem>0.12&&Math.random()<Math.min(1,dem*e.appetite*1.5))n=1;
+      n=Math.min(n,elig.length);
+      for(var k=0;k<n;k++){
+        var fresh=elig.filter(function(ix){return L[ix]===0;});
+        var pool=(fresh.length&&Math.random()<0.75)?fresh:elig;
+        var ti=pool[rnd(pool.length)];
+        L[ti]=Math.min(3,L[ti]+1);elig.splice(elig.indexOf(ti),1);
+      }
+    }
+    if(S.pop>=30&&built.length&&dem<-0.45&&Math.random()<0.3)L[built[rnd(built.length)]]--;
+  }
+  for(i=0;i<N;i++){
+    var t=T[i];
+    if((t===RES||t===COM||t===IND)&&L[i]>0&&f[i]!==7&&Math.random()<0.04)L[i]--;
+  }
+}
+
+/* ================= monthly tick ================= */
+function tick(){
+  var e=computeEconomy();
+  stepMacro(e);
+  S.cash+=e.net;S.shopFill=e.shopFill;
+  var delta=(e.targetPop-S.pop)*0.15;
+  if(Math.abs(delta)<1&&Math.abs(e.targetPop-S.pop)>=1)delta=delta<0?-1:1;
+  S.pop=Math.max(0,Math.round(S.pop+delta));
+  if(e.g.resCap===0&&S.pop<3)S.pop=0;
+  S.approval+=(e.apprTarget-S.approval)*0.2;
+  stepResearch(e);E=e;stepConstruction();stepBatteries(e.g);stepFirms();
+  stepDisasters(e.g);
+  develop(e);
+  S.month++;
+  if(S.month>=10&&S.month-S.lastEvent>5&&Math.random()<0.09)fireEvent();
+  var hh=S.hist;
+  hh.rate.push(S.rate);hh.infl.push(S.infl);hh.mort.push(S.mort);hh.hpi.push(S.hpi);hh.supply.push(1+S.shock);hh.pop.push(S.pop);hh.mkt.push(S.mkt);
+  if(hh.rate.length>180){for(var key in hh){hh[key].shift();}}
+  if(S.pop>S.peak)S.peak=S.pop;
+  var r=rankIdx(S.peak);
+  if(r>S.rank){S.rank=r;toast('Your city is now a '+RANKS[r][1]);addNews('Census: your city has grown into a '+RANKS[r][1]+'.','good');}
+  if(!S.won&&S.peak>=3500){S.won=true;addNews('Metropolis! Your skyline is the envy of the region. Keep it thriving.','good');}
+  if(S.approval<25)S.lowApproval++;else S.lowApproval=0;
+  if(S.cash<-4000)S.lowCash++;else S.lowCash=0;
+  if(S.cash<0&&S.cash>=-4000&&S.month%3===0)toast('Overdrawn. Borrow, raise taxes or cut costs.');
+  if(S.lowApproval>=8)return endGame('recall');
+  if(S.lowCash>=2)return endGame('bankrupt');
+  if(S.month%6===0)save();
+  dirty=true;mmDirty=true;ui();
+}
+function endGame(kind){
+  S.over=kind;speed=0;
+  var best=parseInt(fetchStore(BEST_KEY)||'0',10)||0;
+  if(S.peak>best)store(BEST_KEY,String(S.peak));
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  showSplash('over');ui();
+}
+
+/* ================= building ================= */
+function spend(c){
+  if(S.cash<c){toast('Not enough cash. You need '+money(c)+'.');return false;}
+  S.cash-=c;return true;
+}
+function techLocked(id){var o=OBJ[id];return o&&o.tech&&!S.tech[o.tech];}
+function nearWater(i){var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)return true;}return false;}
+function buildable(i){return TER[i]!==WATER&&TER[i]!==ROCK&&T[i]===EMPTY;}
+function place(i,id,t){
+  if(!spend(costFor(id,i)))return false;
+  T[i]=t;L[i]=(OBJ[id]&&OBJ[id].build)||0;B[i]=0;if(TER[i]===FOREST)TER[i]=GRASS;return true;
+}
+function placeBuilding(ax,ay,id){
+  var o=OBJ[id],sz=sizeOf(id),tiles=footTiles(ax,ay,sz),a=ay*MW+ax,k,sum=0;
+  if(!spend(costFor(id,a)))return false;
+  for(k=0;k<tiles.length;k++)sum+=EL[tiles[k]];
+  var lvl=Math.round(sum/tiles.length);
+  for(k=0;k<tiles.length;k++){var t=tiles[k];T[t]=SUB;PAR[t]=a;EL[t]=lvl;L[t]=0;B[t]=0;if(TER[t]===FOREST)TER[t]=GRASS;}
+  T[a]=o.t;L[a]=o.build||0;PAR[a]=a;
+  return true;
+}
+var pending=null;
+var lastToastKey='';
+function say(k,msg){if(k!==lastToastKey){lastToastKey=k;toast(msg);}}
+function act(i,first){
+  var t=T[i],ok=false,o=OBJ[tool];
+  if(tool!=='inspect'&&pending&&pending.tool!==tool)pending=null;
+  if(tool==='inspect'){pending=null;inspectIdx=rootOf(i);showTile(i);dirty=true;return;}
+  if(tool==='bull'){
+    if(T[i]!==EMPTY){
+      var rt=rootOf(i),ro=BYT[T[rt]],ar=(ro&&ro.size)?ro.size[0]*ro.size[1]:1;
+      if(spend(10*ar)){if(T[i]===WATER)T[i]=EMPTY;clearAt(i);ok=true;}
+    }
+    else if(TER[i]===FOREST){if(spend(10)){TER[i]=GRASS;ok=true;}}
+    if(ok){dirty=true;mmDirty=true;ui();}
+    return;
+  }
+  if(!o)return;
+  if(techLocked(tool)){if(first)toast('Research '+TECHS[o.tech].name+' to unlock this.');return;}
+  if(o.req&&S.peak<o.req){if(first)toast('Capital project unlocks at '+o.req.toLocaleString('en-US')+' people.');return;}
+  if(tool==='road'){
+    if(TER[i]===ROCK){if(first)toast('Too steep. Roads cannot cross mountains.');return;}
+    if(TER[i]===WATER){if(T[i]===EMPTY&&spend(Math.ceil(costFor('road')*4))){T[i]=ROAD;B[i]=1;ok=true;}}
+    else if(T[i]===EMPTY)ok=place(i,'road',ROAD);
+  }else if(tool==='res'||tool==='com'||tool==='ind'){
+    var zt=o.t;
+    if(TER[i]===WATER||TER[i]===ROCK){if(first)toast(TER[i]===WATER?'You cannot zone water.':'Too steep to build on.');return;}
+    if(T[i]===EMPTY)ok=place(i,tool,zt);
+    else if((t===RES||t===COM||t===IND)&&L[i]===0&&t!==zt){if(spend(costFor(tool,i))){T[i]=zt;ok=true;}}
+  }else if(sizeOf(tool)[0]*sizeOf(tool)[1]>1){
+    if(!first)return;
+    var sz=sizeOf(tool),anc=anchorFor(i,sz),ax=anc[0],ay=anc[1],err=checkSite(ax,ay,tool),key=ay*MW+ax;
+    if(err){pending=null;toast(err);dirty=true;return;}
+    if(!pending||pending.tool!==tool||pending.a!==key){
+      pending={tool:tool,a:key};dirty=true;
+      toast('Tap the same spot again to build for '+money(costFor(tool,key))+'.');return;
+    }
+    pending=null;ok=placeBuilding(ax,ay,tool);
+  }else{
+    if(!first&&!(tool==='pline'||tool==='pipe'))return;
+    if(TER[i]===WATER||TER[i]===ROCK){if(first)toast(TER[i]===WATER?'That is water.':'Too steep to build on.');return;}
+    if(T[i]!==EMPTY){if(first)toast('That tile is taken. Bulldoze it first.');return;}
+    if(o.shore&&!nearWater(i)){if(first)toast('The '+TOOLS[tool].name.toLowerCase()+' must touch the water.');return;}
+    ok=place(i,tool,o.t);
+  }
+  if(ok){dirty=true;mmDirty=true;ui();}
+}
+var inspectIdx=-1;
+function showTile(i){
+  i=rootOf(i);
+  var t=T[i],f=scan().flags[i],s='',nm={};
+  nm[RES]='Homes';nm[COM]='Shops';nm[IND]='Factory';
+  var ter=TER[i]===WATER?'Water':TER[i]===FOREST?'Forest':TER[i]===ROCK?'Mountain':'Grass';
+  var base=ter+', elevation '+EL[i]+'. ';
+  if(t===EMPTY){s=base+(TER[i]===FOREST?'Costs 35% more to build on.':'')+(TER[i]===ROCK?'Too steep to build.':'');}
+  else if(t===ROAD)s=B[i]?'Bridge over water.':'Road. '+base;
+  else if(t===RES||t===COM||t===IND){
+    var lv=L[i];
+    if(lv===0)s=nm[t]+' zone, waiting for a builder.';
+    else if(t===RES)s='Homes, level '+lv+': houses '+RES_CAP[lv]+' people.';
+    else if(t===COM)s='Shops, level '+lv+': '+COM_JOBS[lv]+' jobs.';
+    else s='Factory, level '+lv+': '+IND_JOBS[lv]+' jobs.';
+    if(!(f&1))s+=' Needs a road beside it.';
+    if(!(f&2))s+=' No power.';
+    if(!(f&4))s+=' No water.';
+  }else{
+    var o=BYT[t];s=TOOLS[o.id].name+'. '+TOOLS[o.id].desc;
+    if(o.build&&L[i]>0)s='Under construction: '+L[i]+' more months. '+s;
+    if(o.pu&&!(f&2))s+=' Not powered.';
+    if(o.wu&&!(f&4))s+=' No water.';
+  }
+  $('info').textContent=s;
+}
+
+/* ================= new game / save ================= */
+function newGame(){
+  T=new Array(N).fill(EMPTY);L=new Array(N).fill(0);B=new Array(N).fill(0);F=new Uint8Array(N);FLD=new Uint8Array(N);PAR=new Int32Array(N).fill(-1);pending=null;
+  var st=genTerrain();
+  S=freshState(st);tool='inspect';group='power';speed=1;inspectIdx=-1;handMode=true;
+  camSet(st.x+0.5,st.y+0.5,0.62,0);
+  addNews('Welcome, mayor. You set both fiscal and monetary policy. Build power and water, lay roads, then zone homes, shops and factories.','info');
+  closeSplash();ui();toast('Pick Power, then a plant. Big builds ask for a second tap.');
+  mmDirty=true;dirty=true;
+}
+function save(){
+  if(!S||S.over)return;
+  store(SAVE_KEY,JSON.stringify({v:3,S:S,T:T,L:L,B:B,TER:TER,EL:EL,F:Array.prototype.slice.call(F),FLD:Array.prototype.slice.call(FLD),PAR:Array.prototype.slice.call(PAR)}));
+}
+function hasSave(){return !!fetchStore(SAVE_KEY);}
+function loadSave(){
+  try{
+    var d=JSON.parse(fetchStore(SAVE_KEY));
+    if(!d||d.v!==3||d.T.length!==N||d.EL.length!==N||!d.S)return false;
+    T=d.T;L=d.L;B=d.B;TER=d.TER;EL=d.EL;F=Uint8Array.from(d.F);FLD=Uint8Array.from(d.FLD);PAR=Int32Array.from(d.PAR||new Array(N).fill(-1));S=d.S;S.dins=!!S.dins;pending=null;S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;
+    for(var i=0;i<N;i++){SHORE[i]=0;if(TER[i]===WATER)continue;var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}}
+    tool='inspect';group='zones';speed=1;inspectIdx=-1;
+    camSet(S.start.x+0.5,S.start.y+0.5,0.62,0);mmDirty=true;dirty=true;
+    return true;
+  }catch(e){return false;}
+}
+
+/* ================= camera ================= */
+var cam={wx:20,wy:20,z:0.62,rot:0},VW=360,VH=420,ctx=null,hoverIdx=-1;
+var TWb=64,THb=32,ESb=9,BUb=17;
+function camSet(wx,wy,z,rot){cam.wx=wx;cam.wy=wy;cam.z=z;cam.rot=rot;dirty=true;}
+function rotUV(u,v,r){switch(r){case 0:return [u,v];case 1:return [MW-v,u];case 2:return [MW-u,MH-v];default:return [v,MH-u];}}
+function rotInvUV(ru,rv,r){switch(r){case 0:return [ru,rv];case 1:return [rv,MW-ru];case 2:return [MW-ru,MH-rv];default:return [MH-rv,ru];}}
+function rotTile(x,y,r){switch(r){case 0:return [x,y];case 1:return [MW-1-y,x];case 2:return [MW-1-x,MH-1-y];default:return [y,MW-1-x];}}
+function invTile(rx,ry,r){switch(r){case 0:return [rx,ry];case 1:return [ry,MW-1-rx];case 2:return [MW-1-rx,MH-1-ry];default:return [MW-1-ry,rx];}}
+function dirRot(dx,dy,r){switch(r){case 0:return [dx,dy];case 1:return [-dy,dx];case 2:return [-dx,-dy];default:return [dy,-dx];}}
+function view(){
+  var z=cam.z,tw=TWb*z,th=THb*z,es=ESb*z,bu=BUb*z,c=rotUV(cam.wx,cam.wy,cam.rot);
+  return {z:z,tw:tw,th:th,es:es,bu:bu,ox:VW/2-(c[0]-c[1])*tw/2,oy:VH/2-(c[0]+c[1])*th/2+2*es};
+}
+function clampCam(){cam.wx=clamp(cam.wx,0,MW);cam.wy=clamp(cam.wy,0,MH);cam.z=clamp(cam.z,0.3,1.7);}
+function panBy(dx,dy){
+  var v=view(),du=dx/v.tw+dy/v.th,dv=dy/v.th-dx/v.tw,c=rotUV(cam.wx,cam.wy,cam.rot);
+  var w=rotInvUV(c[0]-du,c[1]-dv,cam.rot);cam.wx=w[0];cam.wy=w[1];clampCam();dirty=true;
+}
+function zoomAt(f,sx,sy){
+  var v=view(),nz=clamp(cam.z*f,0.3,1.7);
+  if(sx===undefined){cam.z=nz;dirty=true;return;}
+  var a=(sx-v.ox)*2/v.tw,b=(sy-v.oy+v.es*2)*2/v.th,ru=(a+b)/2,rv=(b-a)/2;
+  cam.z=nz;
+  var v2=view(),X=v2.ox+(ru-rv)*v2.tw/2,Y=v2.oy+(ru+rv)*v2.th/2-2*v2.es;
+  panBy(sx-X,sy-Y);dirty=true;
+}
+
+/* ================= colours ================= */
+var shadeCache={};
+function shade(hex,f){
+  var k=hex+f;if(shadeCache[k])return shadeCache[k];
+  var n=parseInt(hex.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;
+  if(f<1){r*=f;g*=f;b*=f;}else{var t=f-1;r+=(255-r)*t;g+=(255-g)*t;b+=(255-b)*t;}
+  return shadeCache[k]='rgb('+Math.round(r)+','+Math.round(g)+','+Math.round(b)+')';
+}
+function tri(hex){return {t:shade(hex,1.14),l:hex,r:shade(hex,0.72)};}
+var CL={cream:tri('#eadfc4'),brick:tri('#c98a68'),concrete:tri('#cfcac0'),tower:tri('#dcd6c9'),shop:tri('#5f93d9'),office:tri('#78a8e0'),glass:tri('#4a7bc4'),
+  shed:tri('#d9b857'),fact:tri('#c9a24a'),plant:tri('#8e98a3'),pump:tri('#d6dde4'),police:tri('#3b5db0'),fire:tri('#c8483a'),school:tri('#b27b4a'),
+  lab:tri('#eef2f6'),stone:tri('#e4dfd3'),yellow:tri('#e8b923'),white:tri('#f2f4f6'),dc:tri('#444d59'),metal:tri('#7b8590'),deck:tri('#9ca3ab'),red:tri('#c0463a'),blue:tri('#3d6fb7'),green:tri('#4f9d5e'),bio:tri('#d9e6e0')};
+var ROOF={a:'#8f3f2b',l:'#b5523b',r:'#7d3624',t:'#c9654b'};
+var ZC={};ZC[RES]='#38a169';ZC[COM]='#3b82d6';ZC[IND]='#d9a520';
+
+function groundColor(i,x,y){
+  var t=TER[i],e=EL[i],c;
+  if(t===WATER)return '#4f9fca';
+  if(t===ROCK)c=e>=7?'#eef2f5':(e===6?'#9a9da3':'#8a8d93');
+  else if(t===FOREST)c='#5a955b';
+  else if(SHORE[i]&&e<=1)c='#e1d3a0';
+  else c=['#86b86f','#86b86f','#8dbd6f','#9cbf70','#aebc78','#bdb783'][clamp(e,0,5)];
+  return ((x+y)&1)?shade(c,0.965):c;
+}
+function sideColors(i){
+  if(TER[i]===ROCK)return ['#767a80','#5c6065'];
+  if(SHORE[i]&&EL[i]<=1)return ['#cdbd8b','#b3a373'];
+  return ['#8a6a4b','#6f5439'];
+}
+
+/* ================= low-level drawing in tile-local coordinates ================= */
+var gX0=0,gY0=0,gHW=32,gHH=16,gBU=17,hz=1,gWu=1,gWv=1,gS=1,gHS=1;
+function PX(lx,ly){return gX0+(lx*gWu-ly*gWv)*gHW;}
+function PY(lx,ly,h){return gY0+(lx*gWu+ly*gWv)*gHH-h*gBU*gHS;}
+function quad(x1,y1,x2,y2,x3,y3,x4,y4,fill){
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.lineTo(x4,y4);ctx.closePath();ctx.fillStyle=fill;ctx.fill();
+}
+function face(fill,x1,y1,h1,x2,y2,h2,x3,y3,h3,x4,y4,h4){
+  quad(PX(x1,y1),PY(x1,y1,h1),PX(x2,y2),PY(x2,y2,h2),PX(x3,y3),PY(x3,y3,h3),PX(x4,y4),PY(x4,y4,h4),fill);
+}
+function boxL(x0,y0,x1,y1,hb,ht,c){
+  face(c.r,x1,y0,hb,x1,y1,hb,x1,y1,ht,x1,y0,ht);
+  face(c.l,x0,y1,hb,x1,y1,hb,x1,y1,ht,x0,y1,ht);
+  face(c.t,x0,y0,ht,x1,y0,ht,x1,y1,ht,x0,y1,ht);
+}
+function roofL(x0,y0,x1,y1,hb,hp){
+  var ym=(y0+y1)/2;
+  face(ROOF.t,x0,y0,hb,x1,y0,hb,x1,ym,hp,x0,ym,hp);
+  face(ROOF.r,x1,y0,hb,x1,y1,hb,x1,ym,hp,x1,ym,hp);
+  face(ROOF.l,x0,y1,hb,x1,y1,hb,x1,ym,hp,x0,ym,hp);
+}
+function winGrid(x0,y0,x1,y1,hb,ht,rows,cols,seed,lit,dark){
+  var r,c,wH=(ht-hb)*(0.8/rows)*0.55,hh,a,b,col;
+  for(r=0;r<rows;r++){
+    hh=hb+(ht-hb)*(0.1+r*(0.8/rows));
+    for(c=0;c<cols;c++){
+      col=((c*7+r*3+seed)%5<2)?lit:dark;
+      a=x0+(x1-x0)*(0.12+c*(0.76/cols));b=a+(x1-x0)*(0.76/cols)*0.55;
+      face(col,a,y1,hh,b,y1,hh,b,y1,hh+wH,a,y1,hh+wH);
+      a=y0+(y1-y0)*(0.12+c*(0.76/cols));b=a+(y1-y0)*(0.76/cols)*0.55;
+      face(col,x1,a,hh,x1,b,hh,x1,b,hh+wH,x1,a,hh+wH);
+    }
+  }
+}
+function cyl(cx,cy,r,hb,ht,col){
+  var X=PX(cx,cy),Yb=PY(cx,cy,hb),Yt=PY(cx,cy,ht),rx=r*1.414*gHW*gS,ry=r*1.414*gHH*gS;
+  ctx.fillStyle=col;ctx.fillRect(X-rx,Yt,rx*2,Yb-Yt);
+  ctx.beginPath();ctx.ellipse(X,Yb,rx,ry,0,0,Math.PI);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(X,Yt,rx,Yb-Yt);
+  ctx.beginPath();ctx.ellipse(X,Yb,rx,ry,0,0,Math.PI);ctx.fill();
+  ctx.fillStyle=shade(col.charAt(0)==='#'?col:'#aaaaaa',1.2);
+  ctx.beginPath();ctx.ellipse(X,Yt,rx,ry,0,0,6.283);ctx.fill();
+}
+function tree(lx,ly,size,c1,c2){
+  var X=PX(lx,ly),Yb=PY(lx,ly,0),rx=size*gHW*0.9*gS,hgt=size*gBU*3.2*gS;
+  ctx.fillStyle='#6b4a2b';ctx.fillRect(X-rx*0.12,Yb-hgt*0.28,rx*0.24,hgt*0.3);
+  ctx.fillStyle=c1;ctx.beginPath();ctx.moveTo(X,Yb-hgt);ctx.lineTo(X-rx,Yb-hgt*0.22);ctx.lineTo(X+rx,Yb-hgt*0.22);ctx.closePath();ctx.fill();
+  ctx.fillStyle=c2;ctx.beginPath();ctx.moveTo(X,Yb-hgt);ctx.lineTo(X,Yb-hgt*0.22);ctx.lineTo(X+rx,Yb-hgt*0.22);ctx.closePath();ctx.fill();
+}
+function smoke(lx,ly,h){
+  var X=PX(lx,ly),Y=PY(lx,ly,h),r=gHW*0.2*gS;
+  ctx.fillStyle='rgba(215,215,215,.55)';ctx.beginPath();ctx.arc(X+r*0.2,Y-r*0.8,r,0,6.283);ctx.fill();
+  ctx.fillStyle='rgba(225,225,225,.42)';ctx.beginPath();ctx.arc(X+r*0.9,Y-r*2.3,r*1.25,0,6.283);ctx.fill();
+  ctx.fillStyle='rgba(235,235,235,.3)';ctx.beginPath();ctx.arc(X+r*1.6,Y-r*4,r*1.5,0,6.283);ctx.fill();
+}
+function dome(lx,ly,h,r,fill,glow){
+  var X=PX(lx,ly),Y=PY(lx,ly,h),rx=r*1.414*gHW*gS,ry=r*1.414*gHH*gS,rv=r*gBU*2.2*gS*gHS;
+  if(glow){ctx.fillStyle=glow;ctx.beginPath();ctx.ellipse(X,Y-rv*0.35,rx*1.35,rv*0.95,0,0,6.283);ctx.fill();}
+  ctx.fillStyle=fill;ctx.beginPath();ctx.ellipse(X,Y,rx,rv,0,Math.PI,0);ctx.ellipse(X,Y,rx,ry,0,0,Math.PI);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.ellipse(X-rx*0.3,Y-rv*0.55,rx*0.28,rv*0.22,-0.5,0,6.283);ctx.fill();
+}
+function flame(X,Y,s,ph){
+  var tt=performance.now()/160+ph,sw=Math.sin(tt)*s*0.18,hh=s*(1+0.25*Math.sin(tt*1.7));
+  ctx.fillStyle='rgba(255,90,20,.92)';ctx.beginPath();ctx.moveTo(X-s*0.45,Y);ctx.quadraticCurveTo(X-s*0.35,Y-hh*0.6,X+sw,Y-hh);ctx.quadraticCurveTo(X+s*0.4,Y-hh*0.5,X+s*0.45,Y);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(255,205,60,.95)';ctx.beginPath();ctx.moveTo(X-s*0.22,Y);ctx.quadraticCurveTo(X-s*0.15,Y-hh*0.4,X+sw*0.7,Y-hh*0.65);ctx.quadraticCurveTo(X+s*0.2,Y-hh*0.35,X+s*0.22,Y);ctx.closePath();ctx.fill();
+}
+
+/* ================= building shapes ================= */
+function bHeight(i){
+  if(T[i]===SUB&&PAR[i]>=0)i=PAR[i];
+  var t=T[i],l=L[i],sc=1,bo=BYT[t];
+  if(bo&&bo.size){var s2=(bo.size[0]+bo.size[1])/2;sc=0.5+0.5*s2;}
+  return bHeight0(i,t,l)*sc;
+}
+function bHeight0(i,t,l){
+  if(t===RES)return [0,0.95,1.7,3.7][l];
+  if(t===COM)return [0,0.7,2.2,5.5][l];
+  if(t===IND)return [0,0.8,2.2,3.0][l];
+  if(t===PLANT)return 2.3;if(t===PLINE)return 1.7;if(t===FUSION)return 1.4;if(t===SOLAR)return 0.5;
+  if(t===LAB||t===DC||t===POLICE||t===PUMP)return 1.1;if(t===FIRE)return 1.8;if(t===SCHOOL)return 1.5;
+  if(t===PORT)return 1.8;if(t===PARK)return 0.9;if(t===DESAL||t===BIO)return 1.0;
+  if(t===GAS)return 1.7;if(t===NUKE)return 2.2;if(t===HYDRO)return 1.0;if(t===WIND)return 2.8;if(t===STADIUM)return 1.0;if(t===AIRPORT)return 1.5;
+  if(t===BATT)return 0.95;if(t===UNIV)return 1.6;if(t===CONV)return 1.1;if(t===METRO)return 1.2;if(t===EXCH)return 1.3;
+  return 0;
+}
+function drawConstruction(left,total){
+  var prog=1-left/total,k;
+  quad(PX(0.04,0.04),PY(0.04,0.04,0),PX(0.96,0.04),PY(0.96,0.04,0),PX(0.96,0.96),PY(0.96,0.96,0),PX(0.04,0.96),PY(0.04,0.96,0),'#8f9399');
+  boxL(0.12,0.12,0.88,0.88,0,0.12+prog*1.5,CL.deck);
+  ctx.strokeStyle='rgba(70,60,40,.8)';ctx.lineWidth=Math.max(1,hz*1.4);ctx.beginPath();
+  var cs=[[0.1,0.1],[0.9,0.1],[0.9,0.9],[0.1,0.9]];
+  for(k=0;k<4;k++){ctx.moveTo(PX(cs[k][0],cs[k][1]),PY(cs[k][0],cs[k][1],0));ctx.lineTo(PX(cs[k][0],cs[k][1]),PY(cs[k][0],cs[k][1],0.4+prog*1.6));}
+  ctx.stroke();
+  boxL(0.8,0.08,0.86,0.14,0,2.6,CL.yellow);
+  ctx.strokeStyle='#e8b923';ctx.lineWidth=Math.max(1.5,hz*2);ctx.beginPath();
+  ctx.moveTo(PX(0.83,0.11),PY(0.83,0.11,2.6));ctx.lineTo(PX(0.2,0.55),PY(0.2,0.55,2.6));ctx.stroke();
+  ctx.strokeStyle='#444';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PX(0.3,0.5),PY(0.3,0.5,2.6));ctx.lineTo(PX(0.3,0.5),PY(0.3,0.5,1.7));ctx.stroke();
+}
+function drawObject(i,t,l,detail,x,y,g){
+  var seed=(x*7+y*13)|0,lit='rgba(255,243,190,.9)',dk='rgba(40,58,90,.55)',k,ob=BYT[t];
+  if(ob&&ob.build&&L[i]>0){drawConstruction(L[i],ob.build);return;}
+  switch(t){
+    case GAS:
+      boxL(0.1,0.38,0.9,0.92,0,0.7,CL.plant);cyl(0.28,0.2,0.07,0,1.7,'#9aa3ab');cyl(0.52,0.2,0.07,0,1.7,'#9aa3ab');
+      cyl(0.76,0.62,0.15,0.7,1.05,'#d6dce2');
+      if(detail)face('#e89a3c',0.2,0.92,0.15,0.5,0.92,0.15,0.5,0.92,0.45,0.2,0.92,0.45);
+      break;
+    case BATT:
+      quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#9aa09a');
+      var cb=[[0.07,0.08,0.47,0.44],[0.53,0.08,0.93,0.44],[0.07,0.56,0.47,0.92],[0.53,0.56,0.93,0.92]];
+      for(k=0;k<4;k++){
+        boxL(cb[k][0],cb[k][1],cb[k][2],cb[k][3],0,0.8,CL.white);
+        if(detail){face('#f2b61f',cb[k][0],cb[k][3],0.5,cb[k][2],cb[k][3],0.5,cb[k][2],cb[k][3],0.58,cb[k][0],cb[k][3],0.58);
+          face('#6b7480',cb[k][0]+0.05,cb[k][3],0.15,cb[k][0]+0.14,cb[k][3],0.15,cb[k][0]+0.14,cb[k][3],0.4,cb[k][0]+0.05,cb[k][3],0.4);}
+      }
+      break;
+    case NUKE:
+      boxL(0.05,0.35,0.95,0.95,0,0.45,CL.concrete);
+      cyl(0.72,0.28,0.2,0,2.3,'#d4d0c8');smoke(0.72,0.28,2.3);
+      cyl(0.3,0.66,0.2,0.45,1.3,'#dcd8cf');dome(0.3,0.66,1.3,0.2,'#ebe7de');
+      cyl(0.62,0.72,0.12,0.45,1.0,'#c4c9cf');
+      if(detail)face('#8d6fd1',0.12,0.95,0.12,0.88,0.95,0.12,0.88,0.95,0.24,0.12,0.95,0.24);
+      break;
+    case HYDRO:
+      quad(PX(0.0,0.0),PY(0.0,0.0,0.85),PX(1.0,0.0),PY(1.0,0.0,0.85),PX(1.0,0.4),PY(1.0,0.4,0.85),PX(0.0,0.4),PY(0.0,0.4,0.85),'#5aaee0');
+      boxL(0.0,0.4,1.0,0.62,0,1.0,CL.concrete);
+      face('#8cc9ee',0.15,0.62,0.8,0.3,0.62,0.8,0.3,0.62,0.05,0.15,0.62,0.05);face('#8cc9ee',0.6,0.62,0.8,0.75,0.62,0.8,0.75,0.62,0.05,0.6,0.62,0.05);
+      boxL(0.3,0.7,0.7,0.95,0,0.5,CL.pump);
+      break;
+    case WIND:
+      quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#8fbf78');
+      var tps=[[0.2,0.2],[0.72,0.28],[0.32,0.7],[0.82,0.8]];
+      for(k=0;k<tps.length;k++){
+        var tx2=tps[k][0],ty2=tps[k][1];
+        boxL(tx2-0.018,ty2-0.018,tx2+0.018,ty2+0.018,0,1.6,CL.white);
+        var hx=PX(tx2,ty2),hy=PY(tx2,ty2,1.65),bl=gBU*gHS*0.8,a0=((x*53+y*29+k*80)%360)*Math.PI/180;
+        ctx.strokeStyle='#f4f6f8';ctx.lineWidth=Math.max(1.3,hz*2.2);ctx.lineCap='round';ctx.beginPath();
+        for(var kb=0;kb<3;kb++){var an=a0+kb*2.094;ctx.moveTo(hx,hy);ctx.lineTo(hx+Math.cos(an)*bl*0.75,hy+Math.sin(an)*bl);}
+        ctx.stroke();ctx.lineCap='butt';ctx.fillStyle='#d0d6dc';ctx.beginPath();ctx.arc(hx,hy,Math.max(1.8,hz*2.6),0,6.283);ctx.fill();
+      }
+      break;
+    case STADIUM:
+      cyl(0.5,0.5,0.44,0,0.75,'#d9d4ca');
+      var sx=PX(0.5,0.5),sy=PY(0.5,0.5,0.75);ctx.fillStyle='#4f9d5e';ctx.beginPath();ctx.ellipse(sx,sy,0.3*1.414*gHW,0.3*1.414*gHH,0,0,6.283);ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(sx,sy,0.14*1.414*gHW,0.14*1.414*gHH,0,0,6.283);ctx.stroke();
+      boxL(0.04,0.04,0.1,0.1,0,1.7,CL.metal);boxL(0.9,0.04,0.96,0.1,0,1.7,CL.metal);boxL(0.04,0.9,0.1,0.96,0,1.7,CL.metal);boxL(0.9,0.9,0.96,0.96,0,1.7,CL.metal);
+      break;
+    case AIRPORT:
+      quad(PX(0.0,0.42),PY(0.0,0.42,0.02),PX(1.0,0.42),PY(1.0,0.42,0.02),PX(1.0,0.58),PY(1.0,0.58,0.02),PX(0.0,0.58),PY(0.0,0.58,0.02),'#4a5058');
+      ctx.strokeStyle='#f1f1f1';ctx.lineWidth=Math.max(1,hz*1.4);ctx.setLineDash([hz*5,hz*5]);ctx.beginPath();ctx.moveTo(PX(0.04,0.5),PY(0.04,0.5,0.02));ctx.lineTo(PX(0.96,0.5),PY(0.96,0.5,0.02));ctx.stroke();ctx.setLineDash([]);
+      boxL(0.1,0.7,0.7,0.95,0,0.5,CL.glass);cyl(0.84,0.8,0.06,0,1.5,'#dcdcdc');boxL(0.78,0.74,0.9,0.86,1.5,1.75,CL.glass);
+      boxL(0.3,0.12,0.4,0.28,0,0.18,CL.white);face('#f4f4f4',0.2,0.2,0.2,0.5,0.2,0.2,0.5,0.22,0.2,0.2,0.22,0.2);
+      break;
+    case UNIV:
+      boxL(0.08,0.3,0.92,0.86,0,0.9,CL.brick);
+      if(detail){for(k=0;k<5;k++){var cx2=0.16+k*0.17;face('#f2eee4',cx2,0.86,0,cx2+0.06,0.86,0,cx2+0.06,0.86,0.8,cx2,0.86,0.8);}}
+      boxL(0.35,0.4,0.65,0.7,0.9,1.15,CL.stone);dome(0.5,0.55,1.15,0.2,'#c9a25a',null);
+      break;
+    case CONV:
+      boxL(0.04,0.2,0.96,0.82,0,0.9,CL.glass);
+      if(detail){for(k=0;k<6;k++){var ux=0.1+k*0.14;face('rgba(210,235,255,.85)',ux,0.82,0.1,ux+0.08,0.82,0.1,ux+0.08,0.82,0.75,ux,0.82,0.75);}}
+      boxL(0.4,0.1,0.6,0.28,0.9,1.15,CL.concrete);
+      break;
+    case METRO:
+      boxL(0.12,0.22,0.88,0.78,0,0.5,CL.concrete);boxL(0.38,0.38,0.62,0.52,0.5,1.25,CL.red);
+      if(detail){ctx.fillStyle='#fff';ctx.font='bold '+Math.max(8,Math.round(gBU*0.7))+'px sans-serif';ctx.textAlign='center';ctx.fillText('M',PX(0.5,0.62),PY(0.5,0.62,0.95)+gBU*0.18);ctx.textAlign='start';}
+      quad(PX(0.2,0.78),PY(0.2,0.78,0.0),PX(0.8,0.78),PY(0.8,0.78,0.0),PX(0.8,0.92),PY(0.8,0.92,0.0),PX(0.2,0.92),PY(0.2,0.92,0.0),'#2b2f36');
+      break;
+    case EXCH:
+      boxL(0.08,0.28,0.92,0.84,0,0.55,CL.stone);
+      if(detail){for(k=0;k<6;k++){var px2=0.14+k*0.14;face('#fbf8f0',px2,0.84,0,px2+0.05,0.84,0,px2+0.05,0.84,0.55,px2,0.84,0.55);}}
+      roofL(0.06,0.24,0.94,0.88,0.55,1.05);boxL(0.85,0.2,0.88,0.23,1.0,1.7,CL.metal);
+      break;
+
+    case RES:
+      if(l===1){boxL(0.2,0.28,0.8,0.72,0,0.5,CL.cream);roofL(0.16,0.22,0.84,0.78,0.5,0.98);
+        if(detail){face('#8a5a3a',0.5,0.72,0,0.62,0.72,0,0.62,0.72,0.34,0.5,0.72,0.34);}}
+      else if(l===2){boxL(0.14,0.14,0.86,0.86,0,1.6,CL.brick);if(detail)winGrid(0.14,0.14,0.86,0.86,0,1.6,3,3,seed,lit,dk);boxL(0.4,0.4,0.6,0.6,1.6,1.85,CL.concrete);}
+      else{boxL(0.1,0.1,0.9,0.9,0,0.35,CL.concrete);boxL(0.24,0.24,0.76,0.76,0.35,3.5,CL.tower);
+        if(detail)winGrid(0.24,0.24,0.76,0.76,0.35,3.5,8,3,seed,lit,dk);boxL(0.44,0.44,0.56,0.56,3.5,3.9,CL.concrete);}
+      break;
+    case COM:
+      if(l===1){boxL(0.14,0.2,0.86,0.8,0,0.65,CL.shop);face('#f4f4f4',0.14,0.8,0.52,0.86,0.8,0.52,0.86,0.93,0.38,0.14,0.93,0.38);
+        if(detail){face('#c0463a',0.3,0.8,0.52,0.42,0.8,0.52,0.42,0.93,0.38,0.3,0.93,0.38);face('#c0463a',0.58,0.8,0.52,0.7,0.8,0.52,0.7,0.93,0.38,0.58,0.93,0.38);}}
+      else if(l===2){boxL(0.12,0.12,0.88,0.88,0,2.2,CL.office);if(detail)winGrid(0.12,0.12,0.88,0.88,0,2.2,5,4,seed,'rgba(225,242,255,.85)','rgba(40,70,120,.5)');boxL(0.35,0.35,0.65,0.65,2.2,2.5,CL.concrete);}
+      else{boxL(0.08,0.08,0.92,0.92,0,0.6,CL.concrete);boxL(0.22,0.22,0.78,0.78,0.6,4.8,CL.glass);
+        if(detail)winGrid(0.22,0.22,0.78,0.78,0.6,4.8,11,4,seed,'rgba(200,230,255,.88)','rgba(30,60,110,.5)');
+        boxL(0.3,0.3,0.7,0.7,4.8,5.0,CL.concrete);boxL(0.48,0.48,0.52,0.52,5.0,5.9,CL.metal);}
+      break;
+    case IND:
+      if(l===1){boxL(0.1,0.2,0.9,0.8,0,0.6,CL.shed);boxL(0.7,0.25,0.82,0.37,0.6,1.1,CL.metal);}
+      else if(l===2){cyl(0.78,0.3,0.075,1.0,2.2,'#7a7f86');boxL(0.08,0.1,0.92,0.9,0,1.0,CL.fact);boxL(0.2,0.25,0.4,0.45,1.0,1.2,CL.metal);boxL(0.5,0.25,0.7,0.45,1.0,1.2,CL.metal);smoke(0.78,0.3,2.2);}
+      else{boxL(0.06,0.06,0.94,0.56,0,1.2,CL.fact);cyl(0.84,0.3,0.075,1.2,3.0,'#7a7f86');
+        cyl(0.28,0.8,0.15,0,1.25,'#c9ced4');cyl(0.64,0.8,0.15,0,1.25,'#c9ced4');smoke(0.84,0.3,3.0);}
+      break;
+    case PLANT:
+      cyl(0.3,0.22,0.1,0,2.3,'#6e747b');cyl(0.64,0.22,0.1,0,2.3,'#6e747b');
+      boxL(0.08,0.4,0.92,0.92,0,0.8,CL.plant);if(detail)face('#f2c230',0.4,0.92,0.5,0.6,0.92,0.5,0.6,0.92,0.2,0.4,0.92,0.2);
+      smoke(0.3,0.22,2.3);smoke(0.64,0.22,2.3);
+      break;
+    case SOLAR:
+      quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#6a8a62');
+      var rows=Math.max(3,Math.round(2*gWv));
+      for(k=0;k<rows;k++){var yy=0.05+k*(0.9/rows),dep=0.9/rows*0.72;
+        face('#2d56a3',0.07,yy,0.1,0.93,yy,0.1,0.93,yy+dep,0.4,0.07,yy+dep,0.4);
+        if(detail)face('rgba(180,210,255,.5)',0.07,yy+dep*0.5,0.25,0.93,yy+dep*0.5,0.25,0.93,yy+dep*0.55,0.27,0.07,yy+dep*0.55,0.27);}
+      break;
+    case FUSION:
+      boxL(0.06,0.06,0.94,0.94,0,0.3,CL.lab);dome(0.5,0.5,0.3,0.34,'#bff4fb','rgba(80,230,255,.35)');
+      ctx.strokeStyle='rgba(60,220,255,.9)';ctx.lineWidth=Math.max(2,hz*3);ctx.beginPath();ctx.ellipse(PX(0.5,0.5),PY(0.5,0.5,0.3),0.42*1.414*gHW*gS,0.42*1.414*gHH*gS,0,0,6.283);ctx.stroke();
+      break;
+    case PUMP:
+      boxL(0.14,0.2,0.54,0.7,0,0.6,CL.pump);cyl(0.74,0.62,0.15,0,1.0,'#6fb1e8');
+      break;
+    case DESAL:
+      boxL(0.08,0.3,0.92,0.78,0,0.7,CL.pump);cyl(0.3,0.2,0.13,0,1.0,'#4aa3c7');cyl(0.68,0.2,0.13,0,1.0,'#4aa3c7');
+      break;
+    case POLICE:
+      boxL(0.14,0.2,0.86,0.8,0,0.9,CL.police);if(detail)face('#e9edf5',0.14,0.8,0.5,0.86,0.8,0.5,0.86,0.8,0.62,0.14,0.8,0.62);
+      cyl(0.5,0.5,0.06,0.9,1.15,'#d63a3a');
+      break;
+    case FIRE:
+      boxL(0.12,0.22,0.88,0.78,0,0.85,CL.fire);boxL(0.7,0.3,0.84,0.44,0.85,1.8,CL.fire);
+      if(detail){face('#f1f1f1',0.2,0.78,0,0.44,0.78,0,0.44,0.78,0.5,0.2,0.78,0.5);}
+      break;
+    case SCHOOL:
+      boxL(0.1,0.25,0.9,0.75,0,0.8,CL.school);boxL(0.42,0.42,0.58,0.58,0.8,1.55,CL.cream);roofL(0.4,0.4,0.6,0.6,1.55,1.85);
+      break;
+    case LAB:
+      boxL(0.12,0.2,0.88,0.8,0,1.0,CL.lab);
+      var dx=PX(0.68,0.42),dy=PY(0.68,0.42,1.0);ctx.fillStyle='#cdd6df';ctx.beginPath();ctx.ellipse(dx,dy-gBU*0.25,gHW*0.38*gS,gHH*0.55*gS,-0.5,0,6.283);ctx.fill();
+      ctx.fillStyle='#8fa0b2';ctx.beginPath();ctx.ellipse(dx,dy-gBU*0.2,gHW*0.2*gS,gHH*0.3*gS,-0.5,0,6.283);ctx.fill();
+      boxL(0.25,0.3,0.31,0.36,1.0,1.7,CL.metal);
+      break;
+    case DC:
+      boxL(0.05,0.1,0.95,0.78,0,0.9,CL.dc);
+      if(detail){for(k=0;k<7;k++){var ux=0.1+k*0.12;face('#1fd1e0',ux,0.78,0.25,ux+0.07,0.78,0.25,ux+0.07,0.78,0.7,ux,0.78,0.7);}
+        for(k=0;k<5;k++){var vy=0.16+k*0.12;face('rgba(31,209,224,.7)',0.95,vy,0.25,0.95,vy+0.06,0.25,0.95,vy+0.06,0.7,0.95,vy,0.7);}}
+      for(k=0;k<4;k++)boxL(0.14+k*0.2,0.2,0.26+k*0.2,0.34,0.9,1.12,CL.metal);
+      for(k=0;k<4;k++)boxL(0.14+k*0.2,0.5,0.26+k*0.2,0.64,0.9,1.12,CL.metal);
+      boxL(0.05,0.84,0.95,0.96,0,0.12,CL.deck);quad(PX(0.08,0.86),PY(0.08,0.86,0.13),PX(0.92,0.86),PY(0.92,0.86,0.13),PX(0.92,0.94),PY(0.92,0.94,0.13),PX(0.08,0.94),PY(0.08,0.94,0.13),'#4aa3c7');
+      break;
+    case BIO:
+      boxL(0.08,0.3,0.92,0.92,0,0.5,CL.bio);dome(0.5,0.52,0.5,0.34,'rgba(130,235,215,.82)','rgba(120,240,200,.25)');
+      break;
+    case PORT:
+      boxL(0.03,0.03,0.97,0.97,0,0.12,CL.deck);
+      boxL(0.12,0.15,0.5,0.42,0.12,0.5,CL.red);boxL(0.12,0.5,0.5,0.78,0.12,0.5,CL.blue);boxL(0.55,0.5,0.88,0.78,0.12,0.4,CL.green);
+      boxL(0.72,0.14,0.78,0.2,0.12,1.9,CL.metal);boxL(0.52,0.14,0.9,0.2,1.8,1.9,CL.metal);
+      break;
+    case PARK:
+      quad(PX(0.03,0.03),PY(0.03,0.03,0),PX(0.97,0.03),PY(0.97,0.03,0),PX(0.97,0.97),PY(0.97,0.97,0),PX(0.03,0.97),PY(0.03,0.97,0),'#63b46d');
+      tree(0.3,0.3,0.14,'#2f7a43','#256236');tree(0.72,0.38,0.12,'#3a8a4c','#2c6e3c');tree(0.45,0.72,0.15,'#2f7a43','#256236');
+      break;
+  }
+}
+
+/* ================= main draw ================= */
+function drawTerrainTile(i,x,y,X0,Y0,v,rx,ry){
+  var e=EL[i],tt=TER[i],tw2=v.tw/2,th=v.th,r=cam.rot;
+  var rn=invTile(rx+1,ry,r),ln=invTile(rx,ry+1,r);
+  var eR=(rx+1<MW)?EL[rn[1]*MW+rn[0]]:-3,eL=(ry+1<MH)?EL[ln[1]*MW+ln[0]]:-3;
+  if(tt===WATER){eR=(rx+1<MW)?eR:-3;}
+  var sc=sideColors(i),top=groundColor(i,x,y);
+  if(tt!==WATER||rx+1>=MW||ry+1>=MH){
+    var base=(tt===WATER)?['#2f6f94','#255a79']:sc;
+    if(eR<e&&(tt!==WATER||rx+1>=MW)){var h=(e-eR)*v.es;quad(X0+tw2,Y0+th/2,X0,Y0+th,X0,Y0+th+h,X0+tw2,Y0+th/2+h,base[1]);}
+    if(eL<e&&(tt!==WATER||ry+1>=MH)){var h2=(e-eL)*v.es;quad(X0-tw2,Y0+th/2,X0,Y0+th,X0,Y0+th+h2,X0-tw2,Y0+th/2+h2,base[0]);}
+  }
+  quad(X0,Y0,X0+tw2,Y0+th/2,X0,Y0+th,X0-tw2,Y0+th/2,top);
+}
+function drawRoad(i,x,y,X0,Y0,v,off){
+  var th=v.th,tw2=v.tw/2,cx=X0,cy=Y0+th/2-off,r=cam.rot,n;
+  quad(X0,Y0-off,X0+tw2,Y0+th/2-off,X0,Y0+th-off,X0-tw2,Y0+th/2-off,'#5d6872');
+  quad(X0,Y0-off+th*0.08,X0+tw2*0.84,Y0+th/2-off,X0,Y0+th-off-th*0.08,X0-tw2*0.84,Y0+th/2-off,'#6a7580');
+  var dirs=[[1,0],[-1,0],[0,1],[0,-1]],any=false,k;
+  ctx.strokeStyle='#e8ecef';ctx.lineWidth=Math.max(1,v.z*1.6);ctx.setLineDash([v.z*4,v.z*4]);ctx.beginPath();
+  for(k=0;k<4;k++){
+    var nx=x+dirs[k][0],ny=y+dirs[k][1];if(nx<0||ny<0||nx>=MW||ny>=MH)continue;
+    n=ny*MW+nx;if(T[n]!==ROAD)continue;
+    any=true;var d=dirRot(dirs[k][0],dirs[k][1],r);
+    ctx.moveTo(cx,cy);ctx.lineTo(cx+(d[0]-d[1])*tw2/2,cy+(d[0]+d[1])*th/4);
+  }
+  ctx.stroke();ctx.setLineDash([]);
+}
+function drawBridge(i,x,y,X0,Y0,v){
+  var off=v.bu*0.3;
+  quad(X0+v.tw/2,Y0+v.th/2,X0,Y0+v.th,X0,Y0+v.th+v.bu*0.18,X0+v.tw/2,Y0+v.th/2+v.bu*0.18,'#7d868f');
+  quad(X0-v.tw/2,Y0+v.th/2,X0,Y0+v.th,X0,Y0+v.th+v.bu*0.18,X0-v.tw/2,Y0+v.th/2+v.bu*0.18,'#9aa3ab');
+  drawRoad(i,x,y,X0,Y0,v,off);
+}
+function drawConduits(i,x,y,X0,Y0,v,type,col,g,powered){
+  var cx=X0,cy=Y0+v.th/2,r=cam.rot,dirs=[[1,0],[-1,0],[0,1],[0,-1]],k;
+  ctx.strokeStyle=col;ctx.lineWidth=Math.max(2,v.z*5);ctx.lineCap='round';ctx.beginPath();
+  for(k=0;k<4;k++){
+    var nx=x+dirs[k][0],ny=y+dirs[k][1];if(nx<0||ny<0||nx>=MW||ny>=MH)continue;
+    var n=ny*MW+nx,tn=T[n];
+    if(tn===type||(type===PIPE&&(tn===PUMP||tn===DESAL))){
+      var d=dirRot(dirs[k][0],dirs[k][1],r);ctx.moveTo(cx,cy);ctx.lineTo(cx+(d[0]-d[1])*v.tw/4,cy+(d[0]+d[1])*v.th/4);
+    }
+  }
+  ctx.stroke();ctx.lineCap='butt';
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,Math.max(2,v.z*4),0,6.283);ctx.fill();
+}
+function footBox(ax,ay,w,h,r){
+  var cs=[rotTile(ax,ay,r),rotTile(ax+w-1,ay,r),rotTile(ax,ay+h-1,r),rotTile(ax+w-1,ay+h-1,r)],x0=9999,y0=9999,x1=-1,y1=-1;
+  for(var k=0;k<4;k++){x0=Math.min(x0,cs[k][0]);x1=Math.max(x1,cs[k][0]);y0=Math.min(y0,cs[k][1]);y1=Math.max(y1,cs[k][1]);}
+  return {x0:x0,y0:y0,x1:x1,y1:y1};
+}
+function drawBig(root,rx,ry,v,g,detail){
+  var o=BYT[T[root]],r=cam.rot,ax=root%MW,ay=(root/MW)|0,fb=footBox(ax,ay,o.size[0],o.size[1],r);
+  if(rx!==fb.x1||ry!==fb.y1)return;
+  var e=EL[root],X0=v.ox+(fb.x0-fb.y0)*v.tw/2,Y0=v.oy+(fb.x0+fb.y0)*v.th/2-e*v.es;
+  gX0=X0;gY0=Y0;gWu=fb.x1-fb.x0+1;gWv=fb.y1-fb.y0+1;gS=(gWu+gWv)/2;gHS=0.5+0.5*gS;
+  drawObject(root,T[root],L[root],detail,ax,ay,g);
+  if(v.z>0.6&&!(o.build&&L[root]>0)){
+    var f=g.flags[root],bad=[];
+    if(o.pu&&!(f&2))bad.push('#f2b61f');if(o.wu&&!(f&4))bad.push('#3b9be8');
+    if(bad.length){
+      var hy=PY(0.5,0.5,bHeight0(root,T[root],L[root])+0.6),hx=PX(0.5,0.5);
+      for(var kk=0;kk<bad.length;kk++){ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.arc(hx+(kk-(bad.length-1)/2)*v.tw*0.2,hy,v.z*5.6,0,6.283);ctx.fill();ctx.fillStyle=bad[kk];ctx.beginPath();ctx.arc(hx+(kk-(bad.length-1)/2)*v.tw*0.2,hy,v.z*4.1,0,6.283);ctx.fill();}
+    }
+  }
+  gWu=1;gWv=1;gS=1;gHS=1;
+}
+function outlineFoot(ax,ay,w,h,col,fillA){
+  var v=view(),r=cam.rot,fb=footBox(ax,ay,w,h,r),i=(ay+Math.floor(h/2))*MW+ax+Math.floor(w/2),e=EL[Math.min(N-1,Math.max(0,i))];
+  function P(u,vv){return [v.ox+(u-vv)*v.tw/2,v.oy+(u+vv)*v.th/2-e*v.es];}
+  var a=P(fb.x0,fb.y0),b=P(fb.x1+1,fb.y0),c=P(fb.x1+1,fb.y1+1),d=P(fb.x0,fb.y1+1);
+  ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(c[0],c[1]);ctx.lineTo(d[0],d[1]);ctx.closePath();
+  if(fillA){ctx.globalAlpha=fillA;ctx.fillStyle=col;ctx.fill();ctx.globalAlpha=1;}
+  ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.stroke();
+}
+function draw(){
+  if(!ctx)return;
+  var v=view(),i,x,y,s,rx,ry,dark=isDark(),now=performance.now();
+  ctx.setTransform(1,0,0,1,0,0);
+  var dpr=$('cv').width/VW;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle=dark?'#0a141c':'#cfe3ee';ctx.fillRect(0,0,VW,VH);
+  if(now<shakeUntil){ctx.translate((Math.random()-0.5)*7,(Math.random()-0.5)*7);}
+  var g=E?E.g:scan(),detail=v.z>0.5,r=cam.rot,pad=v.tw*1.6;
+  gHW=v.tw/2;gHH=v.th/2;gBU=v.bu;hz=v.z;
+  var tor=S?S.tor:null;
+  for(s=0;s<=MW+MH-2;s++){
+    var r0=Math.max(0,s-MH+1),r1=Math.min(s,MW-1);
+    for(rx=r0;rx<=r1;rx++){
+      ry=s-rx;
+      var w=invTile(rx,ry,r);x=w[0];y=w[1];i=y*MW+x;
+      var e=EL[i],X0=v.ox+(rx-ry)*v.tw/2,Y0=v.oy+(rx+ry)*v.th/2-e*v.es;
+      if(X0<-pad||X0>VW+pad||Y0<-v.bu*7||Y0>VH+v.th*5+e*v.es)continue;
+      drawTerrainTile(i,x,y,X0,Y0,v,rx,ry);
+      var t=T[i],tt=TER[i];
+      if(tt===WATER&&detail&&((x*3+y*5)%7===0)){ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X0-v.tw*0.15,Y0+v.th*0.45);ctx.lineTo(X0+v.tw*0.05,Y0+v.th*0.45);ctx.stroke();}
+      gX0=X0;gY0=Y0;
+      if(tt===FOREST&&t===EMPTY){
+        var hs=(x*31+y*17)%5;
+        tree(0.28+hs*0.02,0.3,0.15,'#2f6f3f','#245832');tree(0.7,0.35+hs*0.02,0.14,'#3b7f4a','#2c6339');tree(0.42,0.74,0.16,'#2f6f3f','#245832');
+        if(detail)tree(0.82,0.78,0.1,'#3b7f4a','#2c6339');
+      }
+      if(t===ROAD){
+        if(tt===WATER)drawBridge(i,x,y,X0,Y0,v);else drawRoad(i,x,y,X0,Y0,v,0);
+      }else if(t===RES||t===COM||t===IND){
+        ctx.globalAlpha=0.38;quad(X0,Y0,X0+v.tw/2,Y0+v.th/2,X0,Y0+v.th,X0-v.tw/2,Y0+v.th/2,ZC[t]);ctx.globalAlpha=1;
+        if(L[i]===0){ctx.strokeStyle=ZC[t];ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(X0,Y0+v.th*0.1);ctx.lineTo(X0+v.tw*0.4,Y0+v.th/2);ctx.lineTo(X0,Y0+v.th*0.9);ctx.lineTo(X0-v.tw*0.4,Y0+v.th/2);ctx.closePath();ctx.stroke();ctx.setLineDash([]);}
+        else drawObject(i,t,L[i],detail,x,y,g);
+      }else if(t===PLINE){
+        boxL(0.46,0.46,0.54,0.54,0,1.7,CL.metal);boxL(0.28,0.46,0.72,0.54,1.4,1.55,CL.metal);
+        var dirs=[[1,0],[0,1]],kk;
+        ctx.strokeStyle='rgba(30,30,30,.75)';ctx.lineWidth=Math.max(1,v.z*1.3);
+        for(kk=0;kk<2;kk++){
+          var nx=x+dirs[kk][0],ny=y+dirs[kk][1];if(nx>=MW||ny>=MH)continue;var n=ny*MW+nx;
+          if(T[n]!==PLINE)continue;
+          var d=dirRot(dirs[kk][0],dirs[kk][1],r),dE=(EL[n]-EL[i])*v.es;
+          ctx.beginPath();ctx.moveTo(PX(0.5,0.5),PY(0.5,0.5,1.5));ctx.lineTo(PX(0.5+d[0],0.5+d[1]),PY(0.5+d[0],0.5+d[1],1.5)-dE);ctx.stroke();
+        }
+        if(g.pc[i]){ctx.fillStyle='#ffd23f';ctx.beginPath();ctx.arc(PX(0.5,0.5),PY(0.5,0.5,1.75),Math.max(1.5,v.z*2.6),0,6.283);ctx.fill();}
+      }else if(t===PIPE){
+        drawConduits(i,x,y,X0,Y0,v,PIPE,g.wc[i]?'#4ea1e6':'#8aa3bb',g,false);
+      }else if(t!==EMPTY){
+        var root=(t===SUB&&PAR[i]>=0)?PAR[i]:i,rt=T[root],ro=BYT[rt];
+        if(ro&&ro.size&&ro.size[0]*ro.size[1]>1)drawBig(root,rx,ry,v,g,detail);
+        else drawObject(i,t,L[i],detail,x,y,g);
+      }
+      if(FLD[i]>0&&tt!==WATER){ctx.globalAlpha=0.55;quad(X0,Y0,X0+v.tw/2,Y0+v.th/2,X0,Y0+v.th,X0-v.tw/2,Y0+v.th/2,'#3b86c9');ctx.globalAlpha=1;}
+      if(F[i]>0){
+        var fh=bHeight(i);if(fh<0.8)fh=0.8;
+        flame(X0-v.tw*0.12,Y0+v.th*0.62,v.bu*1.5,i);flame(X0+v.tw*0.14,Y0+v.th*0.5,v.bu*1.9,i*3);flame(X0,Y0+v.th*0.38,v.bu*2.3,i*7);
+        ctx.fillStyle='rgba(60,60,60,.35)';ctx.beginPath();ctx.arc(X0+v.tw*0.08,Y0-v.bu*fh*0.8,v.bu*0.7,0,6.283);ctx.fill();
+      }
+      if(v.z>0.6&&(t===RES||t===COM||t===IND||(BYT[t]&&!BYT[t].size&&(BYT[t].pu||BYT[t].wu)))){
+        var f=g.flags[i],bad=[];
+        if(t===RES||t===COM||t===IND){if(!(f&1))bad.push('#e0452d');if(!(f&2))bad.push('#f2b61f');if(!(f&4))bad.push('#3b9be8');}
+        else{if(BYT[t].pu&&!(f&2))bad.push('#f2b61f');if(BYT[t].wu&&!(f&4))bad.push('#3b9be8');}
+        if(bad.length){
+          var hy=Y0+v.th/2-v.bu*(bHeight(i)+0.5);
+          for(kk=0;kk<bad.length;kk++){ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.arc(X0+(kk-(bad.length-1)/2)*v.tw*0.14,hy,v.z*5.2,0,6.283);ctx.fill();ctx.fillStyle=bad[kk];ctx.beginPath();ctx.arc(X0+(kk-(bad.length-1)/2)*v.tw*0.14,hy,v.z*3.8,0,6.283);ctx.fill();}
+        }
+      }
+    }
+  }
+  if(tor){
+    var tp=rotTile(clamp(tor.x,0,MW-1),clamp(tor.y,0,MH-1),r),ti=clamp(tor.y,0,MH-1)*MW+clamp(tor.x,0,MW-1);
+    var tx=v.ox+(tp[0]-tp[1])*v.tw/2,ty=v.oy+(tp[0]+tp[1])*v.th/2-EL[ti]*v.es+v.th/2,k2;
+    for(k2=0;k2<8;k2++){
+      var yy=ty-k2*v.bu*0.85,rr=(0.12+0.085*k2)*v.tw*0.5,wob=Math.sin(now/120+k2)*v.tw*0.05;
+      ctx.fillStyle='rgba(95,100,108,'+(0.7-k2*0.04)+')';ctx.beginPath();ctx.ellipse(tx+wob,yy,rr,rr*0.38,0,0,6.283);ctx.fill();
+    }
+  }
+  if(pending){var po=OBJ[pending.tool],psz=po.size||[1,1];outlineFoot(pending.a%MW,(pending.a/MW)|0,psz[0],psz[1],'#2ecc71',0.28);}
+  if(tool==='inspect'&&inspectIdx>=0){
+    var ir=inspectIdx,io=BYT[T[ir]];
+    if(io&&io.size)outlineFoot(ir%MW,(ir/MW)|0,io.size[0],io.size[1],dark?'#e8f0f5':'#13202a',0);
+    else outlineTile(ir,v,dark?'#e8f0f5':'#13202a',2);
+  }
+  else if(hoverIdx>=0&&tool!=='inspect'&&!pending)outlineTile(hoverIdx,v,'#ffffff',2);
+  if(dark){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='rgba(6,14,30,0.40)';ctx.fillRect(-20,-20,VW+40,VH+40);}
+}
+function outlineTile(i,v,col,w){
+  var x=i%MW,y=(i/MW)|0,t=rotTile(x,y,cam.rot),X0=v.ox+(t[0]-t[1])*v.tw/2,Y0=v.oy+(t[0]+t[1])*v.th/2-EL[i]*v.es;
+  ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(X0,Y0);ctx.lineTo(X0+v.tw/2,Y0+v.th/2);ctx.lineTo(X0,Y0+v.th);ctx.lineTo(X0-v.tw/2,Y0+v.th/2);ctx.closePath();ctx.stroke();
+}
+function drawIdle(v){
+  ctx.fillStyle=isDark()?'#10202c':'#dbe9f1';ctx.fillRect(0,0,VW,VH);
+}
+function resize(){
+  var board=$('board'),dpr=Math.min(2,window.devicePixelRatio||1),cv=$('cv');
+  try{document.documentElement.style.setProperty('--app-h',(window.innerHeight||700)+'px');}catch(e){}
+  var bw=Math.max(200,board.clientWidth||360),bh=board.clientHeight||0;
+  if(bh<180)bh=Math.round(clamp((window.innerHeight||700)*0.45,260,520));
+  VW=bw;VH=bh;cv.width=Math.round(bw*dpr);cv.height=Math.round(bh*dpr);
+  ctx=cv.getContext('2d');dirty=true;mmDirty=true;
+}
+
+/* ================= picking ================= */
+function pickTile(px,py){
+  var v=view(),a=(px-v.ox)*2/v.tw,b=(py-v.oy+v.es*2)*2/v.th,u=(a+b)/2,w=(b-a)/2,cx=Math.floor(u),cy=Math.floor(w),best=-1,bd=-1,r=cam.rot;
+  for(var dy=-5;dy<=5;dy++)for(var dx=-5;dx<=5;dx++){
+    var rx=cx+dx,ry=cy+dy;if(rx<0||ry<0||rx>=MW||ry>=MH)continue;
+    var wi=invTile(rx,ry,r),i=wi[1]*MW+wi[0],e=EL[i];
+    var X0=v.ox+(rx-ry)*v.tw/2,Y0=v.oy+(rx+ry)*v.th/2-e*v.es,hgt=bHeight(i),hit=false;
+    for(var s=0;s<=hgt&&!hit;s+=0.5){
+      var ddx=Math.abs(px-X0)/(v.tw/2),ddy=Math.abs(py-(Y0+v.th/2-s*v.bu))/(v.th/2);
+      if(ddx+ddy<=1)hit=true;
+    }
+    if(hit&&rx+ry>bd){bd=rx+ry;best=i;}
+  }
+  return best;
+}
+
+/* ================= minimap ================= */
+function drawMini(){
+  var c=$('mm');if(!c||!S)return;var m=c.getContext('2d'),sz=c.width/MW,i;
+  for(i=0;i<N;i++){
+    var x=i%MW,y=(i/MW)|0,col,t=T[i];
+    if(t===ROAD)col='#4b5560';else if(t===RES)col='#38a169';else if(t===COM)col='#3b82d6';else if(t===IND)col='#d9a520';
+    else if(t!==EMPTY)col='#f4f4f4';
+    else if(TER[i]===WATER)col='#4f9fca';else if(TER[i]===ROCK)col='#8a8d93';else if(TER[i]===FOREST)col='#4a8a52';else col='#9cc784';
+    m.fillStyle=col;m.fillRect(x*sz,y*sz,sz,sz);
+  }
+  m.strokeStyle='#ffffff';m.lineWidth=1.5;
+  var cx=cam.wx*sz,cy=cam.wy*sz,half=Math.max(3,(VW/(TWb*cam.z))*sz*0.35);
+  m.strokeRect(cx-half,cy-half,half*2,half*2);
+}
+
+/* ================= HUD ================= */
+function trend(arr,upBad){
+  if(!arr||arr.length<7)return '';
+  var a=arr[arr.length-1],b=arr[arr.length-7];
+  if(Math.abs(a-b)<Math.abs(b)*0.01)return '';
+  var up=a>b,bad=upBad?up:!up;
+  return '<span class="tr '+(upBad===null?'':(bad?'neg':'pos'))+'">'+(up?'\u25B2':'\u25BC')+'</span>';
+}
+function chip(label,val,tr,cls){
+  return '<div class="chip"><span class="lab">'+label+'</span><span class="val '+(cls||'')+'">'+val+tr+'</span></div>';
+}
+function pct(v){return Math.round(v*100)+'%';}
+function ui(){
+  if(!S)return;
+  E=computeEconomy();
+  var hh=S.hist,g=E.g;
+  $('date').textContent=dateLabel(S.month)+', '+RANKS[rankIdx(S.pop)][1];
+  var c=$('cash');c.textContent=money(S.cash);c.className='val'+(S.cash<0?' neg':'');
+  $('pop').textContent=Math.round(S.pop).toLocaleString('en-US');
+  $('appr').textContent=Math.round(S.approval)+'%';
+  var n=$('net');n.textContent=(E.net>=0?'+':'')+money(E.net);n.className='val '+(E.net>=0?'pos':'neg');
+  var ec='';
+  ec+=chip('Policy rate',S.rate.toFixed(2)+'%',trend(hh.rate,true));
+  ec+=chip('Inflation',S.infl.toFixed(1)+'%',trend(hh.infl,true),(S.infl>4.5||S.infl<0)?'neg':'');
+  ec+=chip('Mortgage',S.mort.toFixed(1)+'%',trend(hh.mort,true));
+  ec+=chip('Jobless',Math.round(E.unemp*100)+'%','',E.unemp>0.15?'neg':'');
+  ec+=chip('Home prices',String(Math.round(S.hpi)),trend(hh.hpi,null));
+  ec+=chip('Stocks',String(Math.round(S.mkt)),trend(hh.mkt,false),(S.mktD<-5||S.crash>0)?'neg':'');
+  ec+=chip('Supply cost','\u00D7'+(1+S.shock).toFixed(2),trend(hh.supply,true),S.shock>0.25?'neg':'');
+  ec+=chip('Power',(g.pCap>0||E.pwUse>0)?Math.round(E.pwUse*100)+'%':'\u2014','',E.pwUse>1?'neg':'');
+  ec+=chip('Water',(g.wCap>0||E.wUse>0)?Math.round(E.wUse*100)+'%':'\u2014','',E.wUse>1?'neg':'');
+  $('econ').innerHTML=ec;
+  var sb=$('speed').querySelectorAll('button');
+  for(var i=0;i<sb.length;i++){sb[i].className=(parseInt(sb[i].getAttribute('data-s'),10)===speed)?'on':'';}
+  $('btnCorp').className='act'+(S.offers.length?' badge':'');
+  $('hand').className=handMode?'on':'';$('hand').textContent=handMode?'\u270B':'\u270F\uFE0F';
+  refreshTools();updateTicker();
+  if(sheetKind==='policy')refreshPolicyLive();
+  else if(sheetKind==='econ')refreshEcon();
+  else if(sheetKind==='corp')refreshCorp();
+  dirty=true;
+}
+
+/* ================= tools ================= */
+function groupTools(){for(var i=0;i<GROUPS.length;i++){if(GROUPS[i].id===group)return GROUPS[i].tools;}return GROUPS[0].tools;}
+function refreshTools(){
+  var gb=$('groups'),box=$('tools'),i;
+  if(!gb.childNodes.length){
+    for(i=0;i<GROUPS.length;i++){
+      var b=document.createElement('button');b.setAttribute('data-g',GROUPS[i].id);b.textContent=GROUPS[i].name;gb.appendChild(b);
+    }
+  }
+  var gbs=gb.querySelectorAll('button');
+  for(i=0;i<gbs.length;i++)gbs[i].className=gbs[i].getAttribute('data-g')===group?'on':'';
+  var list=groupTools(),key=list.join(',')+'|'+(S?Object.keys(S.tech).join(','):'');
+  if(box.getAttribute('data-key')!==key){
+    box.setAttribute('data-key',key);box.innerHTML='';
+    for(i=0;i<list.length;i++){
+      var tb=document.createElement('button');tb.className='tool';tb.setAttribute('data-t',list[i]);
+      tb.innerHTML='<i class="sw" style="background:'+TOOLS[list[i]].sw+'"></i><span class="nm">'+TOOLS[list[i]].name+'</span><span class="ct"></span>';
+      box.appendChild(tb);
+    }
+  }
+  var bs=box.querySelectorAll('.tool');
+  for(i=0;i<bs.length;i++){
+    var id=bs[i].getAttribute('data-t'),cost;
+    if(id==='inspect')cost='free';
+    else if(!S)cost='';
+    else if(id==='bull')cost='$10';
+    else if(techLocked(id))cost='locked';
+    else if(OBJ[id]&&OBJ[id].req&&S.peak<OBJ[id].req)cost='pop '+OBJ[id].req;
+    else cost=money(costFor(id))+(id==='road'?'+':'');
+    bs[i].querySelector('.ct').textContent=cost;
+    bs[i].className='tool'+(id===tool?' on':'')+(S&&(techLocked(id)||(OBJ[id]&&OBJ[id].req&&S.peak<OBJ[id].req))?' lock':'');
+  }
+}
+function selectTool(id){
+  tool=id;inspectIdx=-1;pending=null;refreshTools();dirty=true;
+  var d=TOOLS[id].desc;
+  if(OBJ[id]&&OBJ[id].size&&OBJ[id].size[0]*OBJ[id].size[1]>1)d='Footprint '+OBJ[id].size[0]+'\u00D7'+OBJ[id].size[1]+', tap twice to build. '+d;
+  if(S&&techLocked(id))d='Locked. Research '+TECHS[OBJ[id].tech].name+' to unlock. '+d;
+  else if(S&&OBJ[id]&&OBJ[id].req&&S.peak<OBJ[id].req)d='Unlocks at '+OBJ[id].req.toLocaleString('en-US')+' people. '+d;
+  else if(id!=='inspect'&&id!=='bull'||id==='bull')d+=handMode?' Tap to build. Tap the pencil button to paint by dragging.':' Drag to paint. Two fingers pan and zoom.';
+  $('info').textContent=d;
+}
+function selectGroup(id){group=id;refreshTools();}
+
+/* ================= sheets ================= */
+function sheetHead(title){return '<div class="sh-head"><h2>'+title+'</h2><button class="ghost" data-close="1">Close</button></div>';}
+function openSheet(kind){
+  sheetKind=kind;var b=$('sheetBody');
+  if(kind==='policy'){
+    $('sheet').className='overlay open';renderPolicy();
+  }else if(kind==='econ'){
+    b.innerHTML=sheetHead('Economy')
+    +'<p class="hint">The game is paused while this panel is open.</p><div class="diag" id="eDiag"></div>'
+    +'<div class="chart"><div class="ct">Policy rate, mortgage, inflation <span id="cap1"></span></div><canvas id="ch1"></canvas></div>'
+    +'<div class="chart"><div class="ct">Stock index <span id="cap5"></span></div><canvas id="ch5"></canvas></div>'
+    +'<div class="chart"><div class="ct">Home price index <span>100 = start</span></div><canvas id="ch2"></canvas></div>'
+    +'<div class="chart"><div class="ct">Supply-chain cost multiplier <span>1.0 = normal</span></div><canvas id="ch3"></canvas></div>'
+    +'<div class="chart"><div class="ct">Population</div><canvas id="ch4"></canvas></div>'
+    +'<h3>Headlines</h3><ul class="news" id="eNews"></ul>';
+    $('sheet').className='overlay open';refreshEcon();
+  }else if(kind==='corp'){
+    $('sheet').className='overlay open';refreshCorp();
+  }
+}
+function closeSheet(){sheetKind=null;$('sheet').className='overlay';ui();}
+function creditLimit(){return 12000+S.pop*25;}
+function borrow(kind){
+  var amt=5000;
+  if(S.fixedAmt+S.varAmt+amt>creditLimit()){toast('Credit limit reached. Lenders want a bigger city.');return;}
+  if(kind==='fix'){var r=Math.round((S.rate+2)*10)/10;S.fixedRate=(S.fixedAmt*S.fixedRate+amt*r)/(S.fixedAmt+amt);S.fixedAmt+=amt;}
+  else S.varAmt+=amt;
+  S.cash+=amt;ui();
+}
+function repay(kind){
+  var key=kind==='fix'?'fixedAmt':'varAmt',amt=Math.min(5000,S[key]);
+  if(amt<=0)return;if(S.cash<amt){toast('Not enough cash to repay.');return;}
+  S.cash-=amt;S[key]-=amt;if(kind==='fix'&&S.fixedAmt<=0){S.fixedAmt=0;S.fixedRate=0;}
+  ui();
+}
+function ledgerHTML(which){
+  var h='',i;
+  if(which!=='exp'){
+    h+='<div>';
+    for(i=0;i<E.rev.length;i++)h+='<div class="ln"><span>'+E.rev[i][0]+'</span><span>'+money(E.rev[i][1])+'</span></div>';
+    h+='<div class="ln tot"><span>Revenue</span><span>'+money(E.revenue)+'</span></div></div>';
+  }
+  if(which!=='rev'){
+    h+='<div>';
+    for(i=0;i<E.exp.length;i++)h+='<div class="ln"><span>'+E.exp[i][0]+'</span><span>'+money(E.exp[i][1])+'</span></div>';
+    h+='<div class="ln tot"><span>Costs</span><span>'+money(E.costs)+'</span></div></div>';
+  }
+  return h;
+}
+
+/* ---------- policy sheet: monetary, taxes, spending, books ---------- */
+var polTab='monetary',pendingRate=4;
+function sliderRow(id,label,min,max,step){
+  return '<div class="row"><label for="'+id+'">'+label+' <b id="'+id+'L"></b></label><input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+step+'"></div>';
+}
+function bindSlider(id,get,set,fmt){
+  var el=$(id);if(!el)return;
+  el.value=get();$(id+'L').textContent=fmt(get());
+  el.oninput=function(){set(parseFloat(el.value));$(id+'L').textContent=fmt(get());ui();};
+}
+function renderPolicy(){
+  var b=$('sheetBody'),tabs=[['monetary','Monetary'],['taxes','Taxes'],['spending','Spending'],['books','Books']],i,h=sheetHead('Policy');
+  h+='<div class="seg tabs">';
+  for(i=0;i<tabs.length;i++)h+='<button data-pol="tab" data-tab="'+tabs[i][0]+'" class="'+(polTab===tabs[i][0]?'on':'')+'">'+tabs[i][1]+'</button>';
+  h+='</div><div id="polBody"></div>';b.innerHTML=h;
+  var body=$('polBody');
+  if(polTab==='monetary'){
+    pendingRate=S.rate;
+    body.innerHTML='<div class="diag"><div>Policy rate<b id="mRate"></b></div><div>Inflation<b id="mInfl"></b></div><div>Mortgage rate<b id="mMort"></b></div><div>Jobless<b id="mJob"></b></div></div>'
+      +'<p class="hint" id="mGoal"></p>'
+      +sliderRow('rRate','New policy rate',0,15,0.25)
+      +'<div class="btns"><button class="sm" id="rateApply">Set policy rate</button><button class="sm" id="rateTaylor">Follow the guide</button></div>'
+      +'<p class="hint" id="rateHint"></p>'
+      +'<h3>Balance sheet</h3><div class="seg tabs" id="qeSeg"><button data-pol="qe" data-v="-1">Shrink</button><button data-pol="qe" data-v="0">Hold</button><button data-pol="qe" data-v="1">Expand</button></div>'
+      +'<p class="hint">Expanding buys bonds: mortgage rates fall and stocks rally, but inflation and bubbles build. Shrinking does the opposite.</p>'
+      +'<h3>Financial stability</h3><div class="btns"><button class="sm" data-pol="dins" id="dinsBtn"></button><button class="sm" data-pol="bail" id="bailBtn"></button></div>'
+      +'<p class="hint" id="stabTxt"></p>'
+      +'<div class="chart"><div class="ct">Rates, inflation and outlook <span id="capM"></span></div><canvas id="chM"></canvas></div><p class="hint" id="fcTxt"></p>';
+    var r=$('rRate');r.value=S.rate;$('rRateL').textContent=S.rate.toFixed(2)+'%';
+    r.oninput=function(){pendingRate=parseFloat(r.value);$('rRateL').textContent=pendingRate.toFixed(2)+'%';rateHint();drawPolicyChart();};
+    $('rateApply').onclick=function(){setRate(pendingRate);ui();rateHint();drawPolicyChart();};
+    $('rateTaylor').onclick=function(){pendingRate=Math.round(E.taylor*4)/4;r.value=pendingRate;$('rRateL').textContent=pendingRate.toFixed(2)+'%';rateHint();drawPolicyChart();};
+  }else if(polTab==='taxes'){
+    body.innerHTML='<p class="hint">You set every tax. Revenue funds the city, but each rate has a price in growth and mood.</p>'
+      +sliderRow('tInc','Income tax',3,25,0.5)+'<p class="hint">Above 10% builders pull back and voters grumble.</p>'
+      +sliderRow('tSales','Sales tax',0,15,0.5)+'<p class="hint">Above 8% shoppers cut back. Below 6% retail booms.</p>'
+      +sliderRow('tProp','Property tax',0.3,2,0.1)+'<p class="hint">Scales assessed home and business values. Above 1.3 times it chills housing.</p>'
+      +sliderRow('tCorp','Business tax',0,30,0.5)+'<p class="hint">Above 10% firms hesitate and startups grow slower.</p>'
+      +'<h3>Revenue per month</h3><div id="ledRev"></div>';
+    bindSlider('tInc',function(){return S.tax.inc;},function(v){S.tax.inc=v;},function(v){return v.toFixed(1)+'%';});
+    bindSlider('tSales',function(){return S.tax.sales;},function(v){S.tax.sales=v;},function(v){return v.toFixed(1)+'%';});
+    bindSlider('tProp',function(){return S.tax.prop;},function(v){S.tax.prop=v;},function(v){return v.toFixed(1)+'\u00D7';});
+    bindSlider('tCorp',function(){return S.tax.corp;},function(v){S.tax.corp=v;},function(v){return v.toFixed(1)+'%';});
+  }else if(polTab==='spending'){
+    body.innerHTML='<p class="hint">You choose where the money goes. Cuts save cash and cost you elsewhere.</p>'
+      +sliderRow('sSvc','Public services',50,150,10)+'<p class="hint">Police, fire and city staff. More funding lifts mood and costs more.</p>'
+      +sliderRow('sEdu','Education',50,150,10)+'<p class="hint">Schools and universities. Lifts wages, mood and research.</p>'
+      +sliderRow('sInfra','Infrastructure upkeep',50,150,10)+'<p class="hint">Below 100% utilities lose output as maintenance slips.</p>'
+      +sliderRow('sWel','Welfare payments per month',0,3000,50)+'<p class="hint">A safety net. Cushions the jobless and lifts mood.</p>'
+      +'<h3>Stimulus checks</h3><p class="hint">A one-time boost: spending jumps for four months, approval rises, and so does inflation.</p>'
+      +'<div class="btns"><button class="sm" data-pol="stim" data-v="25" id="stim25"></button><button class="sm" data-pol="stim" data-v="100" id="stim100"></button></div>'
+      +'<h3>Costs per month</h3><div id="ledExp"></div>';
+    bindSlider('sSvc',function(){return Math.round(S.sp.svc*100);},function(v){S.sp.svc=v/100;},function(v){return v+'%';});
+    bindSlider('sEdu',function(){return Math.round(S.sp.edu*100);},function(v){S.sp.edu=v/100;},function(v){return v+'%';});
+    bindSlider('sInfra',function(){return Math.round(S.sp.infra*100);},function(v){S.sp.infra=v/100;},function(v){return v+'%';});
+    bindSlider('sWel',function(){return S.sp.welfare;},function(v){S.sp.welfare=v;},function(v){return money(v);});
+  }else{
+    body.innerHTML='<h3>Borrowing</h3>'
+      +'<div class="debt"><div class="meta"><b>Fixed bonds</b><span id="dFix"></span></div><div class="btns"><button id="fixIssue"></button><button id="fixPay">Repay $5,000</button></div></div>'
+      +'<div class="debt"><div class="meta"><b>Variable loan</b><span id="dVar"></span></div><div class="btns"><button id="varIssue"></button><button id="varPay">Repay $5,000</button></div></div>'
+      +'<p class="hint" id="dHint"></p><h3>Last month on the books</h3><div class="cols" id="ledBoth"></div><div class="ln tot"><span>Net per month</span><span id="ledNet"></span></div>';
+    $('fixIssue').onclick=function(){borrow('fix');};$('varIssue').onclick=function(){borrow('var');};
+    $('fixPay').onclick=function(){repay('fix');};$('varPay').onclick=function(){repay('var');};
+  }
+  refreshPolicyLive();
+}
+function rateHint(){
+  var p=pendingRate,d=p-S.rate,f0=forecastInflation(12,S.rate).mean[11],f1=forecastInflation(12,p).mean[11];
+  var txt;
+  if(Math.abs(d)<0.01)txt='Holding at '+S.rate.toFixed(2)+'%. Inflation heads toward '+f0.toFixed(1)+'% in a year.';
+  else txt=(d>0?'Hiking ':'Cutting ')+Math.abs(d).toFixed(2)+' points. Mortgages follow slowly. '+(d>0?'Builders slow, stocks wobble and house prices cool. ':'Builders speed up and stocks rally, but house prices can bubble. ')+'Projected inflation in 12 months: '+f1.toFixed(1)+'%, versus '+f0.toFixed(1)+'% if you hold.';
+  $('rateHint').textContent=txt;
+}
+function drawPolicyChart(){
+  var cv=$('chM');if(!cv)return;
+  var s=chartSetup(cv),c=s.c,w=s.w,h=s.h,muted=cssVar('--muted','#888'),line=cssVar('--line','#ccc'),acc=cssVar('--accent','#1f6f8b'),warn=cssVar('--warn','#a96f12'),bad=cssVar('--bad','#c2452d');
+  var hr=S.hist.rate.slice(-30),hi=S.hist.infl.slice(-30),hl=hr.length,fc=forecastInflation(24,pendingRate),total=hl+24,i;
+  var mn=Math.min(0,S.infl,S.rate),mx=Math.max(S.rate,pendingRate,S.infl)+0.5;
+  for(i=0;i<hl;i++){mn=Math.min(mn,hi[i],hr[i]);mx=Math.max(mx,hi[i],hr[i]);}
+  for(i=0;i<24;i++){mn=Math.min(mn,fc.mean[i]-1.65*fc.sd[i]);mx=Math.max(mx,fc.mean[i]+1.65*fc.sd[i]);}
+  mn-=0.3;mx+=0.3;
+  function X(k){return 6+(w-12)*(k/Math.max(1,total-1));}
+  function Y(v){return h-6-(h-12)*((v-mn)/(mx-mn));}
+  c.strokeStyle=line;c.lineWidth=1;c.beginPath();c.moveTo(0,Y(2)+0.5);c.lineTo(w,Y(2)+0.5);c.stroke();
+  c.fillStyle=bad;c.globalAlpha=0.18;c.beginPath();c.moveTo(X(Math.max(hl-1,0)),Y(S.infl));
+  for(i=0;i<24;i++)c.lineTo(X(hl+i),Y(fc.mean[i]+1.65*fc.sd[i]));
+  for(i=23;i>=0;i--)c.lineTo(X(hl+i),Y(fc.mean[i]-1.65*fc.sd[i]));
+  c.closePath();c.fill();c.globalAlpha=1;
+  function lineSer(arr,col,dash){c.strokeStyle=col;c.lineWidth=2;c.setLineDash(dash||[]);c.beginPath();for(var k=0;k<arr.length;k++){if(k===0)c.moveTo(X(k),Y(arr[k]));else c.lineTo(X(k),Y(arr[k]));}c.stroke();c.setLineDash([]);}
+  lineSer(hr,acc);lineSer(hi,bad);
+  c.strokeStyle=bad;c.setLineDash([5,4]);c.lineWidth=2;c.beginPath();c.moveTo(X(Math.max(hl-1,0)),Y(S.infl));for(i=0;i<24;i++)c.lineTo(X(hl+i),Y(fc.mean[i]));c.stroke();c.setLineDash([]);
+  c.strokeStyle=acc;c.setLineDash([2,4]);c.beginPath();c.moveTo(X(Math.max(hl-1,0)),Y(S.rate));c.lineTo(X(total-1),Y(pendingRate));c.stroke();c.setLineDash([]);
+  c.fillStyle=muted;c.fillText(mx.toFixed(1)+'%',8,12);c.fillText(mn.toFixed(1)+'%',8,h-8);c.fillText('2% target',w-60,Y(2)-3);
+  $('capM').textContent='blue: policy rate, red: inflation';
+  $('fcTxt').textContent='The shaded cone is the 90% range for inflation if you set the policy rate to '+pendingRate.toFixed(2)+'% and leave it. Supply shocks and tight labor markets can push it outside the cone.';
+}
+function refreshPolicyLive(){
+  var pb=$('polBody');if(!pb)return;
+  var set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('mRate',S.rate.toFixed(2)+'%');set('mInfl',S.infl.toFixed(1)+'%');set('mMort',S.mort.toFixed(1)+'%');set('mJob',Math.round(E.unemp*100)+'%');
+  set('mGoal','Your mandate: inflation near 2% and people at work. The Taylor-rule guide suggests '+E.taylor.toFixed(2)+'%. Inflation is '+(S.infl>3?'too hot':S.infl<1?'too cold':'on target')+'.');
+  var q=$('qeSeg');if(q){var bs=q.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].className=(parseInt(bs[i].getAttribute('data-v'),10)===S.qe)?'on':'';}
+  if($('dinsBtn')){
+    $('dinsBtn').textContent=S.dins?'Deposit insurance: on':'Deposit insurance: off';
+    var bc=Math.max(2000,Math.round(S.pop*30)),inCrisis=S.crash>0||S.crunch>0||S.panic>0;
+    $('bailBtn').textContent='Bail out the banks ('+money(bc)+')';$('bailBtn').disabled=!inCrisis;
+    $('stabTxt').textContent=(inCrisis?'A crisis is under way. ':'Markets are calm. ')+'Deposit insurance softens crashes by a quarter for '+money(S.pop*0.5)+' a month, but breeds risk taking. A bailout ends a panic and reopens credit, but traders expect another one. A stock exchange adds circuit breakers that soften crashes too.';
+  }
+  if($('rateHint')){rateHint();drawPolicyChart();}
+  var lr=$('ledRev');if(lr)lr.innerHTML=ledgerHTML('rev');
+  var le=$('ledExp');if(le)le.innerHTML=ledgerHTML('exp');
+  var s25=$('stim25');if(s25)s25.textContent='$25 each ('+money(S.pop*25)+')';
+  var s100=$('stim100');if(s100)s100.textContent='$100 each ('+money(S.pop*100)+')';
+  if($('dFix')){
+    var fr=Math.round((S.rate+2)*10)/10;
+    $('dFix').textContent=S.fixedAmt>0?money(S.fixedAmt)+' at '+S.fixedRate.toFixed(1)+'%, locked':'None. New bonds lock in '+fr.toFixed(1)+'%.';
+    $('dVar').textContent=S.varAmt>0?money(S.varAmt)+' at '+(S.rate+1).toFixed(1)+'%, floats with your policy rate':'None. Floats at policy rate + 1.0 (now '+(S.rate+1).toFixed(1)+'%).';
+    $('fixIssue').textContent='Issue $5,000 at '+fr.toFixed(1)+'%';$('varIssue').textContent='Borrow $5,000';
+    $('fixPay').disabled=S.fixedAmt<=0;$('varPay').disabled=S.varAmt<=0;
+    $('dHint').textContent='Credit available: '+money(Math.max(0,creditLimit()-S.fixedAmt-S.varAmt))+'. You set the rate, so variable debt costs what you decide. Fixed bonds lock today\u2019s price.';
+    $('ledBoth').innerHTML=ledgerHTML('rev')+ledgerHTML('exp');
+    $('ledNet').className=E.net>=0?'pos':'neg';$('ledNet').textContent=(E.net>=0?'+':'')+money(E.net);
+  }
+}
+function polAct(el){
+  var a=el.getAttribute('data-pol');
+  if(a==='tab'){polTab=el.getAttribute('data-tab');renderPolicy();return;}
+  if(a==='dins'){setDeposit(!S.dins);ui();return;}
+  if(a==='bail'){bailout();ui();return;}
+  if(a==='qe'){setQE(parseInt(el.getAttribute('data-v'),10));ui();return;}
+  if(a==='stim'){sendStimulus(parseFloat(el.getAttribute('data-v')));ui();return;}
+}
+function cssVar(n,d){var v=getComputedStyle(document.documentElement).getPropertyValue(n).trim();return v||d;}
+function chartSetup(cv){
+  var dpr=Math.min(2,window.devicePixelRatio||1),w=cv.clientWidth||300,h=cv.clientHeight||84;
+  cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+  var c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);
+  c.font='11px '+cssVar('--font','sans-serif');
+  return {c:c,w:w,h:h};
+}
+function drawChart(cv,series,fmt){
+  var s=chartSetup(cv),c=s.c,w=s.w,h=s.h,muted=cssVar('--muted','#888'),line=cssVar('--line','#ccc');
+  var len=series[0].data.length;
+  if(len<2){c.fillStyle=muted;c.fillText('Collecting data\u2026',10,h/2);return;}
+  var mn=Infinity,mx=-Infinity,i,k;
+  for(k=0;k<series.length;k++)for(i=0;i<series[k].data.length;i++){mn=Math.min(mn,series[k].data[i]);mx=Math.max(mx,series[k].data[i]);}
+  var pad=(mx-mn)*0.12||1;mn-=pad;mx+=pad;
+  c.strokeStyle=line;c.lineWidth=1;c.beginPath();c.moveTo(0,h-0.5);c.lineTo(w,h-0.5);c.moveTo(0,0.5);c.lineTo(w,0.5);c.stroke();
+  for(k=0;k<series.length;k++){
+    c.strokeStyle=series[k].color;c.lineWidth=2;c.beginPath();
+    for(i=0;i<len;i++){var px=6+(w-12)*(i/(len-1)),py=h-6-(h-12)*((series[k].data[i]-mn)/(mx-mn));if(i===0)c.moveTo(px,py);else c.lineTo(px,py);}
+    c.stroke();
+  }
+  c.fillStyle=muted;c.fillText(fmt(mx),8,12);c.fillText(fmt(mn),8,h-8);
+}
+function refreshEcon(){
+  if(!$('eDiag'))return;
+  var e=E,hh=S.hist;
+  $('eDiag').innerHTML=
+    '<div>Buyer affordability<b>'+pct(clamp(e.af,0,1))+'</b></div><div>Builder appetite<b>'+pct(e.appetite)+'</b></div>'+
+    '<div>Homes filled<b>'+pct(e.occ)+'</b></div><div>Shelves stocked<b>'+pct(e.shopFill)+'</b></div>'+
+    '<div>Mood<b>'+pct(e.h)+'</b></div><div>Power supply<b>'+pct(e.pw)+'</b></div>'+
+    '<div>Water supply<b>'+pct(e.ww)+'</b></div><div>Real mortgage rate<b>'+e.mortReal.toFixed(1)+'%</b></div>';
+  $('cap1').textContent='policy '+S.rate.toFixed(2)+'%, inflation '+S.infl.toFixed(1)+'%';
+  $('cap5').textContent=Math.round(S.mkt)+(S.mktD<-5?', falling fast':'');
+  var accent=cssVar('--accent','#1f6f8b'),bad=cssVar('--bad','#c2452d'),warn=cssVar('--warn','#a96f12'),good=cssVar('--good','#2a8450');
+  drawChart($('ch1'),[{data:hh.mort,color:warn},{data:hh.rate,color:accent},{data:hh.infl,color:bad}],function(v){return v.toFixed(1)+'%';});
+  drawChart($('ch5'),[{data:hh.mkt,color:good}],function(v){return String(Math.round(v));});
+  drawChart($('ch2'),[{data:hh.hpi,color:accent}],function(v){return String(Math.round(v));});
+  drawChart($('ch3'),[{data:hh.supply,color:bad}],function(v){return '\u00D7'+v.toFixed(2);});
+  drawChart($('ch4'),[{data:hh.pop,color:warn}],function(v){return String(Math.round(v));});
+  var h='';
+  for(var i=0;i<Math.min(8,S.news.length);i++){h+='<li><time>'+dateLabel(S.news[i].m)+'</time><span>'+S.news[i].text+'</span></li>';}
+  $('eNews').innerHTML=h;
+}
+
+/* ---------- corporate sheet: research, ventures, deals ---------- */
+function portfolioValue(){var v=0;for(var i=0;i<S.firms.length;i++){var f=S.firms[i];if(f.stage==='seed'||f.stage==='public')v+=f.stake*f.val;}return v;}
+function corpHTML(){
+  var tabs=[['research','Research'],['ventures','Ventures'],['deals','Deals'+(S.offers.length?' ('+S.offers.length+')':'')]],h=sheetHead('Corporate'),i;
+  h+='<div class="seg tabs">';
+  for(i=0;i<tabs.length;i++)h+='<button data-act="tab" data-tab="'+tabs[i][0]+'" class="'+(corpTab===tabs[i][0]?'on':'')+'">'+tabs[i][1]+'</button>';
+  h+='</div><div id="corpBody"></div>';return h;
+}
+function researchBody(){
+  var g=E.g,rate=rdRate(g),h='',i;
+  h+='<div class="row"><label for="rRd">R&amp;D budget per month <b id="rdB">'+money(S.rd.budget)+'</b></label><input type="range" id="rRd" min="0" max="3000" step="100" value="'+S.rd.budget+'"></div>';
+  h+='<p class="hint" id="rdInfo">Labs running: '+g.act.lab+'. Output: '+rate.toFixed(1)+' research points a month. Labs, schools and Applied AI speed it up. Build labs in the Civic tab.</p>';
+  for(i=0;i<TECH_ORDER.length;i++){
+    var id=TECH_ORDER[i],t=TECHS[id],st;
+    if(S.tech[id])st='<span class="stg public">Done</span>';
+    else if(S.rd.active===id)st='<div class="prog"><i style="width:'+Math.round(S.rd.pts/t.cost*100)+'%"></i></div><small>'+Math.round(S.rd.pts)+' / '+t.cost+' points'+(id==='fusion'&&!(g.act.lab>=3&&g.act.univ>=1)?'. Stalled: needs 3 labs and a university':'')+'</small>';
+    else if((t.req&&!S.tech[t.req])||(t.req2&&!S.tech[t.req2]))st='<small>Needs '+[t.req,t.req2].filter(function(q){return q&&!S.tech[q];}).map(function(q){return TECHS[q].name;}).join(' and ')+'</small>';
+    else st='<button class="sm" data-act="tech" data-id="'+id+'">Research</button>';
+    h+='<div class="tech"><div><b>'+t.name+'</b><small>'+t.desc+' Finishing it spins out a '+t.sector+' startup.</small></div><div class="tst">'+st+'</div></div>';
+  }
+  return h;
+}
+function firmCard(f){
+  var h='<div class="firm"><div class="fh"><b>'+f.name+'</b><span class="tagc">'+f.sector+'</span><span class="stg '+f.stage+'">'+
+    (f.stage==='seed'?'Startup':f.stage==='public'?'Listed':'Acquired')+'</span></div>';
+  if(f.stage==='seed'){
+    h+='<p class="fs">Valued at '+money(f.val)+'. You own '+pct(f.stake)+', worth '+money(f.stake*f.val)+'. Cash runway: '+f.runway+' months at '+money(f.burn)+' a month. It can list once it passes '+money(70000)+' and markets are calm.</p>';
+    h+='<div class="btns"><button class="sm" data-act="invest" data-id="'+f.id+'" data-amt="2000">Invest $2,000</button><button class="sm" data-act="invest" data-id="'+f.id+'" data-amt="5000">Invest $5,000</button>'+
+       (f.stake>0?'<button class="sm" data-act="sell" data-id="'+f.id+'" data-frac="1">Sell stake</button>':'')+'</div>';
+  }else if(f.stage==='public'){
+    var p=mergePartner(f);
+    h+='<p class="fs">Valued at '+money(f.val)+'. You own '+pct(f.stake)+', worth '+money(f.stake*f.val)+', paying about '+money(f.stake*f.val*0.0022)+' a month. It employs '+f.jobs+' people here.</p>';
+    h+='<div class="btns"><button class="sm" data-act="buy" data-id="'+f.id+'" data-frac="0.1">Buy 10%</button><button class="sm" data-act="sell" data-id="'+f.id+'" data-frac="0.1">Sell 10%</button>'+
+       '<button class="sm" data-act="buyout" data-id="'+f.id+'">Buy out ('+money(f.val*1.2*(1-f.stake))+')</button>'+
+       (p?'<button class="sm" data-act="merge" data-id="'+f.id+'">Merge with '+p.name+'</button>':'')+'</div>';
+  }else{
+    h+='<p class="fs">Taken over for '+money(f.val)+'. Headquarters jobs left: '+f.jobs+'. Cuts usually follow the deal.</p>';
+  }
+  return h+'</div>';
+}
+function venturesBody(){
+  var h='<p class="hint">Portfolio value '+money(portfolioValue())+'. Stocks are at '+Math.round(S.mkt)+(mktSentiment()>0?', trending up, so IPO windows are open':', trending down, so IPOs may wait')+'. Startups can fail, dilute you, or list and pay off big.</p>',n=0;
+  for(var i=0;i<S.firms.length;i++){if(S.firms[i].stage!=='dead'){h+=firmCard(S.firms[i]);n++;}}
+  if(!n)h+='<p class="hint">No ventures yet. Finish a research project or run a lab and startups will appear here.</p>';
+  return h;
+}
+function dealsBody(){
+  var h='',i;
+  if(!S.offers.length)h+='<p class="hint">No bids on the table. Listed firms attract takeover offers from time to time, more often when stocks are strong.</p>';
+  for(i=0;i<S.offers.length;i++){
+    var o=S.offers[i],f=firmById(o.fid),price=f.val*(1+o.prem);
+    h+='<div class="firm"><div class="fh"><b>'+o.buyer+'</b><span class="tagc">bids for '+f.name+'</span></div>'+
+      '<p class="fs">Offer '+money(price)+', a '+Math.round(o.prem*100)+'% premium. Your stake pays '+money(f.stake*price*0.98)+' plus about '+money(price*0.012)+' in deal taxes. Takeovers usually cut headquarters jobs 40% within two years. The bid expires in '+Math.max(0,o.expires-S.month)+' months.</p>'+
+      '<div class="btns"><button class="sm" data-act="accept" data-id="'+o.id+'">Accept</button><button class="sm" data-act="reject" data-id="'+o.id+'">Reject</button></div></div>';
+  }
+  return h;
+}
+function refreshCorp(){
+  var b=$('sheetBody');b.innerHTML=corpHTML();
+  var body=$('corpBody');
+  body.innerHTML=corpTab==='research'?researchBody():corpTab==='ventures'?venturesBody():dealsBody();
+  var r=$('rRd');
+  if(r)r.oninput=function(){
+    S.rd.budget=parseInt(r.value,10);$('rdB').textContent=money(S.rd.budget);
+    $('rdInfo').textContent='Labs running: '+E.g.act.lab+'. Output: '+rdRate(E.g).toFixed(1)+' research points a month. Labs, schools and Applied AI speed it up. Build labs in the Civic tab.';
+  };
+}
+function corpAct(el){
+  var a=el.getAttribute('data-act'),id=parseInt(el.getAttribute('data-id'),10);
+  if(a==='tab'){corpTab=el.getAttribute('data-tab');refreshCorp();return;}
+  if(a==='tech'){S.rd.active=el.getAttribute('data-id');S.rd.pts=0;}
+  else if(a==='invest')invest(id,parseInt(el.getAttribute('data-amt'),10));
+  else if(a==='buy')buyShares(id,parseFloat(el.getAttribute('data-frac')));
+  else if(a==='sell')sellShares(id,parseFloat(el.getAttribute('data-frac')));
+  else if(a==='buyout')buyout(id);
+  else if(a==='merge')mergeFirms(id);
+  else if(a==='accept')acceptOffer(id);
+  else if(a==='reject')rejectOffer(id);
+  ui();
+}
+
+/* ================= splash and menu ================= */
+function closeSplash(){splashOpen=false;$('splash').className='overlay center';}
+function showSplash(mode){
+  splashOpen=true;var b=$('splashBody'),best=parseInt(fetchStore(BEST_KEY)||'0',10)||0,h='';
+  if(mode==='start'){
+    var active=!!(S&&!S.over),sv=hasSave();
+    h='<h1>Skyline 5000</h1><p class="tag">The classic you remember, rebuilt for a world where interest rates, supply chains, and housing markets decide whether your skyline thrives or stalls.</p>'
+     +'<div class="btns col">'
+     +(active?'<button class="primary" id="spBack">Back to your city</button>':(sv?'<button class="primary" id="spCont">Continue your city</button>':''))
+     +'<button class="'+((active||sv)?'sm':'primary')+'" id="spNew">'+(active?'Start a new city':'New city')+'</button></div>'
+     +'<ol class="how"><li>You run the whole show: fiscal policy (taxes, spending, borrowing) and monetary policy (the policy rate and balance sheet). Then you live with the results.</li>'
+     +'<li>Build power and water first, then roads beside your zones. Coal and gas are cheap, renewables are weak, and advanced nuclear needs research.</li>'
+     +'<li>Zone homes, shops and factories. Builders move in when demand is high and credit is cheap, so your rate decision matters.</li>'
+     +'<li>Watch inflation, jobs and the Taylor-rule guide. Hike too hard and you freeze growth. Cut too long and prices run away.</li>'
+     +'<li>Save for capital projects, fund R&amp;D, seed startups and decide on takeover bids. Keep fire stations close.</li>'
+     +'<li>Drag to pan the map and tap to build. Tap the pencil to paint by dragging. Pinch to zoom.</li></ol>'
+     +(best?'<p class="best">Best city so far: '+best.toLocaleString('en-US')+' people</p>':'');
+  }else{
+    var title=S.over==='recall'?'Recalled by voters':'City in receivership';
+    var why=S.over==='recall'?'Approval stayed under 25% for eight months, and the voters showed you the door.':'Cash stayed below \u2212$4,000 for two months and creditors took over.';
+    h='<h1>'+title+'</h1><p class="tag">'+why+'</p>'
+     +'<p>You peaked at <b>'+S.peak.toLocaleString('en-US')+' people</b> over '+Math.floor(S.month/12)+' years and '+(S.month%12)+' months.</p>'
+     +(best?'<p class="best">Best city so far: '+Math.max(best,S.peak).toLocaleString('en-US')+' people</p>':'')
+     +'<div class="btns col" style="margin-top:14px"><button class="primary" id="spNew">Build a new city</button></div>';
+  }
+  b.innerHTML=h;$('splash').className='overlay center open';
+  var nb=$('spNew');if(nb)nb.onclick=function(){newGame();};
+  var bk=$('spBack');if(bk)bk.onclick=function(){closeSplash();dirty=true;};
+  var cb=$('spCont');if(cb)cb.onclick=function(){if(loadSave()){closeSplash();ui();toast('Welcome back, mayor');}else newGame();};
+}
+function showMenu(){
+  sheetKind='menu';var b=$('sheetBody');
+  b.innerHTML=sheetHead('Menu')
+   +'<div class="btns col" style="margin-top:8px"><button class="sm" id="mSave">Save city</button><button class="sm" id="mHow">How to play</button>'
+   +'<button class="sm" id="mDis">Random disasters: '+(S.disasters!==false?'on':'off')+'</button></div>'
+   +'<h3>Disaster lab</h3><p class="hint">Trigger a disaster to test your fire stations and nerves.</p>'
+   +'<div class="btns"><button class="sm" data-dis="fire">Fire</button><button class="sm" data-dis="quake">Earthquake</button><button class="sm" data-dis="flood">Flood</button><button class="sm" data-dis="tornado">Tornado</button></div>';
+  $('mSave').onclick=function(){save();closeSheet();toast('City saved');};
+  $('mHow').onclick=function(){closeSheet();showSplash('start');};
+  $('mDis').onclick=function(){S.disasters=!(S.disasters!==false);closeSheet();toast('Random disasters '+(S.disasters?'on':'off'));};
+  $('sheet').className='overlay open';
+}
+
+/* ================= input ================= */
+var ptrs={},gest=null,painting=false,lastIdx=-1,firstHit=false,downInfo=null;
+function localXY(e){var r=$('cv').getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];}
+function paintAt(x,y){
+  var i=pickTile(x,y);if(i<0||i===lastIdx)return;
+  var first=firstHit;firstHit=false;
+  if(lastIdx>=0&&!first){
+    var x0=lastIdx%MW,y0=(lastIdx/MW)|0,x1=i%MW,y1=(i/MW)|0,n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0));
+    if(n>1){for(var k=1;k<n;k++){act(Math.round(y0+(y1-y0)*k/n)*MW+Math.round(x0+(x1-x0)*k/n),false);}}
+  }
+  lastIdx=i;hoverIdx=i;act(i,first);
+}
+function startGesture(){
+  var ids=Object.keys(ptrs),a=ptrs[ids[0]],b=ptrs[ids[1]];
+  gest={d:Math.hypot(a.x-b.x,a.y-b.y)||1,mx:(a.x+b.x)/2,my:(a.y+b.y)/2};
+}
+function wire(){
+  var cv=$('cv');
+  cv.addEventListener('pointerdown',function(e){
+    if(splashOpen||sheetKind)return;e.preventDefault();
+    try{cv.setPointerCapture(e.pointerId);}catch(x){}
+    var p=localXY(e);ptrs[e.pointerId]={x:p[0],y:p[1]};
+    if(Object.keys(ptrs).length>=2){startGesture();painting=false;downInfo=null;return;}
+    if(!S||S.over)return;
+    var panMode=handMode||(tool==='inspect')||e.button===1||e.button===2;
+    downInfo={x:p[0],y:p[1],lx:p[0],ly:p[1],moved:false,pan:panMode};
+    if(!panMode){painting=true;lastIdx=-1;firstHit=true;paintAt(p[0],p[1]);}
+  });
+  cv.addEventListener('pointermove',function(e){
+    var p=localXY(e);
+    if(ptrs[e.pointerId]){ptrs[e.pointerId].x=p[0];ptrs[e.pointerId].y=p[1];}
+    if(gest&&Object.keys(ptrs).length>=2){
+      var ids=Object.keys(ptrs),a=ptrs[ids[0]],b=ptrs[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y)||1,mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      zoomAt(d/gest.d,mx,my);panBy(mx-gest.mx,my-gest.my);gest.d=d;gest.mx=mx;gest.my=my;return;
+    }
+    if(downInfo){
+      if(downInfo.pan){
+        var dx=p[0]-downInfo.lx,dy=p[1]-downInfo.ly;
+        if(!downInfo.moved&&Math.hypot(p[0]-downInfo.x,p[1]-downInfo.y)>6)downInfo.moved=true;
+        if(downInfo.moved){panBy(dx,dy);}
+        downInfo.lx=p[0];downInfo.ly=p[1];
+      }else if(painting)paintAt(p[0],p[1]);
+    }else if(e.pointerType==='mouse'&&S&&!S.over){var hi=pickTile(p[0],p[1]);if(hi!==hoverIdx){hoverIdx=hi;dirty=true;}}
+  });
+  var up=function(e){
+    var wasTwo=Object.keys(ptrs).length>=2;
+    delete ptrs[e.pointerId];
+    if(wasTwo){if(Object.keys(ptrs).length<2)gest=null;downInfo=null;painting=false;return;}
+    if(downInfo&&downInfo.pan&&!downInfo.moved&&S&&!S.over&&!splashOpen&&!sheetKind){
+      var i=pickTile(downInfo.x,downInfo.y);if(i>=0)act(i,true);
+    }
+    downInfo=null;painting=false;lastIdx=-1;
+  };
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  cv.addEventListener('contextmenu',function(e){e.preventDefault();});
+  cv.addEventListener('wheel',function(e){e.preventDefault();var p=localXY(e);zoomAt(Math.exp(-e.deltaY*0.0015),p[0],p[1]);},{passive:false});
+  $('tools').addEventListener('click',function(e){var b=e.target.closest('.tool');if(b)selectTool(b.getAttribute('data-t'));});
+  $('groups').addEventListener('click',function(e){var b=e.target.closest('button');if(b)selectGroup(b.getAttribute('data-g'));});
+  $('speed').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;speed=parseInt(b.getAttribute('data-s'),10);ui();});
+  $('btnPolicy').addEventListener('click',function(){if(S&&!S.over)openSheet('policy');});
+  $('hand').addEventListener('click',function(){handMode=!handMode;ui();toast(handMode?'Drag pans the map. Tap to build.':'Drag paints with the current tool. Two fingers pan and zoom.');});
+  $('btnEcon').addEventListener('click',function(){if(S&&!S.over)openSheet('econ');});
+  $('btnCorp').addEventListener('click',function(){if(S&&!S.over)openSheet('corp');});
+  $('btnMenu').addEventListener('click',function(){if(S&&!S.over&&!splashOpen)showMenu();});
+  $('zIn').addEventListener('click',function(){zoomAt(1.25);});
+  $('zOut').addEventListener('click',function(){zoomAt(0.8);});
+  $('rotL').addEventListener('click',function(){cam.rot=(cam.rot+3)%4;dirty=true;});
+  $('rotR').addEventListener('click',function(){cam.rot=(cam.rot+1)%4;dirty=true;});
+  $('mm').addEventListener('pointerdown',function(e){
+    var r=$('mm').getBoundingClientRect();cam.wx=clamp((e.clientX-r.left)/r.width*MW,0,MW);cam.wy=clamp((e.clientY-r.top)/r.height*MH,0,MH);dirty=true;mmDirty=true;
+  });
+  $('sheet').addEventListener('click',function(e){
+    if(e.target.id==='sheet'||e.target.getAttribute('data-close')){closeSheet();return;}
+    var d=e.target.closest('[data-dis]');if(d){closeSheet();triggerDisaster(d.getAttribute('data-dis'));return;}
+    var pl=e.target.closest('[data-pol]');if(pl&&sheetKind==='policy'){polAct(pl);return;}
+    var a=e.target.closest('[data-act]');if(a&&sheetKind==='corp')corpAct(a);
+  });
+  document.addEventListener('visibilitychange',function(){if(document.hidden)save();});
+  window.addEventListener('pagehide',save);
+  window.addEventListener('resize',resize);
+  if(window.ResizeObserver)new ResizeObserver(resize).observe($('board'));
+  try{new MutationObserver(function(){dirty=true;if(sheetKind==='econ')refreshEcon();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});}catch(x){}
+  if(window.matchMedia){try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){dirty=true;if(sheetKind==='econ')refreshEcon();});}catch(x){}}
+}
+
+/* ================= main loop and boot ================= */
+var lastT=0,acc=0;
+function frame(t){
+  var dt=Math.min(250,t-lastT);lastT=t;
+  if(S&&!S.over&&speed>0&&!sheetKind&&!splashOpen){
+    acc+=dt;var per=[0,1400,700,280][speed];
+    while(acc>=per){acc-=per;tick();if(!S||S.over||splashOpen)break;}
+  }else acc=0;
+  if(S&&animOn())dirty=true;
+  if(dirty){dirty=false;draw();}
+  if(mmDirty){mmDirty=false;drawMini();}
+  requestAnimationFrame(frame);
+}
+(function boot(){
+  var st=genTerrain();
+  wire();resize();refreshTools();
+  camSet(st.x+0.5,st.y+0.5,0.5,0);
+  $('info').textContent='Pick a tool below, then tap or drag on the map.';
+  showSplash('start');
+  requestAnimationFrame(function(t){lastT=t;frame(t);});
+  if(window.__SKYTEST){window.__sky={get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+    setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
+    invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
+    triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
+    get F(){return F;},get FLD(){return FLD;},resize:resize,setCorpTab:function(t){corpTab=t;}};}
+})();
+
+
+})();
+</script>
+</body>
+</html>
