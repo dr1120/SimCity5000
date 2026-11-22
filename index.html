@@ -757,7 +757,7 @@ function freshState(start){
     rq:[],rqStat:{n:0,cost:0,told:false},pp:{bal:0,props:[],last:0,mod:{},built:[],since:0},
     phasePay:{},kmax:0,era:0,calpts:[[0,0,1]],alien:null,
     fund:{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]},
-    city:'New Haven',scn:'free',goalsDone:false,sandbox:false,tut:0,advSeen:{},ord:{recycle:false,clean:false,transit:false,retrofit:false,breaker:false,repair:true,planners:true},npx:1,
+    city:'New Haven',scn:'free',goalsDone:false,sandbox:false,tut:0,advSeen:{},ord:{recycle:false,clean:false,transit:false,retrofit:false,breaker:false,repair:true,planners:true,transparency:false},npx:1,
     tax:{inc:9,sales:6,prop:1,corp:6,bot:0,splost:0},sp:{svc:1,edu:1,infra:1,welfare:0,safety:1,health:1,udiv:0,retrain:0,aisafe:0},stim:0,qe:0,
     rate:4.0,prevRate:4.0,mort:5.2,infl:2.0,anch:1,rn:0,diff:'normal',sunF:1,windF:1,
     hpi:100,hpiMom:0,shock:0,bubble:0,recession:0,remote:0,heat:0,drought:0,
@@ -1168,6 +1168,8 @@ function computeEconomy(){
   var Idem=clamp(0.6*wfGap+0.6*goodsGap+0.2-(S.recession>0?0.3:0)-0.02*(tx.corp-8)+(A.airport?0.05:0),-1,1);
   var apprRaw=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,sx1-9)-Math.max(0,S.infl-5)*2+Math.min(6,ppm.appr||0)+(A.stadium?3:0)-(S.cash<0?10:0)-((S.fund.bal>24*Math.max(1000,revenue)&&tx.inc>9)?3:0)-10*Math.max(0,ineq-0.45)+((S.auto&&S.auto.psc>=12)?4:0),0,100);
   var apprTarget=apprRaw>85?85+(apprRaw-85)*0.4:apprRaw;  /* nobody is ever 100% happy */
+  var bl=blocCalc({tx:tx,hpi:S.hpi,mort:mort,infl:S.infl,socCov:socCov,hc:hc,schCov:g.schCov,unemp:unemp,tight:jobsGap,mkt:S.mkt,appr:apprTarget});
+  apprTarget=clamp(apprTarget+bl.mw*0.5-(S.recallPen||0)-(S.scand||0),0,100);
   e.supply=supply;e.mort=mort;e.pw=pw;e.ww=ww;e.workforce=workforce;e.employed=employed;e.unemp=unemp;e.tight=jobsGap;e.mortReal=mort-(S.infl-2);
   e.produced=produced;e.need=need;e.imported=imported;e.sold=sold;e.shopFill=shopFill;e.exports=exports;
   e.pwUse=(g.pCap+impMW)>0?pwD/(g.pCap+impMW):(pwD>0?9.99:0);e.wUse=(wCap+impW)>0?wD/(wCap+impW):(wD>0?9.99:0);
@@ -1175,7 +1177,7 @@ function computeEconomy(){
   e.rev=[['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax],['Exports',exports],['Dividends',dividends],['Tourism',tourism],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
   e.exp=[['Public services',services],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop)*dm('infl');
@@ -1251,6 +1253,7 @@ function updateTicker(){showPop(S&&S.news[0]);}
 /* ================= macro: rates, supply, housing, stock market ================= */
 var handMode=true;
 function setRate(r){
+  if(locked()){lockMsg();return;}
   r=clamp(Math.round(r*4)/4,0,RATE_MAX);
   if(Math.abs(r-S.rate)<0.01){toast('Policy rate is already '+r.toFixed(2)+'%.');return;}
   var diff=r-S.rate;S.rate=r;
@@ -1258,15 +1261,18 @@ function setRate(r){
   toast('Policy rate set to '+r.toFixed(2)+'%');
 }
 function setOrd(k,on){
+  if(locked()){lockMsg();return;}
   S.ord[k]=on;
-  var nm={recycle:'Recycling program',clean:'Clean air rules',transit:'Transit subsidy',retrofit:'Seismic retrofit program',breaker:'AI circuit breakers',repair:'Repair crews',planners:'Utility planners'};
+  var nm={recycle:'Recycling program',clean:'Clean air rules',transit:'Transit subsidy',retrofit:'Seismic retrofit program',breaker:'AI circuit breakers',repair:'Repair crews',planners:'Utility planners',transparency:'Transparency rules'};
   addNews(nm[k]+(on?' is now in force.':' was repealed.'),'info');
 }
 function setQE(v){
+  if(locked()){lockMsg();return;}
   S.qe=v;
   addNews(v>0?'You launched asset purchases. Long rates fall and stocks rally, but inflation and bubble risk rise.':v<0?'You started shrinking the balance sheet. Long rates and the dollar rise, and risk assets suffer.':'You put the balance sheet on hold.','info');
 }
 function sendStimulus(per){
+  if(locked()){lockMsg();return;}
   var c=Math.round(S.pop*per);
   if(S.pop<10){toast('Not enough residents yet.');return;}
   if(S.cash<c){toast('Not enough cash. Checks cost '+money(c)+'.');return;}
@@ -1275,6 +1281,7 @@ function sendStimulus(per){
   toast('Stimulus sent: '+money(c));
 }
 function bailout(){
+  if(locked()){lockMsg();return;}
   if(S.crash<=0&&S.crunch<=0&&S.panic<=0){toast('There is no crisis to fight right now.');return;}
   var c=Math.max(2000,Math.round(S.pop*30));
   if(S.cash<c){toast('Not enough cash. A bailout costs '+money(c)+'.');return;}
@@ -1283,6 +1290,7 @@ function bailout(){
   toast('Bailout done');
 }
 function setDeposit(on){
+  if(locked()){lockMsg();return;}
   S.dins=on;
   addNews(on?'Deposit insurance is now funded. Crashes will hit softer, but it costs money every month and encourages risk taking.':'Deposit insurance ended. Savers and banks are on their own.','info');
 }
@@ -1460,7 +1468,7 @@ function applyBrief(cid,oi){
 function stepInfra(e){
   var r=S.renew;
   if(r<1)S.cond-=0.008*(1-r)*Math.min(1,e.assets/15000);
-  else S.cond+=0.002+0.005*Math.max(0,r-1);
+  else S.cond+=0.004+0.005*Math.max(0,r-1);
   S.cond=clamp(S.cond,0.2,1);
   var kinds=['water','power','road'],msgs={water:'A water main bursts and a district loses pressure.',power:'Aging transformers fail and part of the grid goes dark.',road:'A bridge and several roads close for emergency repairs.'},i;
   for(i=0;i<3;i++){
@@ -1546,11 +1554,13 @@ function stepWaste(e){
 }
 /* ================= sovereign wealth fund ================= */
 function fundDeposit(amt){
+  if(locked()){lockMsg();return;}
   amt=Math.min(amt,Math.floor(S.cash));
   if(amt<=0){toast('No spare cash to put in the fund.');return;}
   S.cash-=amt;S.fund.bal+=amt;toast('Deposited '+money(amt)+' in the fund');
 }
 function fundWithdraw(amt){
+  if(locked()){lockMsg();return;}
   amt=Math.min(amt,S.fund.bal);
   if(amt<=0.5){toast('The fund is empty.');return;}
   S.fund.bal-=amt;S.cash+=amt;toast('Withdrew '+money(amt)+' from the fund');
@@ -2197,7 +2207,7 @@ function tick(){
   if(e.g.resCap===0&&S.pop<3)S.pop=0;
   S.approval+=(e.apprTarget-S.approval)*0.2;
   if(S.approval>92)S.approval=92;  /* one-off boosts cannot lift anyone past 92% */
-  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);
+  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);stepOffice(e);
   stepDisasters(e.g);
   develop(e);
   S.month++;
@@ -2217,8 +2227,8 @@ function tick(){
   var cashFloor=(e.costs>100000)?-e.costs*1.5:-4000;
   if(S.cash<cashFloor&&!S.sandbox)S.lowCash++;else S.lowCash=0;
   if(!S.sandbox&&S.cash<0&&S.cash>=cashFloor&&S.month%3===0)toast('Overdrawn. Borrow, raise taxes or cut costs.');
-  if(S.lowApproval>=8)return endGame('recall');
-  if(S.lowCash>=2)return endGame('bankrupt');
+  if(S.lowApproval>=8&&(S.office||{mode:'mayor'}).mode==='mayor')startRecall();
+  if(S.lowCash>=2&&(S.office||{mode:'mayor'}).mode!=='receiver')startReceivership();
   if(S.month%6===0)save();
   dirty=true;mmDirty=true;ui();
 }
@@ -2289,6 +2299,7 @@ function say(k,msg){if(k!==lastToastKey){lastToastKey=k;toast(msg);}}
 var buildRot=0;
 function startClock(){if(S&&S.started===false){S.started=true;speed=1;toast('Time is running. Use the pause button any time.');}}
 function act(i,first){
+  if(locked()&&tool!=='inspect'){if(first)lockMsg();return;}
   var own=!undoFrame;if(own)beginUndo();
   var c0=S.cash;
   try{doAct(i,first);}finally{if(own)commitUndo();}
@@ -2410,7 +2421,7 @@ function newGame(name,scnId){
   for(attempt=0;attempt<tries;attempt++){
     T=new Array(N).fill(EMPTY);L=new Array(N).fill(0);B=new Array(N).fill(0);F=new Uint8Array(N);FLD=new Uint8Array(N);PAR=new Int32Array(N).fill(-1);ORI=new Uint8Array(N);PU=new Uint8Array(N);pending=null;undoStack=[];undoFrame=null;
     st=genTerrain();
-    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);
+    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);officeInit();
     S.scn=sc.id;S.diff=scnDiff;if(sc.setup)sc.setup(S);
     S.noDeadline=!!scnNoDl;
     tool='inspect';group='util';speed=0;S.started=false;inspectIdx=-1;handMode=true;buildRot=0;setOverlay(0);
@@ -2498,6 +2509,7 @@ function seedOnce(spec){
     for(m=0;m<(spec.months||90);m++){S.cash=Math.max(S.cash,1e7);S.approval=Math.max(S.approval,75);S.rate=2.5;S.crises=[];S.sched=[];S.briefs=[];S.shock=0;S.recession=0;tick();}
   }finally{seeding=false;bulk=false;}
   if(!hadWater&&!(spec.keepWater))S.tech.water=true;
+  S.mayors=[];S.office={mode:'mayor'};S.scand=0;S.scandalsTotal=0;S.recallPen=0;officeInit();
   S.hs=undefined;S.news=[];S.chron=[];S.ach={};S.yrs=[];S.st=undefined;S.crashes=0;S.crises=[];S.sched=[];S.briefs=[];S.shock=0;S.recession=0;S.mktBubble=0;
   S.rate=4;S.prevRate=4;S.infl=2;S.mort=5.2;S.anch=1;S.rn=0;S.hpi=100;S.hpiMom=0;S.mkt=100;S.approval=70;S.hist={rate:[],mort:[],hpi:[],supply:[],pop:[],mkt:[],infl:[]};
   S.cash=cash0;undoStack=[];undoFrame=null;pending=null;tool='inspect';
@@ -2511,7 +2523,7 @@ function restore(d){
   if(!d||d.v!==3||!d.T||d.T.length!==N||!d.EL||d.EL.length!==N||!d.S)return false;
   T=d.T;L=d.L;B=d.B;TER=d.TER;EL=d.EL;F=Uint8Array.from(d.F);FLD=Uint8Array.from(d.FLD);
   PAR=Int32Array.from(d.PAR||new Array(N).fill(-1));ORI=Uint8Array.from(d.ORI||new Array(N).fill(0));PU=Uint8Array.from(d.PU||new Array(N).fill(0));S=d.S;
-  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
+  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();officeInit();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
   S.ord=S.ord||{recycle:false,clean:false,transit:false};S.city=S.city||'My City';S.scn=S.scn||'free';S.sandbox=!!S.sandbox;
   for(var i=0;i<N;i++){SHORE[i]=0;if(TER[i]===WATER)continue;var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}}
   tool='inspect';group='build';speed=1;inspectIdx=-1;pending=null;undoStack=[];undoFrame=null;handMode=true;buildRot=0;setOverlay(0);
@@ -2971,6 +2983,9 @@ var ACH=[
  {id:'breaker',tier:2,name:'Safety first',desc:'Adopt AI circuit breakers.',f:function(e){return !!S.ord.breaker;}},
  {id:'aisurvive',tier:3,name:'Stared down the AI',desc:'Live through an AI revolt for two years.',f:function(e){return S.st.seen.airevolt!==undefined&&S.month-S.st.seen.airevolt>=24;}},
  /* luck and time */
+ {id:'comeback',tier:2,name:'Comeback',desc:'Win the mayor\u2019s office back after a recall.',f:function(e){return (S.comebacks|0)>=1;},p:function(e){return (S.recalls|0)>0?0.5:0;}},
+ {id:'landslide',tier:2,name:'Landslide',desc:'Win your comeback with at least 65% of the vote.',f:function(e){return !!S.landslide;},p:function(e){return (S.comebacks|0)>0?0.8:0;}},
+ {id:'backblack',tier:1,name:'Back in the black',desc:'Get your city out of receivership.',f:function(e){return !!S.backBlack;},p:function(e){return (S.receiverships|0)>0?0.5:0;}},
  {id:'swan',tier:2,name:'Black swan survivor',desc:'Come through a black swan event with the city intact for a year.',f:function(e){return (S.swans|0)>0&&S.month-(S.lastSwan||0)>=12&&S.pop>=300;},p:function(e){return (S.swans|0)>0?1:0;}},
  {id:'pride3',tier:1,name:'Civic pride',desc:'Fund three pet projects with the local projects tax.',f:function(e){return S.pp.built.length>=3;},p:function(e){return prog(S.pp.built.length,3);}},
  {id:'pride10',tier:2,name:'Pet project patron',desc:'Fund ten pet projects.',f:function(e){return S.pp.built.length>=10;},p:function(e){return prog(S.pp.built.length,10);}},
@@ -3122,7 +3137,7 @@ function scoreParts(){
   var k=E?E.kard:0,years=Math.min(200,Math.floor(S.month/12));
   var emp=E&&E.unemp!==undefined?Math.round((1-Math.max(0,Math.min(1,E.unemp)))*500):0;
   var bal=(E&&E.net!==undefined&&E.net>=0)?500:0;
-  return [['Peak population',Math.floor(S.peak/2)],['Years in office (to 200)',years*10],['Achievements ('+achCount()+')',achCount()*40],['Voter approval',Math.round(S.approval*8)],['Jobs',emp],['Balanced budget',bal],['Kardashev rating',Math.floor(120*k*k)],['Eras reached',(S.era|0)*30]];
+  return [['Peak population',Math.floor(S.peak/2)],['Years in office (to 200)',years*10],['Achievements ('+achCount()+')',achCount()*40],['Voter approval',Math.round(S.approval*8)],['Jobs',emp],['Balanced budget',bal],['Kardashev rating',Math.floor(120*k*k)],['Eras reached',(S.era|0)*30],['Comebacks, less scandals',Math.max(0,(S.comebacks|0)*150-(S.scandalsTotal|0)*30)]];
 }
 function scoreOf(){var s=0,p=scoreParts();for(var i=0;i<p.length;i++)s+=p[i][1];return Math.round(s*dm('score'));}
 function hash5(str){var h=5381;for(var i=0;i<str.length;i++){h=((h<<5)+h+str.charCodeAt(i))|0;}return (h>>>0).toString(36).slice(0,5);}
@@ -3211,7 +3226,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-22 01:09';
+var BUILD_ID='2026-11-22 02:47';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -3372,11 +3387,345 @@ function renderPP(){
   b.innerHTML=h;
 }
 
+/* ================= office: recall, caretaker mayor, campaign, receivership, voting blocs, scandals, legacy ================= */
+var CAMP_MS=1800000;  /* a campaign lasts 30 real minutes of running time. It is the only real-time timer in the game. */
+var BLOCS=[['homeowners','Homeowners',0.25],['renters','Renters',0.20],['business','Business owners',0.15],['workers','Workers',0.20],['retirees','Retirees',0.10],['young','Young residents',0.10]];
+var CARE_NAMES=['Margaret Ellis','Raymond Cho','Dolores Vance','Walter Okafor','Priya Raman','Gordon Pike','Lucinda Marsh','Tomas Ibarra'];
+var PERSONA_TXT={smallgov:'a small-government conservative who cuts taxes and trims spending',biggov:'an activist who raises taxes and spends more on services',austerity:'an austerity board'};
+var PERSONA_SHORT={smallgov:'small-government',biggov:'activist',austerity:'austerity'};
+var SCANDALS=[
+  'A contractor is caught kicking back money to a city hall insider.',
+  'Leaked emails show a deputy mayor steering a contract to a relative.',
+  'An audit finds that city credit cards paid for lavish dinners.',
+  'A permit official is arrested for selling zoning favors.',
+  'The press reveals a no-bid deal for a donor.'
+];
+function locked(){return !!(S&&S.office&&S.office.mode&&S.office.mode!=='mayor'&&!S.sandbox);}
+function lockMsg(){toast(S.office.mode==='receiver'?'A financial control board is running the city until it is solvent again.':'A caretaker mayor is running the city. Win the election to return.');sfx('bad');}
+
+/* ---- voting blocs: approval is the weighted view of six groups with different worries ---- */
+function blocCalc(v){
+  var tx=v.tx,hp=clamp((v.hpi-100)/100,-1.3,1.3),i,adj={},list=[],mw=0,h=S&&S.office&&S.office.hostile;
+  adj.homeowners=-(tx.prop-1)*8+hp*6-(v.mort-5)*1.2;
+  adj.renters=-hp*6+6*(v.socCov-0.5)-(tx.sales-6)*0.8;
+  adj.business=-(tx.corp-6)*1.5+clamp((v.mkt-100)/100*6,-6,6);
+  adj.workers=-v.unemp*60-(tx.inc-9)*1.2+4*clamp(v.tight,0,1);
+  adj.retirees=8*(v.hc-0.5)-(v.infl-2)*2.5-(tx.prop-1)*5;
+  adj.young=8*(v.schCov-0.5)-hp*5-v.unemp*30;
+  for(i=0;i<BLOCS.length;i++){
+    var id=BLOCS[i][0],a=clamp(adj[id],-14,14);
+    if(h&&h.id===id&&S.month<h.until)a-=10;
+    mw+=BLOCS[i][2]*a;
+    list.push({id:id,name:BLOCS[i][1],w:BLOCS[i][2],adj:a,appr:clamp(v.appr+a,0,100)});
+  }
+  return {list:list,mw:mw};
+}
+var BLOC_WHY={homeowners:'property taxes, home prices and mortgage rates',renters:'rising rents, services and sales tax',business:'business tax and the stock market',workers:'jobs, wages and income tax',retirees:'health care, inflation and property taxes',young:'schools, housing costs and jobs'};
+
+/* ---- the ledger of mayors ---- */
+function officeInit(){
+  if(!S.office)S.office={mode:'mayor'};
+  if(!S.mayors)S.mayors=[];
+  if(!S.mayors.length)openTenure('you',S.city||'You','');
+  S.recalls=S.recalls|0;S.receiverships=S.receiverships|0;S.comebacks=S.comebacks|0;S.scandalsTotal=S.scandalsTotal|0;S.pcap=S.pcap||0;
+}
+function openTenure(who,name,persona){
+  S.mayors.push({who:who,name:name,persona:persona||'',from:S.month,to:null,popFrom:Math.round(S.pop),popTo:null,apprFrom:Math.round(S.approval),apprTo:null,peak:Math.round(S.pop),how:'',scandals:0,apprSum:0,apprN:0});
+}
+function closeTenure(how){
+  var t=S.mayors[S.mayors.length-1];if(!t||t.to!==null)return;
+  t.to=S.month;t.popTo=Math.round(S.pop);t.apprTo=Math.round(S.approval);t.how=how;
+}
+function curTenure(){return S.mayors[S.mayors.length-1];}
+function newCamp(){return {rt:0,pts:0,used:{},cool:{},fix:'',noise:(Math.random()+Math.random()-1)*3};}
+
+/* ---- recall: the voters show you the door, but the city carries on ---- */
+function readStance(){
+  var tx=S.tax,sp=S.sp,e=E||{};
+  var spend=(sp.svc+sp.safety+sp.health+sp.edu+sp.infra)/5;
+  var big=(tx.inc-9)/3+(tx.sales-6)/2+(tx.prop-1)/0.4+(tx.corp-6)/4+(spend-1)/0.2;   /* positive: high taxes and generous spending */
+  var gap=(e.taylor!==undefined)?S.rate-e.taylor:0;                                    /* positive: tighter money than the guide */
+  return {big:big,gap:gap};
+}
+function choosePersona(st){
+  if(Math.abs(st.big)<0.25)return Math.random()<0.5?'smallgov':'biggov';
+  return st.big>0?'smallgov':'biggov';
+}
+/* the caretaker governs by the opposite playbook: opposite taxes and spending, opposite ordinances, opposite money */
+function applyStance(P,st){
+  var tx=S.tax,sp=S.sp,o=S.office;
+  o.bias=st.gap<=0?0.75:-0.75;
+  if(P==='smallgov'){
+    tx.inc=7;tx.sales=5;tx.prop=0.9;tx.corp=5;sp.svc=0.9;sp.safety=0.95;sp.health=0.9;sp.edu=0.9;sp.infra=0.9;
+    o.log.push('Cut income tax to 7%, sales tax to 5% and business tax to 5%, and trimmed spending.');
+  }else{
+    tx.inc=11;tx.sales=7;tx.prop=1.2;tx.corp=7;sp.svc=1.15;sp.safety=1.1;sp.health=1.2;sp.edu=1.2;sp.infra=1.1;
+    o.log.push('Raised income tax to 11%, sales tax to 7% and business tax to 7%, and boosted services.');
+  }
+  var flipped=[];['recycle','clean','transit','retrofit'].forEach(function(k){S.ord[k]=!S.ord[k];flipped.push((S.ord[k]?'adopted ':'repealed ')+k);});
+  o.log.push('Reversed your ordinances: '+flipped.join(', ')+'.');
+  o.log.push('Set interest rates '+(o.bias>0?'tighter':'looser')+' than you did.');
+}
+function startRecall(){
+  if(!S.office||S.office.mode!=='mayor'||S.sandbox)return;
+  officeInit();closeTenure('recalled');
+  var st=readStance(),P=choosePersona(st),nm=pick(CARE_NAMES);
+  S.recalls++;
+  S.office={mode:'caretaker',persona:P,name:nm,since:S.month,why:'recall',popAt:Math.round(S.pop),apprAt:Math.round(S.approval),camp:newCamp(),log:[],fix:[],hostile:null,bias:0,stance:st};
+  S.pcap=clamp(25+achCount()*2+Math.min(15,(S.pp&&S.pp.built?S.pp.built.length:0)*5),0,80);
+  applyStance(P,st);
+  S.ord.repair=true;S.ord.planners=true;S.lowApproval=0;
+  openTenure('caretaker',nm,P);
+  S.approval=Math.max(S.approval,32);
+  addNews('You have been recalled. '+nm+', '+PERSONA_TXT[P]+', is now running the city, and will govern the opposite way to you. You have 30 minutes of running time to campaign for the job back.','bad','Politics');
+  chron('crisis','Recalled by voters. '+nm+' takes over as caretaker mayor.');
+  toast('Recalled. A caretaker is in charge. Open the Campaign sheet.',5200);sfx('bad');
+  if(typeof setTimeout==='function')setTimeout(function(){if(S&&locked()&&!sheetKind&&!splashOpen)openSheet('camp');},400);
+}
+
+/* ---- receivership instead of bankruptcy ---- */
+var SELLABLE=['airport','metro','univ','exch','conv','stadium','dc','lab','bio','stn'];
+function boardSell(n){
+  var sold=0,gain=0,names=[],k,i;
+  for(k=0;k<SELLABLE.length&&sold<n;k++){
+    var o=OBJ[SELLABLE[k]];if(!o)continue;
+    for(i=0;i<N&&sold<n;i++){
+      if(T[i]===o.t&&(PAR[i]===i||PAR[i]===-1)){gain+=o.cost*0.4;names.push(TOOLS[SELLABLE[k]].name.toLowerCase());clearAt(i);sold++;}
+    }
+  }
+  if(sold){S.cash+=gain;dirty=true;mmDirty=true;addNews('The control board sold '+names.join(', ')+' for '+money(gain)+' to cut the city\u2019s running costs.','warn','Politics');}
+  return sold;
+}
+function startReceivership(){
+  if(!S.office||S.office.mode==='receiver'||S.sandbox)return;
+  officeInit();closeTenure('receivership');
+  var costs=Math.max(6000,(E&&E.costs)||6000),tx=S.tax,sp=S.sp;
+  S.receiverships++;
+  S.office={mode:'receiver',persona:'austerity',name:'The Financial Control Board',since:S.month,why:'bankruptcy',popAt:Math.round(S.pop),apprAt:Math.round(S.approval),ok:0,log:[],fix:[],camp:null,hostile:null};
+  S.office.old={svc:sp.svc,safety:sp.safety,health:sp.health,edu:sp.edu,infra:sp.infra};
+  tx.inc=Math.max(tx.inc,11);tx.sales=Math.max(tx.sales,7);
+  sp.svc=Math.min(sp.svc,0.85);sp.safety=Math.min(sp.safety,0.9);sp.health=Math.min(sp.health,0.9);sp.edu=Math.min(sp.edu,0.9);
+  sp.infra=Math.min(sp.infra,0.8);
+  S.cash=Math.max(S.cash,0)+costs*8;boardSell(3);
+  S.office.log.push('Raised taxes, trimmed spending and sold surplus city assets. Infrastructure renewal stays funded.');
+  S.ord.repair=true;S.ord.planners=true;S.lowCash=0;S.approval=Math.max(0,S.approval-5);
+  openTenure('board','The Financial Control Board','austerity');
+  addNews('The city has run out of money. A financial control board has taken over, raised taxes, cut services and sold assets. It stays until the city is solvent again.','bad','Politics');
+  chron('crisis','Financial control board takes over after a bankruptcy.');
+  toast('Receivership. A control board is in charge until the city is solvent.',5200);sfx('bad');
+}
+
+/* ---- the caretaker (and the control board) run the city every month ---- */
+function caretakerGovern(e){
+  var o=S.office,tx=S.tax,sp=S.sp,costs=Math.max(1,e.costs||1),i;
+  var tg=Math.round((e.taylor+(o.bias||0))*4)/4;
+  if(Math.abs(tg-S.rate)>=0.25)S.rate=clamp(Math.round((S.rate+(tg>S.rate?1:-1)*Math.min(0.5,Math.abs(tg-S.rate)))*4)/4,0,RATE_MAX);
+  S.ord.repair=true;S.ord.planners=true;
+  if(S.month%6===0){
+    var deficit=e.net<0&&S.cash<costs*24,surplus=e.net>costs*(o.mode==='receiver'?0.12:0.3)&&S.cash>costs*(o.mode==='receiver'?4:12);
+    var cutSvc=function(){var done=false;[['svc',0.8],['safety',0.85],['health',0.8],['edu',0.8]].forEach(function(p){if(sp[p[0]]>p[1]){sp[p[0]]=Math.max(p[1],Math.round((sp[p[0]]-0.05)*100)/100);done=true;}});return done;};
+    if(o.mode==='receiver'){
+      if(deficit&&tx.inc<12)tx.inc=Math.min(12,tx.inc+1);
+      else if(surplus&&tx.inc>9)tx.inc=Math.max(9,tx.inc-0.5);
+    }else if(o.persona==='smallgov'){
+      /* cuts spending before it raises taxes, and hands any surplus back as tax cuts */
+      if(deficit){if(!cutSvc()&&tx.inc<12)tx.inc=Math.min(12,tx.inc+0.5);}
+      else if(surplus&&tx.inc>5)tx.inc=Math.max(5,tx.inc-0.5);
+    }else{
+      /* raises taxes before it cuts services, and spends any surplus on services */
+      if(deficit){if(tx.inc<13)tx.inc=Math.min(13,tx.inc+1);else cutSvc();}
+      else if(surplus){['svc','safety','health','edu'].forEach(function(k){if(sp[k]<1.3)sp[k]=Math.min(1.3,Math.round((sp[k]+0.05)*100)/100);});}
+    }
+    if(e.net<0&&S.cash<costs*6&&tx.sales<8)tx.sales=Math.min(8,tx.sales+0.5);
+  }
+  /* mistakes: a competent caretaker, but not a perfect one */
+  if(o.mode==='caretaker'&&S.month%3===0&&!o.fix.length&&Math.random()<0.04*dm('ev')){
+    var k=pick(['cut','tax','neglect','scandal']);
+    if(k==='cut'){o.fix.push({kind:'cut',until:S.month+24,old:[sp.svc,sp.safety,sp.health,sp.edu]});sp.svc=Math.max(0.6,sp.svc-0.2);sp.safety=Math.max(0.6,sp.safety-0.2);sp.health=Math.max(0.6,sp.health-0.2);sp.edu=Math.max(0.6,sp.edu-0.2);o.log.push('Cut services across the board to save money.');}
+    else if(k==='tax'){o.fix.push({kind:'tax',until:S.month+18,old:[tx.inc]});tx.inc=Math.min(14,tx.inc+2);o.log.push('Raised income tax two points on a hunch.');}
+    else if(k==='neglect'){o.fix.push({kind:'neglect',until:S.month+12,old:[S.renew]});S.renew=0.7;o.log.push('Let infrastructure renewal slip for a year.');}
+    else scandalHit('The caretaker\u2019s office is dragged into a scandal.');
+  }
+  for(i=o.fix.length-1;i>=0;i--){
+    var f=o.fix[i];if(S.month<f.until)continue;
+    if(f.kind==='cut'){sp.svc=f.old[0];sp.safety=f.old[1];sp.health=f.old[2];sp.edu=f.old[3];}
+    else if(f.kind==='tax')tx.inc=f.old[0];
+    else if(f.kind==='neglect')S.renew=f.old[0];
+    o.fix.splice(i,1);
+  }
+  if(o.log.length>8)o.log.splice(0,o.log.length-8);
+}
+
+/* ---- scandals ---- */
+function scandalHit(txt){
+  var t=curTenure();S.scandalsTotal++;if(t)t.scandals++;
+  S.approval=Math.max(0,S.approval-(8+Math.random()*6));S.scand=(S.scand||0)+4;
+  addNews('Scandal: '+(txt||pick(SCANDALS)),'bad','Politics');chron('crisis','Scandal at city hall.');sfx('bad');
+}
+function stepOffice(e){
+  officeInit();
+  var o=S.office,t=curTenure();
+  if(t){t.apprSum+=S.approval;t.apprN++;t.peak=Math.max(t.peak,Math.round(S.pop));}
+  S.recallPen=Math.max(0,(S.recallPen||0)-0.1);S.scand=Math.max(0,(S.scand||0)-0.05);
+  if(S.ord.transparency)S.cash-=0.002*Math.max(0,e.costs||0);
+  /* scandal odds rise with graft risk and fall with transparency */
+  if(S.month>24&&S.pop>=150&&!S.sandbox){
+    var p=0.0012*(1+0.25*(S.pp&&S.pp.built?S.pp.built.length:0))*(S.ord.transparency?0.4:1)*dm('ev');
+    if(Math.random()<p)scandalHit();
+  }
+  if(o.mode==='caretaker'||o.mode==='receiver')caretakerGovern(e);
+  if(o.mode==='receiver'){
+    var costs=Math.max(1,e.costs||1);
+    if(S.cash>=costs*3&&e.net>0)o.ok=(o.ok|0)+1;else o.ok=0;
+    o.months=(o.months|0)+1;
+    if(e.net<0&&o.months%12===0){var sd=boardSell(2);if(!sd)o.log.push('Nothing left to sell, and the books are still in the red.');}
+    if(o.months>=120&&o.ok<12){S.cash=Math.max(S.cash,0)+costs*6;o.log.push('After ten years of austerity the state forgave the shortfall.');addNews('After ten years of austerity the state steps in, forgives the shortfall and hands the city back.','info','Politics');endReceivership();return;}
+    if(o.ok>=12)endReceivership();
+  }
+  if(o.mode==='caretaker'&&o.camp)o.camp.noise=clamp(o.camp.noise+(Math.random()-0.5)*0.8,-4,4);
+}
+function endReceivership(){
+  closeTenure('solvent again');
+  var old=S.office.old;if(old){S.sp.svc=Math.max(S.sp.svc,old.svc);S.sp.safety=Math.max(S.sp.safety,old.safety);S.sp.health=Math.max(S.sp.health,old.health);S.sp.edu=Math.max(S.sp.edu,old.edu);S.sp.infra=Math.max(S.sp.infra,old.infra);}
+  S.renew=Math.max(S.renew,1);S.tax.inc=Math.min(S.tax.inc,11);S.tax.sales=Math.min(S.tax.sales,7);
+  S.office={mode:'mayor'};S.approval=Math.max(S.approval,35);S.recallPen=Math.max(S.recallPen||0,4);S.lowCash=0;S.lowApproval=0;
+  S.backBlack=true;
+  openTenure('you',S.city||'You','');
+  addNews('The city is solvent again. The control board hands the keys back to you.','good','Politics');chron('good','Control board steps aside. The mayor returns.');toast('Solvent again. You are back in charge.',4800);
+}
+
+/* ---- the campaign ---- */
+function campaignClock(ms,force){
+  if(!S||!S.office||S.office.mode!=='caretaker'||S.over)return;
+  var c=S.office.camp;if(!c)return;
+  var d=force?ms:Math.min(ms,500);
+  c.rt+=d;S.pcap=Math.min(100,(S.pcap||0)+d/60000);
+  if(c.rt>=CAMP_MS)resolveElection();
+}
+function supportCalc(){
+  var o=S.office,c=o.camp,you=null,i;
+  for(i=S.mayors.length-1;i>=0;i--){if(S.mayors[i].who==='you'){you=S.mayors[i];break;}}
+  var avg=you&&you.apprN?you.apprSum/you.apprN:50;
+  var pTo=you?(you.popTo!==null?you.popTo:S.pop):S.pop,gr=you?(pTo-you.popFrom)/Math.max(50,you.popFrom):0;
+  var legacy=clamp((avg-50)*0.25,-12,12)+clamp(gr*20,-6,6)-3*Math.max(0,(S.recalls|0)-1)-2*(you?you.scandals:0);
+  var dPop=(S.pop-o.popAt)/Math.max(50,o.popAt)*100,dAp=S.approval-o.apprAt;
+  var trend=clamp(dPop*0.4,-10,10)+clamp(dAp*0.3,-10,10);
+  var sup=38+legacy-trend+c.pts;
+  return {sup:sup,legacy:legacy,trend:trend,camp:c.pts};
+}
+function pollNow(){var r=supportCalc(),c=S.office.camp;var you=clamp(r.sup+(c?c.noise:0),0,100);return {you:you,them:100-you,parts:r};}
+var CAMP_ACTIONS={
+  town:{label:'Hold a town hall',cost:10,pts:8,cool:150000,desc:'Meet voters in a packed hall. Worth a few points. Repeat after a short wait.'},
+  debate:{label:'Challenge a debate',cost:25,pts:20,once:true,desc:'One big night. A strong swing, once per campaign.'},
+  fixtax:{label:'Promise tax relief',cost:20,pts:15,once:'fix',desc:'Own the tax grievance. If you win, income tax falls a point.'},
+  fixsvc:{label:'Promise better services',cost:20,pts:15,once:'fix',desc:'Own the services grievance. If you win, service spending rises 10%.'}
+};
+function campAvail(id){
+  var c=S.office.camp,a=CAMP_ACTIONS[id];
+  if(!a)return {ok:false,why:'Unknown action.'};
+  if(S.pcap<a.cost)return {ok:false,why:'Not enough political capital.'};
+  if(a.once===true&&c.used[id])return {ok:false,why:'Already done this campaign.'};
+  if(a.once==='fix'&&c.fix)return {ok:false,why:'You already made a promise.'};
+  if(a.cool&&c.cool[id]!==undefined&&c.rt-c.cool[id]<a.cool)return {ok:false,why:'Wait '+Math.ceil((a.cool-(c.rt-c.cool[id]))/1000)+' seconds.'};
+  return {ok:true,why:''};
+}
+function campAction(id){
+  if(!S.office||S.office.mode!=='caretaker')return false;
+  var c=S.office.camp,v;
+  if(id.indexOf('endorse:')===0){
+    var bid=id.slice(8);if(c.used[id])return false;
+    var bl=(E&&E.blocs)||[],b=null;for(var i=0;i<bl.length;i++){if(bl[i].id===bid)b=bl[i];}
+    if(!b||b.appr<55||S.pcap<8)return false;
+    S.pcap-=8;c.pts+=6;c.used[id]=1;addNews(b.name+' endorse your comeback.','good','Politics');return true;
+  }
+  v=campAvail(id);if(!v.ok){toast(v.why);return false;}
+  var a=CAMP_ACTIONS[id];S.pcap-=a.cost;c.pts+=a.pts;
+  if(a.once===true)c.used[id]=1;if(a.once==='fix')c.fix=id;
+  if(a.cool)c.cool[id]=c.rt;
+  addNews(a.label+'. Your standing improves.','good','Politics');return true;
+}
+function resolveElection(){
+  var o=S.office,r=supportCalc();
+  var share=clamp(r.sup+(Math.random()+Math.random()+Math.random()-1.5)*2*5,0,100);
+  S.elections=(S.elections|0)+1;
+  if(share>=50)winElection(share,r);else loseElection(share);
+}
+function winElection(share,r){
+  var o=S.office,fix=o.camp?o.camp.fix:'',bl=(E&&E.blocs)||[],worst=null,i;
+  closeTenure('lost the election');
+  for(i=0;i<bl.length;i++){if(!worst||bl[i].appr<worst.appr)worst=bl[i];}
+  S.office={mode:'mayor',hostile:worst?{id:worst.id,until:S.month+24}:null};
+  S.comebacks++;if(share>=65)S.landslide=true;
+  S.approval=Math.min(70,Math.max(S.approval,45+(share-50)*0.5));S.recallPen=6;S.lowApproval=0;
+  if(fix==='fixtax')S.tax.inc=Math.max(3,S.tax.inc-1);
+  if(fix==='fixsvc'){S.sp.svc=Math.min(1.5,S.sp.svc*1.1);}
+  openTenure('you',S.city||'You','');
+  addNews('You won the election with '+Math.round(share)+'% and are back as mayor.'+(worst?' '+worst.name+' have not forgiven you.':''),'good','Politics');
+  chron('good','Won back the mayor\u2019s office with '+Math.round(share)+'% of the vote.');
+  toast('You won! Welcome back, Mayor.',5200);sfx('cash');
+}
+function loseElection(share){
+  var o=S.office;
+  addNews('You lost the election with '+Math.round(share)+'%. '+o.name+' stays on. You can run again.','warn','Politics');
+  chron('crisis','Lost an election with '+Math.round(share)+'%.');
+  o.camp=newCamp();S.pcap=Math.min(100,(S.pcap||0)+10);
+  toast('You lost the election. A new campaign starts now.',5200);sfx('bad');
+}
+function retire(){
+  if(!S||S.over)return;
+  closeTenure('retired');endGame('retired');
+}
+function campLeftMs(){return (S&&S.office&&S.office.camp)?Math.max(0,CAMP_MS-S.office.camp.rt):0;}
+function fmtClock(ms){var s=Math.ceil(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
+
+/* ---- sheets ---- */
+function renderCampaign(){
+  var b=$('sheetBody'),o=S.office,h=sheetHead('Campaign'),i;
+  if(!o||o.mode==='mayor'){b.innerHTML=h+'<p class="hint">You are the mayor. There is no campaign. If voters recall you, a caretaker takes over and you will campaign here to win the job back.</p>';return;}
+  if(o.mode==='receiver'){
+    b.innerHTML=h+'<p><b>'+o.name+'</b> is running the city.</p><p class="hint">There is no election. The board stays until the city has at least three months of spending in the bank and a surplus for twelve months in a row. Progress: '+(o.ok|0)+' of 12 months.</p>'+(o.log.length?'<ul class="news">'+o.log.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>':'')+'<div class="btns"><button class="sm" data-camp="retire">Retire and take your legacy score</button></div>';return;
+  }
+  var c=o.camp,pl=pollNow(),r=pl.parts,popD=Math.round(S.pop-o.popAt),apD=Math.round(S.approval-o.apprAt);
+  h+='<p><b>'+o.name+'</b>, '+PERSONA_TXT[o.persona]+', has run '+S.city+' for '+(S.month-o.since)+' months.</p>';
+  h+='<div class="kr ok"><b>Time left: '+fmtClock(campLeftMs())+'</b> of running time. The clock only moves while the game is running, not while a panel is open or the game is paused.</div>';
+  h+='<h3>The polls</h3><p>You '+Math.round(pl.you)+'%, '+o.name.split(' ')[0]+' '+Math.round(pl.them)+'%. The polls wobble. The real vote has a bit of luck in it.</p>';
+  h+='<p class="hint">Your record '+(r.legacy>=0?'+':'')+r.legacy.toFixed(0)+', the city under the caretaker '+(-r.trend>=0?'+':'')+(-r.trend).toFixed(0)+' (it is '+(popD>=0?'+':'')+popD+' people and '+(apD>=0?'+':'')+apD+' approval points since the recall; a better city helps the caretaker), campaign '+(c.pts>=0?'+':'')+c.pts+'.</p>';
+  h+='<h3>Political capital: '+Math.round(S.pcap)+'</h3><p class="hint">You earn it from achievements and pet projects, and a little more each minute. It is not city money.</p><div class="btns col">';
+  for(var id in CAMP_ACTIONS){var a=CAMP_ACTIONS[id],v=campAvail(id);h+='<button class="sm" data-camp="'+id+'"'+(v.ok?'':' disabled')+'>'+a.label+' ('+a.cost+')'+(v.ok?'':' \u2013 '+v.why)+'</button><p class="hint" style="margin:0 0 6px">'+a.desc+'</p>';}
+  var bl=(E&&E.blocs)||[];
+  h+='</div><h3>Voters</h3>';
+  for(i=0;i<bl.length;i++){
+    var bb=bl[i],eid='endorse:'+bb.id,done=c.used[eid],can=bb.appr>=55&&!done&&S.pcap>=8;
+    h+='<div style="margin:6px 0"><div style="display:flex;justify-content:space-between"><span>'+bb.name+' <span class="hint">('+Math.round(bb.w*100)+'%)</span></span><b>'+Math.round(bb.appr)+'%</b></div><div style="background:#243;height:6px;border-radius:3px"><div style="width:'+Math.round(bb.appr)+'%;height:6px;border-radius:3px;background:#5ac"></div></div><div class="hint">They care about '+BLOC_WHY[bb.id]+'.'+(done?' They have endorsed you.':can?'':' ')+'</div>'+(can?'<button class="sm" data-camp="'+eid+'">Ask for their endorsement (8)</button>':'')+'</div>';
+  }
+  if(o.log.length)h+='<h3>What the caretaker has done</h3><ul class="news">'+o.log.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+  h+='<div class="btns"><button class="sm" data-camp="retire">Retire and take your legacy score</button></div>';
+  b.innerHTML=h;
+}
+var HOWTXT={recalled:'Recalled by voters','lost the election':'Lost the election',receivership:'Bankrupt, put into receivership','solvent again':'Solvent again, returned control',retired:'Retired','':'In office'};
+function renderMayors(){
+  var b=$('sheetBody'),h=sheetHead('Mayors of '+S.city),i;
+  h+='<p class="hint">Every mayor of '+S.city+', and how each tenure ended. Comebacks: '+(S.comebacks|0)+'. Recalls: '+(S.recalls|0)+'. Receiverships: '+(S.receiverships|0)+'. Scandals: '+(S.scandalsTotal|0)+'.</p>';
+  h+='<table><tr><th>Mayor</th><th>Years</th><th>Population</th><th>Approval</th><th>How it ended</th></tr>';
+  for(i=0;i<S.mayors.length;i++){
+    var t=S.mayors[i],end=t.to===null?S.month:t.to,avg=t.apprN?Math.round(t.apprSum/t.apprN):Math.round(S.approval);
+    var who=t.who==='you'?'You':t.name+(t.persona?' ('+(PERSONA_SHORT[t.persona]||t.persona)+')':'');
+    h+='<tr><td>'+who+(t.scandals?' <span class="hint">('+t.scandals+' scandal'+(t.scandals>1?'s':'')+')</span>':'')+'</td><td>'+(Math.floor(t.from/12))+' to '+(t.to===null?'now':Math.floor(end/12))+'</td><td>'+t.popFrom+' to '+(t.popTo!==null?t.popTo:Math.round(S.pop))+'</td><td>'+avg+'% average</td><td>'+(t.to===null?'In office':HOWTXT[t.how]||t.how)+'</td></tr>';
+  }
+  h+='</table>';
+  b.innerHTML=h;
+}
+function campAct(el){
+  var k=el.getAttribute('data-camp');
+  if(k==='retire'){if(typeof confirm==='function'&&!confirm('Retire and end your game with your legacy score?'))return;retire();return;}
+  campAction(k);ui();
+}
+
 /* ================= the manual ================= */
 var GUIDE=[
 {id:'g-goal',title:'The goal and how the game works',
  brief:'You are the Mayor of a growing city and also its central banker. You set taxes, spending and the interest rate. Private builders put up homes, shops and factories, and residents move in. Your job is to grow the city while keeping prices, jobs, money and voters in balance.',
- more:'<p>Time runs in months. Every month the city earns tax revenue, pays its bills, grows or shrinks, and the economy moves on its own. You lose if approval stays under 25% for eight months (you get recalled) or if cash stays below minus $4,000 for two months (receivership).</p>'+
+ more:'<p>Time runs in months. Every month the city earns tax revenue, pays its bills, grows or shrinks, and the economy moves on its own. If approval stays under 25% for eight months you are recalled, and if cash stays below minus $4,000 for two months the city goes into receivership. Neither ends the game. A caretaker mayor or a financial control board takes over, and you can win your office back. See Recalls and receivership.</p>'+
  '<p>The clock starts paused and begins when you place your first building. Pick a scenario when you found a city for a goal and a deadline, or play Free play or Sandbox with no pressure.</p>'+
  '<p>Your city ranks up as it grows: Hamlet, Village (150 people), Town (600), City (1,500) and Metropolis (3,500). Capital projects unlock at certain sizes.</p>'+
  '<p><b>There is no winning.</b> The game never ends. For a long game, the Kardashev scale is how you keep score, and as your civilization advances the world changes around you. See the sections on the Kardashev scale and eras.</p>'},
@@ -3502,6 +3851,16 @@ var GUIDE=[
  more:'<p>Crash risk is low in normal times and climbs when the index is far above its start, when bubbles build, when you expand the balance sheet for long, and after sharp rate hikes. It only applies once the city passes about 300 people.</p>'+
  '<p><b>A crash</b> wipes out about a third of the market over three panic months, followed by a bear market. Startups lose funding and IPOs freeze. Banks tighten credit, adding 1.5 points to mortgage rates for a year. A recession follows about 60% of the time.</p>'+
  '<p><b>Deposit insurance</b> (Policy, Monetary tab) softens crashes by about a quarter but costs money every month and encourages risk. A <b>bailout</b> ends the panic and reopens credit, but traders then expect rescues. A <b>stock exchange</b> adds circuit breakers that shorten and soften crashes.</p>'},
+{id:'g-office',title:'Recalls and receivership',
+ brief:'A recall or a bankruptcy does not end the game. A caretaker mayor or a financial control board runs the city while you try to get the job back.',
+ more:'<p><b>Recall.</b> If approval stays under 25% for eight months, voters recall you. A caretaker mayor, a computer-run successor, takes over, and it governs the opposite way to you. If you ran high taxes and generous spending, it is a small-government conservative who cuts taxes to 7% and trims services. If you ran low taxes and lean services, it is an activist who raises taxes and spends more on schools, health and safety. It also reverses your recycling, clean air, transit and seismic ordinances and sets interest rates tighter or looser than you did. It is still trying to make the city succeed: it balances the budget in its own style (the conservative cuts spending before raising taxes and hands surpluses back as tax cuts, the activist raises taxes before cutting services and spends surpluses on services), sets interest rates, keeps repair crews and utility planners running and handles disasters. It is competent, but it makes mistakes: services cut, taxes raised on a hunch, infrastructure left to slide. You can watch and look around, but you cannot build or change policy.</p>'+
+
+ '<p><b>The campaign.</b> You have 30 minutes of running time to win the job back. This is the one real-time timer in the game. It only moves while the game clock is running, so it does not move while a panel is open or the game is paused, and you cannot skip it. Open the Campaign sheet from the button where Build usually is. You spend political capital, not city money. You earn it from achievements, pet projects and a little more every minute. You can hold a town hall (repeat after a short wait), challenge a debate (once), promise tax relief or better services (one promise, kept if you win) and ask the voter blocs that like you for their endorsements.</p>'+
+ '<p><b>The election.</b> When the 30 minutes are up the city votes. Three things decide it: your record as mayor (average approval, how the city grew, scandals), how the city fared under the caretaker (a thriving city helps the caretaker, a struggling one helps you) and your campaign, plus a little luck. Win and you are mayor again. Approval is reset to a middling level, the group that likes you least stays hostile for two years, and a recall penalty on approval fades over five years. Lose and a new 30-minute campaign starts straight away. You can keep campaigning forever, or retire at any time and take your legacy score. There are no regular elections. Recalls are the only vote.</p>'+
+ '<p><b>Receivership.</b> If the city runs out of money, a financial control board takes over instead of the game ending. It raises taxes, trims spending, keeps infrastructure renewal funded and sells surplus assets such as airports, universities and stadiums, starting with about eight months of spending in cash. If a year goes by with the books still in the red it sells more. When it leaves, your spending levels go back to where they were. There is no election. The board leaves once the city has three months of spending in the bank and a surplus for twelve months in a row, and you return as mayor. If ten years of austerity cannot balance the books and there is nothing left to sell, the state forgives the shortfall and hands the city back.</p>'+
+ '<p><b>Voters.</b> Approval is the weighted view of six groups. Homeowners care about property taxes, home prices and mortgage rates. Renters care about rents, services and sales tax. Business owners care about business tax and the stock market. Workers care about jobs, wages and income tax. Retirees care about health care, inflation and property taxes. Young residents care about schools, housing costs and jobs. The Economy panel shows each group. Their moods nudge overall approval.</p>'+
+ '<p><b>Scandals.</b> Corruption scandals drain approval and can lead to a recall. They get likelier with every pet project and much less likely with Transparency rules (Policy, Spending, ordinances; they cost a small slice of the budget).</p>'+
+ '<p><b>The mayors of your city.</b> Menu, Mayors of your city, lists every mayor: you, the caretakers and the control board, with years, population, approval and how each tenure ended. The score counts comebacks and subtracts scandals.</p>'},
 {id:'g-risk',title:'Risk, failure and black swans',
  brief:'Most startups fail, the sovereign fund is a real fund with real risks, and when the city is rich, happy and taking no risks, something nobody planned for can arrive.',
  more:'<p><b>Startups.</b> Every startup has a hidden quality. About half are duds that fold, a quarter limp along and get absorbed, and the rest are solid, star or, rarely, runaway successes. Tight money, recessions and low markets shorten the odds for all of them. A random $5,000 bet returns nothing about three times in four, and about one in seven returns five times or more. Spread your bets: on average a diversified investor makes a modest profit, and one in a hundred is a giant. Founders will not sell you more than 40% of a company, and a company cannot grow beyond what its economy can support.</p>'+
@@ -3604,7 +3963,7 @@ var GUIDE=[
  '<p><b>Voters get used to it.</b> A city that keeps people very happy gradually raises what they expect, by up to half a point of mood over a couple of decades, so approval settles around the low-to-mid 80s instead of sticking at 100%. If mood falls well below normal, expectations ease off again.</p>'+
  '<p><b>Rising expectations.</b> When the city earns more per resident, public services cost more per resident: up to twice as much. A richer public also expects, and enjoys, a better public realm, so mood rises by up to 0.2.</p>'+
  '<p><b>Contractors charge what you can pay.</b> The price of every megaproject goes up with your treasury, counting the sovereign fund. A very rich civilization pays about 1.5 to 2 times the base price.</p>'+
- '<p><b>Credit and bankruptcy scale with the economy.</b> The most you can borrow is at least a year of revenue, and bankruptcy only comes when you are about a month and a half of costs overdrawn for two months. A small city still goes bankrupt at about $4,000.</p>'+
+ '<p><b>Credit and bankruptcy scale with the economy.</b> The most you can borrow is at least a year of revenue, and receivership only comes when you are about a month and a half of costs overdrawn for two months. A small city goes into receivership at about $4,000.</p>'+
  '<p><b>Voters will not let you sit on a pile.</b> Cash plus the sovereign fund above 30 months of spending (48 on Relaxed, 18 on Hard) draws a demand for a refund. Every January, half of the excess goes back to taxpayers, and voters are pleased. Reserves of about two and a half years of spending are a real safety net. A mountain of savings is not allowed, so saving everything for fifteen years and then spending freely no longer works. Megaprojects are paid in monthly installments, so you never need to stockpile for them. The news warns you when reserves pass 80% of the cap.</p>'+
  '<p><b>Nobody is 100% happy.</b> Approval can never rise above 92%, however many headlines, openings and refunds pile up.</p>'+
  '<p><b>Past Type III.</b> Dark-energy taps (Type IV) and Universe forges (Type V) are the new sinks. They cost hundreds of millions to billions, take a decade or more to build on Standard length, and each one costs more than the last. Beyond the first four, every extra one adds a little to your rating forever.</p>'},
@@ -3701,45 +4060,7 @@ var GUIDE=[
  '<tr><td>Pensions</td><td>About 0.8 dollars a month per resident after 25 years</td></tr>'+
  '<tr><td>IPO threshold</td><td>$70,000 value</td></tr>'+
  '<tr><td>Recall</td><td>Approval under 25% for 8 months</td></tr>'+
- '<tr><td>Receivership</td><td>Below minus $4,000 for 2 months</td></tr></table>'},
-{id:'g-new',title:'What\u2019s new',
- brief:'A running list of the latest changes to the game, newest first.',
- more:'<ul>'+
- '<li><b>The city comes first.</b> The score now counts the city (population, approval, jobs, a balanced budget) well above technology, and the Goals panel lists city goals before research. Technology is a long-term prize.</li>'+
-'<li><b>A very long climb.</b> Each era now takes real research and construction. A perfect player at 3\u00D7 needs about 1 hour for Industrial, then 1.5, 2, 2.5 and 3 hours, 10 hours for Type I and 20, 40 and 80 for Types II to IV. The clock slows as eras advance. Reserves above 30 months of spending are refunded to taxpayers each year, approval tops out at 92%, and there is a fix for the iPhone bug that left half the screen blank.</li>'+
- '<li><b>Risk is real now.</b> Startups mostly fail, with a hidden quality you cannot see, so you have to spread your bets. The sovereign fund has fees, crashes, bond losses and shrinking returns at scale. And black swans arrive, more often when the city is rich, happy, calm and taking no risks. A strategy of pouring everything into ventures and the fund no longer covers the future.</li>'+
- '<li><b>Beyond Type III, and money that does not pile up forever.</b> Types IV and V with Dark-energy taps and Universe forges, megaproject income that saturates, upkeep that follows income, renewal that follows value, public costs that rise with wealth, contractors who charge a rich treasury more, a mood bonus for prosperity, and credit and bankruptcy lines that scale with the economy. Funded renewal now heals infrastructure, and utility planners also add sewage and garbage capacity.</li>'+
- '<li><b>Underground pipes and cables.</b> Water pipes now run underground, beneath roads and buildings. Underground power cables are an upgrade (Underground cables). Buried lines cannot burn or be torn out by a tornado.</li>'+
- '<li><b>Utility planners and quicker repairs.</b> Power and water keep pace with the city on their own, rebuilt plants return within a couple of months, and a sudden loss can no longer empty a city in a few months. In my 75-year test games the collapses went from about 1 in 2 to none in 16.</li>'+
- '<li><b>Fixing the late-game collapse.</b> A disaster could wreck roads, lines and pipes, and nothing rebuilt them, so coverage vanished, buildings decayed and the population melted away while space income kept piling up. Repair crews now rebuild what disasters destroy, buildings pass power and water along to their neighbors, and space income scales with how many people live in the city. In my simulations the collapse went from 3 in 8 long games to 0 in 8.</li>'+
- '<li><b>Arterial roads, a local projects tax with pet projects, a bigger dividend range.</b></li>'+
- '<li><b>Difficulty.</b> Relaxed, Normal or Hard, chosen when you found a city and changeable in the Menu. It scales shocks, costs, inflation pressure, luck, starting cash and score.</li>'+
- '<li><b>Cities that look like their era.</b> Building colors, rooftop solar, glowing beacons, smart roads, pods and hover traffic, cleaner factories and lusher ground follow your era.</li>'+
- '<li><b>Display and accessibility.</b> Text size, high contrast, color-blind safe colors, easy-to-read font, big touch targets, reduced motion, theme and fast graphics. Also a fuller Menu with Achievements, Chronicle, Share and Playtest report.</li>'+
- '<li><b>Desktop floating panels.</b> Wide screens now use floating panels over the map like a phone, with a side-panel option.</li>'+
- '<li><b>New scenarios for the long game.</b> Reach for the Stars, Century City, Align the AI, The Space Age and Volcker Shock, three of them starting with a ready-made city. Scenarios are grouped, and you can play any of them without the deadline.</li>'+
- '<li><b>Playtest report.</b> In the Menu or the Goals panel, a short snapshot of your city (rates, inflation, credibility, taxes, automation, world events, recent headlines) with a box for what felt off. Copy it and send it along, optionally with a save code so the exact city can be loaded.</li>'+
- '<li><b>A calmer, fairer inflation model.</b> Inflation is now anchored. A rate below neutral raises inflation gradually toward a higher resting level instead of accelerating forever, and hikes bring it down faster when inflation is high. Years of very high inflation loosen the anchor, which makes every rate move bite harder until credibility is rebuilt. The neutral rate also drifts over the years, so the Taylor guide is only an estimate.</li>'+
- '<li><b>Icons.</b> The futuristic buildings and all technologies now have their own icons: rocket, space elevator, orbital array, Dyson swarm, wormhole, DNA, quantum sphere and more.</li>'+
- '<li><b>Goals and rewards.</b> A Goals button with a live progress line, over fifty achievements, windfalls with a pity timer, a chronicle, yearly report cards with grades, and a score code you can share and compare. The first minutes are faster and the clock speeds up after the tutorial.</li>'+
- '<li><b>Automation, jobs and AI risk.</b> Machines make things cheaper but take jobs, so you need retraining. Inequality can breed protests. You can reach post-scarcity. Capable AI can glitch, crash markets, collapse in a bubble or revolt, so fund oversight.</li>'+
- '<li><b>Money in the space age.</b> The neutral rate falls in later eras, rates can hit zero, space income follows the market and rates, and there is a new automation levy and a universal dividend.</li>'+
- '<li><b>The Kardashev scale</b> is the new long-term goal: Type I, II and III civilizations, with an elevator, orbital arrays, Dyson nodes and galactic relays funded in monthly installments. The game is infinite: reaching Type III is a milestone, not an ending.</li>'+
- '<li><b>Eras.</b> As you advance, the world changes: oil and shipping crises fade, and asteroid ore booms, orbital debris, solar storms, alien contact and extraterrestrial viruses arrive. The calendar speeds up too.</li>'+
- '<li><b>Frontier technologies</b> for long games: genomic medicine, superconductors, quantum computing, climate engineering, general-purpose AI, and a space track with a colony ship milestone.</li>'+
- '<li><b>Sovereign wealth fund</b> in Corp: save surplus cash, invest it, and pay out a steady share into the budget.</li>'+
- '<li><b>Healthcare, education and social services.</b> Hospitals and school capacity, public safety and healthcare budgets, social services funding, and public safety overtime.</li>'+
- '<li><b>Waste options.</b> Recycling plants and waste-to-energy plants. Landfills now fill up and must be capped.</li>'+
- '<li><b>Resilience.</b> Levees, reservoirs and a seismic retrofit ordinance.</li>'+
- '<li><b>World events chain together</b> and usually come with an early warning headline.</li>'+
- '<li><b>Toolbox overlap fixed</b> in portrait and landscape.</li>'+
- '<li><b>World events and briefings.</b> Seven channels such as energy, shipping and chips, with decisions you can make.</li>'+
- '<li><b>Aging infrastructure and growing costs.</b> Condition, renewal funding, pensions and cost creep.</li>'+
- '<li><b>Inflation now accelerates</b> when the real rate stays too low.</li>'+
- '<li><b>Five toolbox tabs</b> with roads under Transport, and floating Undo and Turn buttons.</li>'+
- '<li><b>Rail, traffic and animated cars, trains and smoke.</b></li>'+
- '</ul>'}
-
+ '<tr><td>Receivership</td><td>Below minus $4,000 for 2 months (more in a big economy). A control board takes over.</td></tr></table>'},
 ];
 function guideHTML(inSplash){
   var h='<div id="g-top"><h2>How to play</h2><p class="hint">Each section gives the short version first, then the detail. Tap a title to jump to it.</p>',i;
@@ -4691,6 +5012,7 @@ function ui(){
   else if(sheetKind==='econ')refreshEcon();
   else if(sheetKind==='corp')refreshCorp();
   else if(sheetKind==='adv')renderAdvisors();
+  else if(sheetKind==='camp')renderCampaign();
   dirty=true;
 }
 
@@ -4751,7 +5073,7 @@ function openSheet(kind){
     $('sheet').className='overlay open';renderPolicy();
   }else if(kind==='econ'){
     b.innerHTML=sheetHead('Economy')
-    +'<p class="hint">The game is paused while this panel is open.</p><div class="diag" id="eDiag"></div><h3>World watch</h3><div id="worldBox"></div><h3>Civilization</h3><div id="kardBox"></div><h3>Automation and AI</h3><div id="autoBox"></div>'
+    +'<p class="hint">The game is paused while this panel is open.</p><div class="diag" id="eDiag"></div><h3>World watch</h3><div id="worldBox"></div><h3>Voters</h3><div id="blocBox"></div><h3>Civilization</h3><div id="kardBox"></div><h3>Automation and AI</h3><div id="autoBox"></div>'
     +'<div class="chart"><div class="ct">Policy rate, mortgage, inflation <span id="cap1"></span></div><canvas id="ch1"></canvas></div>'
     +'<div class="chart"><div class="ct">Stock index <span id="cap5"></span></div><canvas id="ch5"></canvas></div>'
     +'<div class="chart"><div class="ct">Home price index <span>100 = start</span></div><canvas id="ch2"></canvas></div>'
@@ -4783,6 +5105,10 @@ function openSheet(kind){
     $('sheet').className='overlay open';
     $('sheetBody').innerHTML='<div class="sh-head"><span></span><button class="ghost" data-close="1">Close</button></div>'+guideHTML();
     $('sheetBody').scrollTop=0;
+  }else if(kind==='camp'){
+    $('sheet').className='overlay open';renderCampaign();b.scrollTop=0;
+  }else if(kind==='mayors'){
+    $('sheet').className='overlay open';renderMayors();b.scrollTop=0;
   }else if(kind==='explain'){
     $('sheet').className='overlay open';renderExplain();
   }else if(kind==='brief'){
@@ -4802,6 +5128,7 @@ function welMax(){
 function udMax(){return 2+2*Math.max(0,(S.era|0)-1);}
 function creditLimit(){return Math.round(Math.max((12000+S.pop*25)*(1+0.75*(S.era|0)),(E&&E.revenue>0)?E.revenue*12:0));}
 function borrow(kind){
+  if(locked()){lockMsg();return;}
   var amt=5000;
   if(S.fixedAmt+S.varAmt+amt>creditLimit()){toast('Credit limit reached. Lenders want a bigger city.');return;}
   if(kind==='fix'){var r=Math.round((S.rate+2)*10)/10;S.fixedRate=(S.fixedAmt*S.fixedRate+amt*r)/(S.fixedAmt+amt);S.fixedAmt+=amt;}
@@ -4809,6 +5136,7 @@ function borrow(kind){
   S.cash+=amt;ui();
 }
 function repay(kind){
+  if(locked()){lockMsg();return;}
   var key=kind==='fix'?'fixedAmt':'varAmt',amt=Math.min(5000,S[key]);
   if(amt<=0)return;if(S.cash<amt){toast('Not enough cash to repay.');return;}
   S.cash-=amt;S[key]-=amt;if(kind==='fix'&&S.fixedAmt<=0){S.fixedAmt=0;S.fixedRate=0;}
@@ -4837,7 +5165,7 @@ function sliderRow(id,label,min,max,step){
 function bindSlider(id,get,set,fmt){
   var el=$(id);if(!el)return;
   el.value=get();$(id+'L').textContent=fmt(get());
-  el.oninput=function(){set(parseFloat(el.value));$(id+'L').textContent=fmt(get());ui();};
+  el.oninput=function(){if(locked()){lockMsg();el.value=get();return;}set(parseFloat(el.value));$(id+'L').textContent=fmt(get());ui();};
 }
 function renderPolicy(){
   var b=$('sheetBody'),tabs=[['monetary','Monetary'],['taxes','Taxes'],['spending','Spending'],['books','Books']],i,h=sheetHead('Policy');
@@ -4889,7 +5217,7 @@ function renderPolicy(){
       +(S.tech.agi?sliderRow('sUd','Universal dividend',0,udMax(),0.25)+'<p class="hint">A monthly payment to every resident, up to $'+(udMax()*8)+' each as your civilization grows. It lifts affordability and eases social needs. Paid by deficit it feeds inflation, and it pushes prices up even when funded.</p>':'')
       +'<h3>Stimulus checks</h3><p class="hint">A one-time boost: spending jumps for four months, approval rises, and so does inflation.</p>'
       +'<div class="btns"><button class="sm" data-pol="stim" data-v="25" id="stim25"></button><button class="sm" data-pol="stim" data-v="100" id="stim100"></button></div>'
-      +'<h3>Ordinances</h3><div class="btns col"><button class="sm" data-pol="ord" data-k="recycle" id="ordRecycle"></button><button class="sm" data-pol="ord" data-k="clean" id="ordClean"></button><button class="sm" data-pol="ord" data-k="transit" id="ordTransit"></button><button class="sm" data-pol="ord" data-k="retrofit" id="ordRetro"></button>'+(S.tech.ai?'<button class="sm" data-pol="ord" data-k="breaker" id="ordBreaker"></button>':'')+'<button class="sm" data-pol="ord" data-k="repair" id="ordRepair"></button><button class="sm" data-pol="ord" data-k="planners" id="ordPlan"></button></div>'
+      +'<h3>Ordinances</h3><div class="btns col"><button class="sm" data-pol="ord" data-k="recycle" id="ordRecycle"></button><button class="sm" data-pol="ord" data-k="clean" id="ordClean"></button><button class="sm" data-pol="ord" data-k="transit" id="ordTransit"></button><button class="sm" data-pol="ord" data-k="retrofit" id="ordRetro"></button>'+(S.tech.ai?'<button class="sm" data-pol="ord" data-k="breaker" id="ordBreaker"></button>':'')+'<button class="sm" data-pol="ord" data-k="repair" id="ordRepair"></button><button class="sm" data-pol="ord" data-k="planners" id="ordPlan"></button><button class="sm" data-pol="ord" data-k="transparency" id="ordTrans"></button></div>'
       +'<p class="hint">Recycling cuts garbage 30% and costs money. Clean air cuts pollution about 35% but trims factory output 5%. A transit subsidy lifts road capacity 15% and cheapens buses. Seismic retrofit halves earthquake damage.</p>'
       +'<h3>Costs per month</h3><div id="ledExp"></div>';
     bindSlider('sSvc',function(){return Math.round(S.sp.svc*100);},function(v){S.sp.svc=v/100;},function(v){return v+'%';});
@@ -4962,6 +5290,7 @@ function refreshPolicyLive(){
     $('ordClean').textContent='Clean air rules: '+(S.ord.clean?'on':'off');
     $('ordTransit').textContent='Transit subsidy: '+(S.ord.transit?'on':'off')+' ('+money(S.pop*0.08)+'/mo)';
     if($('ordPlan'))$('ordPlan').textContent='Utility planners: '+(S.ord.planners?'on':'off');
+    if($('ordTrans'))$('ordTrans').textContent='Transparency rules: '+(S.ord.transparency?'on':'off');
     if($('ordRepair'))$('ordRepair').textContent='Repair crews: '+(S.ord.repair?'on':'off')+(S.rq&&S.rq.length?' ('+S.rq.length+' jobs waiting)':'');
     if($('ordBreaker'))$('ordBreaker').textContent='AI circuit breakers: '+(S.ord.breaker?'on':'off')+' ('+money(S.pop*0.8)+'/mo)';
     $('ordRetro').textContent='Seismic retrofit: '+(S.ord.retrofit?'on':'off')+' ('+money(S.pop*0.12)+'/mo)';
@@ -5070,6 +5399,7 @@ function kardHTML(){
 function refreshEcon(){
   if(!$('eDiag'))return;
   var e=E,hh=S.hist;
+  if($('blocBox')){var bh='',bl=e.blocs||[];for(var bi=0;bi<bl.length;bi++){var bb=bl[bi];bh+='<div style="margin:5px 0"><div style="display:flex;justify-content:space-between"><span>'+bb.name+'</span><b>'+Math.round(bb.appr)+'%</b></div><div style="background:#243;height:5px;border-radius:3px"><div style="width:'+Math.round(bb.appr)+'%;height:5px;border-radius:3px;background:#5ac"></div></div><div class="hint">They care about '+BLOC_WHY[bb.id]+'.</div></div>';}$('blocBox').innerHTML=bh;}
   $('eDiag').innerHTML=
     '<div>Buyer affordability<b>'+pct(clamp(e.af,0,1))+'</b></div><div>Builder appetite<b>'+pct(e.appetite)+'</b></div>'+
     '<div>Homes filled<b>'+pct(e.occ)+'</b></div><div>Shelves stocked<b>'+pct(e.shopFill)+'</b></div>'+
@@ -5192,6 +5522,7 @@ function refreshCorp(){
   };
 }
 function corpAct(el){
+  if(locked()){lockMsg();return;}
   var a=el.getAttribute('data-act'),id=parseInt(el.getAttribute('data-id'),10);
   if(a==='tab'){corpTab=el.getAttribute('data-tab');refreshCorp();return;}
   if(a==='fdep'){var da=el.getAttribute('data-amt');fundDeposit(da==='q'?Math.floor(S.cash*0.25):parseInt(da,10));ui();return;}
@@ -5249,8 +5580,8 @@ function showSplash(mode){
      +'<p>Peak population: <b>'+S.peak.toLocaleString('en-US')+'</b> after '+Math.floor(S.month/12)+' years and '+(S.month%12)+' months.</p>'
      +'<div class="btns col" style="margin-top:14px"><button class="primary" id="spBack">Keep playing</button><button class="sm" id="spNew">Found a new city</button></div>';
   }else{
-    var title=S.over==='recall'?'Recalled by voters':S.over==='deadline'?'Out of time':'City in receivership';
-    var why=S.over==='recall'?'Approval stayed under 25% for eight months, and the voters showed you the door.':S.over==='deadline'?'The scenario deadline passed before every objective was met.':'Cash stayed below \u2212$4,000 for two months and creditors took over.';
+    var title=S.over==='retired'?'You retired':S.over==='recall'?'Recalled by voters':S.over==='deadline'?'Out of time':'City in receivership';
+    var why=S.over==='retired'?'You stepped down and took your legacy with you. The city carries on without you.':S.over==='recall'?'Approval stayed under 25% for eight months, and the voters showed you the door.':S.over==='deadline'?'The scenario deadline passed before every objective was met.':'Cash stayed below \u2212$4,000 for two months and creditors took over.';
     h='<h1>'+title+'</h1><p class="tag">'+why+'</p>'
      +'<p>You peaked at <b>'+S.peak.toLocaleString('en-US')+' people</b> over '+Math.floor(S.month/12)+' years and '+(S.month%12)+' months.</p>'
      +(best?'<p class="best">Best city so far: '+Math.max(best,S.peak).toLocaleString('en-US')+' people</p>':'')
@@ -5290,7 +5621,7 @@ function showMenu(){
    +'<button class="sm" data-mn="pop">Advice popups: '+popMode+'</button><button class="sm" data-mn="mute">Mute individual advisors</button><button class="sm" data-mn="keys">Keyboard shortcuts</button>'
    +'<button class="sm" data-mn="manual">Manual: how to play</button><button class="sm" data-mn="anim">Map animations: '+(animEnabled?'on':'off')+'</button>'
    +'<button class="sm" data-mn="dis">Random disasters: '+(S.disasters!==false?'on':'off')+'</button></div>'
-   +'<h3>Your city</h3><div class="btns col"><button class="sm" data-mn="ach">Achievements ('+achCount()+' of '+ACH.length+')</button><button class="sm" data-mn="pp">Pet projects'+(S.pp.props.length?' (waiting)':'')+'</button><button class="sm" data-mn="chron">Chronicle and yearly reports</button><button class="sm" data-mn="share">Share your city</button><button class="sm" data-mn="play">Playtest report</button><button class="sm" data-mn="diff">Difficulty: '+DIFF[S.diff||'normal'].name+'</button><button class="sm" data-mn="display">Display and accessibility</button></div>'
+   +'<h3>Your city</h3><div class="btns col"><button class="sm" data-mn="ach">Achievements ('+achCount()+' of '+ACH.length+')</button><button class="sm" data-mn="pp">Pet projects'+(S.pp.props.length?' (waiting)':'')+'</button>'+(locked()?'<button class="sm" data-mn="camp">Campaign ('+(S.office.camp?fmtClock(campLeftMs()):'control board')+')</button>':'')+'<button class="sm" data-mn="mayors">Mayors of '+S.city+'</button><button class="sm" data-mn="chron">Chronicle and yearly reports</button><button class="sm" data-mn="share">Share your city</button><button class="sm" data-mn="play">Playtest report</button><button class="sm" data-mn="diff">Difficulty: '+DIFF[S.diff||'normal'].name+'</button><button class="sm" data-mn="display">Display and accessibility</button></div>'
    +'<h3>Disaster lab</h3><p class="hint">Trigger a disaster to test your fire stations and nerves.</p>'
    +'<div class="btns"><button class="sm" data-dis="fire">Fire</button><button class="sm" data-dis="quake">Earthquake</button><button class="sm" data-dis="flood">Flood</button><button class="sm" data-dis="tornado">Tornado</button></div>';
   $('sheet').className='overlay open';
@@ -5306,7 +5637,7 @@ function menuAct(k){
   else if(k==='keys'){openSheet('keys');}
   else if(k==='manual'){openSheet('guide');}
   else if(k==='anim'){animEnabled=!animEnabled;store('sc5000.anim',animEnabled?'1':'0');dirty=true;showMenu();}
-  else if(k==='ach'||k==='chron'||k==='share'||k==='play'||k==='display'||k==='pp'){openSheet(k);}
+  else if(k==='ach'||k==='chron'||k==='share'||k==='play'||k==='display'||k==='pp'||k==='camp'||k==='mayors'){openSheet(k);}
   else if(k==='diff'){var ks=['relaxed','normal','hard'],nx=ks[(ks.indexOf(S.diff||'normal')+1)%3];S.diff=nx;chron('start','Difficulty set to '+DIFF[nx].name+'.');toast(DIFF[nx].name+': '+DIFF[nx].desc,4200);showMenu();}
   else if(k==='dis'){S.disasters=!(S.disasters!==false);closeSheet();toast('Random disasters '+(S.disasters?'on':'off'));}
 }
@@ -5494,7 +5825,7 @@ function applyCompact(){var a=$('app');if(a)a.classList.toggle('compact',compact
 function overlayMode(){return !!(window.matchMedia&&window.matchMedia('(max-aspect-ratio: 11/10), (min-aspect-ratio: 11/10) and (min-width: 560px) and (max-height: 519px)').matches);}
 function updateTrayBtn(){
   var b=$('trayBtn'),a=$('app');if(!b||!a)return;
-  b.textContent=a.classList.contains('tray')?'Hide tools':('Build: '+TOOLS[tool].name);
+  b.textContent=locked()?(S.office.camp?'Campaign '+fmtClock(campLeftMs()):'Control board in charge'):(a.classList.contains('tray')?'Hide tools':('Build: '+TOOLS[tool].name));
 }
 function setTray(on){var a=$('app');if(a)a.classList.toggle('tray',!!on);updateTrayBtn();}
 function wire(){
@@ -5578,7 +5909,7 @@ function wire(){
     if(overlayMode()){$('app').classList.toggle('chips');return;}
     compact=!compact;store('sc5000.compact',compact?'1':'0');applyCompact();if(S)ui();
   });
-  $('trayBtn').addEventListener('click',function(){setTray(!$('app').classList.contains('tray'));});
+  $('trayBtn').addEventListener('click',function(){if(locked()){openSheet('camp');return;}setTray(!$('app').classList.contains('tray'));});
   var chipOpen=function(e){var c=e.target.closest('.chip');if(c&&S&&!S.over&&c.getAttribute('data-k')){exKey=c.getAttribute('data-k');if(exKey==='goals'){openSheet('adv');return;}openSheet('explain');}};
   $('econ').addEventListener('click',chipOpen);
   $('econ').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();chipOpen(e);}});
@@ -5601,6 +5932,7 @@ function wire(){
     var d=e.target.closest('[data-dis]');if(d){closeSheet();triggerDisaster(d.getAttribute('data-dis'));return;}
     var pl=e.target.closest('[data-pol]');if(pl&&sheetKind==='policy'){polAct(pl);return;}
     var a=e.target.closest('[data-act]');if(a&&sheetKind==='corp')corpAct(a);
+    var ca=e.target.closest('[data-camp]');if(ca&&sheetKind==='camp'&&!ca.disabled)campAct(ca);
   });
   document.addEventListener('keydown',function(e){
     var tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA')return;
@@ -5653,7 +5985,7 @@ var lastT=0,acc=0,compact=false,lastAmb=0;
 function frame(t){
   var dt=Math.min(250,t-lastT);lastT=t;
   if(S&&!S.over&&speed>0&&!sheetKind&&!splashOpen){
-    acc+=dt;var per=(speed>0?1000*eraMul()/speed:0)*paceMul();
+    acc+=dt;campaignClock(dt);var per=(speed>0?1000*eraMul()/speed:0)*paceMul();
     while(acc>=per){acc-=per;tick();if(!S||S.over||splashOpen)break;}
   }else acc=0;
   if(fling){var dtf=Math.min(50,t-(fling.last||t));fling.last=t;panBy(fling.vx*dtf,fling.vy*dtf);var dec=Math.pow(0.93,dtf/16);fling.vx*=dec;fling.vy*=dec;if(Math.hypot(fling.vx,fling.vy)<0.02)fling=null;}
@@ -5673,7 +6005,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
