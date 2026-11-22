@@ -1225,7 +1225,7 @@ function renderPop(){
   $('pnav').style.display=popQ.length>1?'flex':'none';
   p.style.display='flex';
 }
-function hidePop(){clearTimeout(popTimer);popQ=[];popIdx=0;var p=$('advpop');if(p)p.style.display='none';}
+function hidePop(){clearTimeout(popTimer);popQ=[];popPend=[];popIdx=0;var p=$('advpop');if(p)p.style.display='none';}
 function popExpire(){
   popQ=popQ.filter(function(q){return q.sticky;});
   if(popIdx>=popQ.length)popIdx=Math.max(0,popQ.length-1);
@@ -1237,13 +1237,34 @@ function prunePop(){
   if(popIdx>=popQ.length)popIdx=Math.max(0,popQ.length-1);
   renderPop();
 }
+/* Popups are paced in real time. Urgent items (decisions and political shocks) show at once. Everything else
+   waits its turn, one every POP_GAP milliseconds, so a burst of news becomes a trickle. Nothing is lost: all of it
+   is still in the Headlines list and the advisors sheet. */
+var POP_GAP=30000,POP_MAX_STACK=3,POP_MAX_WAIT=5,popPend=[],popLast=0;
+function popPacing(){return !(typeof window!=='undefined'&&window.__NOHOLD);}
+function popUrgent(n){return !!(n.sticky||(n.who==='Politics'&&n.tone==='bad'));}
+function pushPop(n){
+  popLast=Date.now();
+  for(var i=popQ.length-1;i>=0;i--){if(popQ[i].text===n.text)popQ.splice(i,1);}
+  popQ.push(n);while(popQ.length>(popPacing()?POP_MAX_STACK:8))popQ.shift();
+  popIdx=popQ.length-1;renderPop();
+  clearTimeout(popTimer);if(!n.sticky)popTimer=setTimeout(popExpire,16000);
+}
 function showPop(n){
   if(!n||popMode==='off')return;
   if(popMode==='important'&&n.tone==='info'&&!n.sticky)return;
   if(n.who&&popMute[n.who])return;
-  popQ.push(n);if(popQ.length>8)popQ.shift();
-  popIdx=popQ.length-1;renderPop();
-  clearTimeout(popTimer);if(!n.sticky)popTimer=setTimeout(popExpire,16000);
+  if(!popPacing()||popUrgent(n)||(Date.now()-popLast>=POP_GAP&&!popPend.length)){pushPop(n);return;}
+  for(var i=0;i<popPend.length;i++){if(popPend[i].text===n.text)return;}
+  popPend.push(n);
+  while(popPend.length>POP_MAX_WAIT){
+    var di=-1,k;for(k=0;k<popPend.length&&di<0;k++){if(popPend[k].tone==='good')di=k;}
+    popPend.splice(di<0?0:di,1);
+  }
+}
+function popDrain(){
+  if(!popPend.length||Date.now()-popLast<POP_GAP)return;
+  while(popPend.length){var n=popPend.shift();if(n.cond&&!n.cond())continue;if(n.who&&popMute[n.who])continue;pushPop(n);return;}
 }
 function popStep(d){if(popQ.length<2)return;popIdx=(popIdx+d+popQ.length)%popQ.length;renderPop();clearTimeout(popTimer);popTimer=setTimeout(popExpire,16000);}
 function setPopMode(m){popMode=m;store('sc5000.pop',m);}
@@ -3226,7 +3247,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-22 02:47';
+var BUILD_ID='2026-11-22 03:15';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -4018,7 +4039,7 @@ var GUIDE=[
  '<p><b>Undo</b> reverses your last build or district and refunds it. It cannot undo disasters or time passing.</p>'},
 {id:'g-advisors',title:'Advisors and popups',
  brief:'Advisors only speak up about problems your city actually has. A red dot on Goals means something urgent.',
- more:'<p>Popups appear over the map with an X to close them, arrows when several are waiting, and a counter. In the Menu you can show all popups, important ones only, or none, and mute individual advisors. The Tips panel always lists current advice, your objectives and the next tutorial step.</p>'+
+ more:'<p>Popups are paced so they never pile up: apart from decisions you must make and political shocks, no more than one appears every 30 seconds of real time, and at most three show at once. Anything that has to wait is still in the Headlines list and the advisors sheet. Popups appear over the map with an X to close them, arrows when several are waiting, and a counter. In the Menu you can show all popups, important ones only, or none, and mute individual advisors. The Tips panel always lists current advice, your objectives and the next tutorial step.</p>'+
  '<p>Advice disappears when the problem is fixed. Early on, the guide only suggests the next build step.</p>'},
 {id:'g-desktop',title:'Desktop and keyboard',
  brief:'Everything works with a mouse and keyboard too. On wide screens the panels float over the map just like on a phone, and you can switch to a side panel if you prefer.',
@@ -5965,6 +5986,7 @@ function wire(){
   document.addEventListener('visibilitychange',function(){if(document.hidden)save();});
   window.addEventListener('pagehide',save);
   window.addEventListener('resize',resize);
+  setInterval(popDrain,2000);
   setInterval(vpCheck,1000);
   ['pageshow','orientationchange','focus'].forEach(function(ev){window.addEventListener(ev,function(){setTimeout(vpCheck,50);setTimeout(vpCheck,400);});});
   document.addEventListener('visibilitychange',function(){if(!document.hidden){setTimeout(vpCheck,50);setTimeout(vpCheck,400);}});
@@ -6005,7 +6027,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
