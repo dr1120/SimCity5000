@@ -37,6 +37,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .muted{color:var(--muted)}
 #app{max-width:480px;margin:0 auto;padding:6px 10px 8px;display:flex;flex-direction:column;gap:6px;height:calc(var(--app-h,100vh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:0;overflow-x:hidden;overflow-y:auto}
+@supports (height:100dvh){#app{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
 .brand{display:flex;flex-direction:column;line-height:1.1}
 .brand b{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
@@ -463,10 +464,10 @@ var OBJ={
   stn:{t:STN,cost:12000,up:120,pu:3,cat:'transit',size:[2,1],jobs:6},
   elevator:{t:ELEV,cost:2000000,up:20000,tech:'spaceelev',build:48,req:3000,cat:'proj',size:[3,3],phased:true},
   array:{t:ARRAY,cost:1500000,up:5000,tech:'orbsolar',build:48,req:3000,cat:'proj',size:[4,4],phased:true},
-  node:{t:NODE,cost:14000000,up:40000,tech:'dyson',build:72,req:3000,kmin:1,cat:'proj',size:[4,4],phased:true},
-  relay:{t:RELAY,cost:80000000,up:200000,tech:'wormhole',build:96,req:3000,kmin:2,cat:'proj',size:[4,4],phased:true},
+  node:{t:NODE,cost:14000000,up:40000,tech:'dyson',build:93,req:3000,kmin:1,cat:'proj',size:[4,4],phased:true},
+  relay:{t:RELAY,cost:80000000,up:200000,tech:'wormhole',build:118,req:3000,kmin:2,cat:'proj',size:[4,4],phased:true},
   tap:{t:TAP,cost:600000000,up:0,tech:'darkenergy',build:144,req:3000,kmin:3,cat:'proj',size:[4,4],phased:true,esc:1.25},
-  forge:{t:FORGE,cost:6000000000,up:0,tech:'universe',build:240,req:3000,kmin:4,cat:'proj',size:[4,4],phased:true,esc:1.3},
+  forge:{t:FORGE,cost:6000000000,up:0,tech:'universe',build:186,req:3000,kmin:4,cat:'proj',size:[4,4],phased:true,esc:1.3},
   spaceport:{t:SPACEPORT,cost:400000,up:3000,pu:30,tech:'rockets',build:24,req:3000,cat:'proj',size:[4,4]},
   yard:{t:YARD,cost:2500000,up:6000,pu:40,tech:'colony',build:48,req:3500,cat:'proj',size:[4,4]},
   hosp:{t:HOSP,cost:14000,up:0,pu:5,wu:6,cat:'civic',size:[2,2],jobs:30},
@@ -514,8 +515,8 @@ var TOOLS={
   bus:{name:'Bus depot',sw:'#e0a13a',desc:'Covers 6 tiles: roads there carry 60% more traffic before they jam.'},
   sew:{name:'Sewage plant',sw:'#6a8f5b',desc:'Treats 150 units of sewage and needs power. Untreated sewage drags down mood.'},
   landfill:{name:'Landfill',sw:'#8a7a5a',desc:'Takes 150 units of garbage a month. Smelly: pushes pollution up nearby.'},
-  tie:{name:'Grid link',sw:'#d1a23a',desc:'Connects you to neighbouring cities. Sell surplus power and water, and buy shortfalls at their price.'},
-  dres:{name:'Suburb',sw:'#38a169',desc:'Plans a neighbourhood: tap one corner, then the opposite corner. Roads every third row with homes between. Tap the second corner again to build.'},
+  tie:{name:'Grid link',sw:'#d1a23a',desc:'Connects you to neighboring cities. Sell surplus power and water, and buy shortfalls at their price.'},
+  dres:{name:'Suburb',sw:'#38a169',desc:'Plans a neighborhood: tap one corner, then the opposite corner. Roads every third row with homes between. Tap the second corner again to build.'},
   dcom:{name:'Downtown',sw:'#3b82d6',desc:'Plans a business district: roads every third row with mostly shops and some homes. Tap two corners, then the second again to build.'},
   dind:{name:'Industry park',sw:'#d9a520',desc:'Plans an industrial park: roads every third row with mostly factories and a few shops. Tap two corners, then the second again to build.'},
   rail:{name:'Rail track',sw:'#7a6f60',desc:'Drag to lay track between stations. Track on its own does nothing: it must join two powered stations.'},
@@ -524,8 +525,8 @@ var TOOLS={
   array:{name:'Orbital array',sw:'#e8c35a',desc:'Orbital solar collectors beaming power down. Each one sells power and moves you up the Kardashev scale. Monthly installments over 48 months. Each one costs 15% more than the last.'},
   node:{name:'Dyson node',sw:'#ffb24a',desc:'A segment of a Dyson swarm around the sun. Needs a Type I civilization. Monthly installments over 72 months.'},
   relay:{name:'Galactic relay',sw:'#a77bff',desc:'A wormhole relay linking star systems. Needs a Type II civilization. Four of them make you a Type III civilization. Monthly installments over 96 months.'},
-  tap:{name:'Dark-energy tap',sw:'#6a5acd',desc:'A structure that draws power from the expansion of the universe itself. Needs a Type III civilization. Four of them make you Type IV. Monthly installments over 12 years, and each one costs 25% more than the last.'},
-  forge:{name:'Universe forge',sw:'#e0b84a',desc:'A machine that builds new universes. Needs a Type IV civilization. Four of them make you Type V. Monthly installments over 20 years, and each one costs 30% more than the last.'},
+  tap:{name:'Dark-energy tap',sw:'#6a5acd',desc:'A structure that draws power from the expansion of the universe itself. Needs a Type III civilization. Four of them make you Type IV. Monthly installments over a long build, and each one costs 25% more than the last.'},
+  forge:{name:'Universe forge',sw:'#e0b84a',desc:'A machine that builds new universes. Needs a Type IV civilization. Four of them make you Type V. Monthly installments over a very long build, and each one costs 30% more than the last.'},
   spaceport:{name:'Spaceport',sw:'#dfe6f2',desc:'Capital project, 24 months. Launch contracts bring in big money and 150 jobs. Orbital manufacturing doubles the take. Needs Reusable rockets.'},
   yard:{name:'Colony ship yard',sw:'#b9c4e8',desc:'A milestone project: 48 months and $2.5 million to build a ship that carries humanity\u2019s next chapter. Adds to your Kardashev rating. Needs the colony ship program.'},
   hosp:{name:'Hospital',sw:'#e8e8ee',desc:'Serves 800 residents a month (more with higher healthcare funding). Cuts the damage of outbreaks and keeps people healthy. Needs power and water.'},
@@ -550,9 +551,9 @@ var TECHS={
   water:{name:'Water recycling',cost:160,req:null,sector:'Water tech',desc:'Cuts water demand 30% and unlocks desalination.'},
   auto:{name:'Factory automation',cost:220,req:'fiber',sector:'Robotics',desc:'Factories make 30% more goods.'},
   bio:{name:'Biotech',cost:260,req:null,sector:'Biotech',desc:'Unlocks biotech campuses with high-wage jobs.'},
-  ai:{name:'Applied AI',cost:380,req:'fiber',sector:'AI',desc:'Trims service costs 15% and speeds research 25%.'},
+  ai:{name:'Applied AI',cost:42000000,req:'fiber',sector:'AI',desc:'Trims service costs 15% and speeds research 25%.'},
   fission:{name:'Advanced fission',cost:450,req:null,sector:'Nuclear',desc:'Unlocks Gen IV nuclear plants: 420 MW of steady clean power.'},
-  fusion:{name:'Fusion power',cost:9000,req:'fission',req2:'ai',sector:'Fusion',desc:'The holy grail. Needs Advanced fission and Applied AI, plus at least 3 working labs and a university. Plasma instabilities keep setting the program back.'}
+  fusion:{name:'Fusion power',cost:47500000,req:'fission',req2:'ai',sector:'Fusion',desc:'The holy grail. Needs Advanced fission and Applied AI, plus at least 3 working labs and a university. Plasma instabilities keep setting the program back.'}
 };
 var DIST={dres:{homes:0.85,shops:0.15},dcom:{homes:0.3,shops:0.7},dind:{homes:0,shops:0.2}};
 var FRONTIER={
@@ -560,29 +561,33 @@ var FRONTIER={
   vaccine:{name:'Rapid vaccine platforms',cost:1800,req:'genome',sector:'Vaccines',frontier:1,desc:'Pandemics start at half strength.'},
   autoveh:{name:'Autonomous vehicles',cost:2200,req:'ai',sector:'Mobility',frontier:1,desc:'Roads carry 30% more before they jam and mood rises a little.'},
   vfarm:{name:'Vertical farming and lab-grown food',cost:2000,req:'water',sector:'Agri-tech',frontier:1,desc:'Food price shocks hit half as hard.'},
-  materials:{name:'Advanced materials',cost:2600,req:'auto',sector:'Materials',frontier:1,desc:'Construction costs fall 12% and infrastructure wears out 25% slower.'},
+  materials:{name:'Advanced materials',cost:46667,req:'auto',sector:'Materials',frontier:1,desc:'Construction costs fall 12% and infrastructure wears out 25% slower.'},
   quantum:{name:'Quantum computing',cost:3800,req:'ai',sector:'Quantum',frontier:1,desc:'Research is 30% faster, data centers earn 50% more and chip shortages bite 30% less.'},
-  supercon:{name:'Room-temperature superconductors',cost:4200,req:'fission',req2:'ai',sector:'Superconductors',frontier:1,desc:'Power lines reach 2 tiles farther and the grid wastes less: 8% more usable power.'},
+  supercon:{name:'Room-temperature superconductors',cost:7333,req:'fission',req2:'ai',sector:'Superconductors',frontier:1,desc:'Power lines reach 2 tiles farther and the grid wastes less: 8% more usable power.'},
   carbon:{name:'Carbon capture and climate engineering',cost:5200,req:'fission',sector:'Climate tech',frontier:1,desc:'Pollution is cut in half, heatwaves and droughts are half as long, and mood rises a little.'},
   agi:{name:'General-purpose AI',cost:7000,req:'quantum',req2:'ai',sector:'AGI',frontier:1,desc:'Income tax revenue up 15% and automation spreads fast. It also raises AI risk. Fund oversight or pay the price.'},
-  rockets:{name:'Reusable launch vehicles',cost:3000,req:'materials',req2:'ai',sector:'Launch',frontier:1,desc:'Unlocks the Spaceport, a capital project that earns launch fees.'},
-  orbital:{name:'Orbital manufacturing',cost:6000,req:'rockets',sector:'Space industry',frontier:1,desc:'Spaceports earn double, exports rise 20% and chip shortages bite half as hard.'},
-  asteroid:{name:'Asteroid mining',cost:9000,req:'orbital',req2:'fusion',sector:'Space mining',frontier:1,desc:'Materials get cheaper for good, and each spaceport adds mining income.'},
+  rockets:{name:'Reusable launch vehicles',cost:58000,req:'materials',req2:'ai',sector:'Launch',frontier:1,desc:'Unlocks the Spaceport, a capital project that earns launch fees.'},
+  orbital:{name:'Orbital manufacturing',cost:46667,req:'rockets',sector:'Space industry',frontier:1,desc:'Spaceports earn double, exports rise 20% and chip shortages bite half as hard.'},
+  asteroid:{name:'Asteroid mining',cost:70000,req:'orbital',req2:'fusion',sector:'Space mining',frontier:1,desc:'Materials get cheaper for good, and each spaceport adds mining income.'},
   colony:{name:'Colony ship program',cost:14000,req:'asteroid',req2:'carbon',sector:'Interstellar',frontier:1,desc:'Unlocks the Colony ship yard, a milestone on the way to a Type II civilization.'}
 };
-FRONTIER.spaceelev={name:'Space elevator',cost:16000,req:'rockets',req2:'materials',sector:'Skyhook',frontier:1,desc:'Unlocks the Space elevator, the first step to a Type I civilization. Launch fees triple.'};
-FRONTIER.orbsolar={name:'Orbital solar power',cost:20000,req:'spaceelev',req2:'supercon',sector:'Orbital power',frontier:1,desc:'Unlocks Orbital arrays that beam power down and sell it. An elevator and three arrays make you Type I.'};
+FRONTIER.spaceelev={name:'Space elevator',cost:27833,req:'rockets',req2:'materials',sector:'Skyhook',frontier:1,desc:'Unlocks the Space elevator, the first step to a Type I civilization. Launch fees triple.'};
+FRONTIER.orbsolar={name:'Orbital solar power',cost:34833,req:'spaceelev',req2:'supercon',sector:'Orbital power',frontier:1,desc:'Unlocks Orbital arrays that beam power down and sell it. An elevator and three arrays make you Type I.'};
 FRONTIER.antimatter={name:'Antimatter production',cost:26000,req:'orbsolar',req2:'quantum',sector:'Antimatter',frontier:1,desc:'Research 20% faster and launch fees up 25%. The stepping stone to stellar engineering.'};
-FRONTIER.dyson={name:'Dyson swarm engineering',cost:45000,req:'antimatter',req2:'asteroid',sector:'Stellar engineering',frontier:1,tier:2,desc:'Unlocks Dyson nodes. Research stalls until you are a Type I civilization.'};
+FRONTIER.dyson={name:'Dyson swarm engineering',cost:101500,req:'antimatter',req2:'asteroid',sector:'Stellar engineering',frontier:1,tier:2,desc:'Unlocks Dyson nodes. Research stalls until you are a Type I civilization.'};
 FRONTIER.matrioshka={name:'Matrioshka brains',cost:60000,req:'dyson',req2:'agi',sector:'Computronium',frontier:1,tier:2,desc:'Dyson nodes earn double and research is 50% faster.'};
-FRONTIER.darkenergy={name:'Dark-energy harvesting',cost:200000,req:'wormhole',req2:'matrioshka',sector:'Vacuum engineering',frontier:1,tier:4,desc:'Unlocks Dark-energy taps. Research stalls until you are a Type III civilization.'};
-FRONTIER.universe={name:'Universe engineering',cost:350000,req:'darkenergy',sector:'Cosmogenesis',frontier:1,tier:5,desc:'Unlocks Universe forges. Research stalls until you are a Type IV civilization.'};
-FRONTIER.wormhole={name:'Traversable wormholes',cost:100000,req:'matrioshka',sector:'Galactic network',frontier:1,tier:3,desc:'Unlocks Galactic relays. Research stalls until you are a Type II civilization.'};
+FRONTIER.darkenergy={name:'Dark-energy harvesting',cost:252000,req:'wormhole',req2:'matrioshka',sector:'Vacuum engineering',frontier:1,tier:4,desc:'Unlocks Dark-energy taps. Research stalls until you are a Type III civilization.'};
+FRONTIER.universe={name:'Universe engineering',cost:343000,req:'darkenergy',sector:'Cosmogenesis',frontier:1,tier:5,desc:'Unlocks Universe forges. Research stalls until you are a Type IV civilization.'};
+FRONTIER.wormhole={name:'Traversable wormholes',cost:142333,req:'matrioshka',sector:'Galactic network',frontier:1,tier:3,desc:'Unlocks Galactic relays. Research stalls until you are a Type II civilization.'};
 TECHS.arterial={name:'Arterial roads',cost:520,sector:'Highways',desc:'Lots can sit up to two tiles from a road, so blocks can be twice as deep. Fewer streets, bigger parcels.'};
 TECHS.ugcable={name:'Underground cables',cost:780,sector:'Utilities',desc:'Power cables can run underground, beneath roads and buildings. Buried cables cannot burn and tornadoes cannot reach them.'};
 TECHS.robotics={name:'Industrial robotics',cost:2800,req:'auto',sector:'Robotics',desc:'Factory robots make goods cheaper and take over assembly work. Many workers will need retraining.'};
 TECHS.svcbot={name:'Service robots',cost:5200,req:'robotics',req2:'ai',sector:'Service robotics',desc:'Robots in shops, kitchens and clinics. Services get cheaper. More jobs are at risk.'};
-(function(){for(var k in FRONTIER){TECHS[k]=FRONTIER[k];TECHS[k].cost=Math.round(TECHS[k].cost*3);}})();
+/* Campaign length: 1 Standard, 3 Long (the old pacing), 10 Epic. It stretches frontier research, megaproject cost and megaproject build time. */
+function lenF(){return 100;}
+function bMon(o){return o.phased?Math.max(12,Math.round(o.build*lenF())):o.build;}
+function applyLen(){for(var k in FRONTIER){TECHS[k].cost=Math.round(TECHS[k].base*6*lenF());}}
+(function(){for(var k in FRONTIER){TECHS[k]=FRONTIER[k];TECHS[k].base=FRONTIER[k].cost;}applyLen();})();
 var TECH_ORDER=['solar','fiber','water','arterial','ugcable','auto','bio','ai','fission','fusion','robotics','svcbot','genome','vaccine','autoveh','vfarm','materials','quantum','supercon','carbon','agi','rockets','orbital','asteroid','colony','spaceelev','orbsolar','antimatter','dyson','matrioshka','wormhole','darkenergy','universe'];
 var NAME_A=['Nova','Helio','Quanta','Vertex','Aero','Lumen','Orbit','Kinetic','Zenith','Atlas','Cobalt','Ember','Fathom','Meridian','Pylon','Strata'];
 var NAME_B=['Cell','Labs','Dynamics','Systems','Works','Grid','Genomics','Robotics','Cloud','Energy','Materials','Logic','Networks','Therapeutics'];
@@ -1017,7 +1022,7 @@ function eraW(ch){var e=S?S.era|0:0;return ERA_W[ch][e];}
 function eraOf(g,k){
   var e=0;
   if(S.tech.ai)e=1;
-  if(S.tech.fusion||S.tech.supercon)e=2;
+  if(S.tech.fusion)e=2;
   if(g.done[SPACEPORT]>0)e=Math.max(e,3);
   if(S.tech.asteroid&&e>=3)e=4;
   if(k>=1)e=5;if(k>=2)e=6;if(k>=3)e=7;if(k>=4)e=8;if(k>=5)e=9;
@@ -1042,7 +1047,7 @@ function terrainCost(i){return (TER[i]===FOREST?1.35:1)*(1+0.12*Math.max(0,EL[i]
 function costFor(id,i){
   if(id==='inspect')return 0;if(id==='bull')return 10;
   var c=OBJ[id].cost*mult();
-  if(OBJ[id].phased){c*=Math.pow(OBJ[id].esc||1.15,countType(OBJ[id].t));c*=1+0.3*Math.max(0,Math.log10(Math.max(1,((S&&S.cash>0)?S.cash:0)+((S&&S.fund)?S.fund.bal:0))/5e6));}
+  if(OBJ[id].phased){c*=lenF();c*=Math.pow(OBJ[id].esc||1.15,countType(OBJ[id].t));c*=1+0.3*Math.max(0,Math.log10(Math.max(1,((S&&S.cash>0)?S.cash:0)+((S&&S.fund)?S.fund.bal:0))/5e6));}
   if(id==='lab'||id==='dc'||id==='bio'||id==='fusion')c*=1+0.5*Math.max(0,S.mc.chips)*(S.tech.quantum?0.7:1)*(S.tech.orbital?0.5:1);
   if(i!==undefined&&i>=0)c*=terrainCost(i);
   return Math.ceil(c);
@@ -1051,6 +1056,7 @@ function firmJobsTotal(){
   var j=0;for(var k=0;k<S.firms.length;k++){var f=S.firms[k];if(f.stage==='public'||f.stage==='acquired')j+=f.jobs;}return j;
 }
 function rdRate(g){
+  if(typeof window!=='undefined'&&window.__NOGATE)return 7000;
   var labs=g.act.lab,labF=labs===0?0.25:(1+0.4*(labs-1));
   var raw=S.rd.budget/30*labF*(1+0.06*g.act.school)*(S.tech.ai?1.25:1)*(g.act.univ?1.6:1)*(1+0.2*Math.min(4,g.act.dc))*(0.9+0.1*S.sp.edu)*(S.tech.quantum?1.3:1)*(S.tech.antimatter?1.2:1)*(S.tech.matrioshka?1.5:1)*(S.alien==='friend'?1.2:1)/(1+0.3*Math.max(0,S.mc.chips)*(S.tech.quantum?0.7:1)*(S.tech.orbital?0.5:1));
   return raw/(1+raw/8000);
@@ -1145,7 +1151,7 @@ function computeEconomy(){
         -Math.max(0,tx.inc-9)*0.04+Math.max(0,9-tx.inc)*0.01-Math.max(0,tx.sales-8)*0.02-Math.max(0,tx.prop-1.3)*0.1
         -(1-shopFill)*0.3-(1-pw)*0.5-(1-ww)*0.4-0.04*Math.max(0,mc.food)*(S.tech.vfarm?0.5:1)-0.04*clamp(mc.health,0,1.5)*(S.tech.genome?0.7:1)+(S.tech.carbon?0.03:0)+(S.tech.autoveh?0.02:0)-(A.spaceport?0.03:0)-unemp*0.6*Math.min(1,workforce/30)*(1-0.3*wfFrac)
         -Math.max(0,S.infl-4)*0.035-Math.max(0,-S.infl)*0.02;
-  h+=Math.min(0.12,ppm.mood||0)+0.008*Math.min(8,sp.udiv||0)+0.04*g.nukeShare+((S.auto&&S.auto.psc>=12)?0.05:0)-0.15*Math.max(0,ineq-0.4);h=clamp(h,0.15,1.25);
+  h+=Math.min(0.12,ppm.mood||0)+0.008*Math.min(8,sp.udiv||0)+0.04*g.nukeShare+((S.auto&&S.auto.psc>=12)?0.05:0)-0.15*Math.max(0,ineq-0.4)-(S.xp||0);h=clamp(h,0.15,1.25);
   var payIdx=S.hpi/100*mort/5.5,af=clamp(1.55-0.55*payIdx+0.06*(sp.udiv||0),0.15,1.15);
   var jf=workforce>0?clamp(jobsEff/workforce,0.3,1):1;
   var hPop=(S.hs===undefined)?h:S.hs,target=g.resCap*Math.min(1,af*Math.min(hPop,1)*(0.5+0.5*jf)*1.15);
@@ -1160,7 +1166,8 @@ function computeEconomy(){
         +(A.stadium?0.05:0)+(A.airport?0.08:0);
   var goodsGap=need>0?clamp((need-produced-imported)/(need+10),-1,1):0;
   var Idem=clamp(0.6*wfGap+0.6*goodsGap+0.2-(S.recession>0?0.3:0)-0.02*(tx.corp-8)+(A.airport?0.05:0),-1,1);
-  var apprTarget=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,sx1-9)-Math.max(0,S.infl-5)*2+Math.min(6,ppm.appr||0)+(A.stadium?3:0)-(S.cash<0?10:0)-((S.fund.bal>24*Math.max(1000,revenue)&&tx.inc>9)?3:0)-10*Math.max(0,ineq-0.45)+((S.auto&&S.auto.psc>=12)?4:0),0,100);
+  var apprRaw=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,sx1-9)-Math.max(0,S.infl-5)*2+Math.min(6,ppm.appr||0)+(A.stadium?3:0)-(S.cash<0?10:0)-((S.fund.bal>24*Math.max(1000,revenue)&&tx.inc>9)?3:0)-10*Math.max(0,ineq-0.45)+((S.auto&&S.auto.psc>=12)?4:0),0,100);
+  var apprTarget=apprRaw>85?85+(apprRaw-85)*0.4:apprRaw;  /* nobody is ever 100% happy */
   e.supply=supply;e.mort=mort;e.pw=pw;e.ww=ww;e.workforce=workforce;e.employed=employed;e.unemp=unemp;e.tight=jobsGap;e.mortReal=mort-(S.infl-2);
   e.produced=produced;e.need=need;e.imported=imported;e.sold=sold;e.shopFill=shopFill;e.exports=exports;
   e.pwUse=(g.pCap+impMW)>0?pwD/(g.pCap+impMW):(pwD>0?9.99:0);e.wUse=(wCap+impW)>0?wD/(wCap+impW):(wD>0?9.99:0);
@@ -1168,7 +1175,7 @@ function computeEconomy(){
   e.rev=[['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax],['Exports',exports],['Dividends',dividends],['Tourism',tourism],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
   e.exp=[['Public services',services],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop)*dm('infl');
@@ -1281,6 +1288,9 @@ function setDeposit(on){
 }
 /* ================= world events ================= */
 var OPT={
+  s1:{label:'Open emergency credit lines',cp:30,mult:0.65,desc:'Costs money now and cuts the damage by about a third.'},
+  s2:{label:'Step in with guarantees',cp:60,mult:0.5,desc:'Expensive. Halves the damage if you act fast.'},
+  s3:{label:'Ride it out',cp:0,mult:1,appr:2,desc:'Free, and voters respect calm. The full damage lands.'},
   e1:{label:'Release strategic fuel reserves',cp:25,mult:0.65,desc:'Costs money now and cuts the price spike by about a third.'},
   e2:{label:'Urge conservation',cp:0,mult:0.85,appr:-3,desc:'Free. Softens the spike 15% but voters grumble.'},
   f1:{label:'Charter alternative shipping',cp:15,mult:0.7,desc:'Costs money and cuts the freight spike by 30%.'},
@@ -1318,16 +1328,16 @@ OPT.v7={label:'Hard shutdown',cp:120,mult:0.45,desc:'Very expensive. Cuts the da
 var MACRO=[
  {id:'gulf',maxEra:3,warn:'Tensions are rising in the Gulf. Analysts warn tanker traffic could be disrupted within weeks.',chain:[{id:'opec',p:0.5,d:[3,6]},{id:'x:infl',p:0.5,d:[2,4]},{id:'x:recession',p:0.3,d:[6,10]},{id:'redsea',p:0.25,d:[4,8]}],w:2,name:'War in the Gulf',region:'Middle East',head:'War breaks out in the Gulf and tanker traffic through the Strait of Hormuz is disrupted. Oil and gas prices spike worldwide.',end:'A ceasefire holds in the Gulf and tankers are moving again. Energy prices are easing.',ch:{energy:1.3,freight:0.3},dur:9,mkt:-0.08,rec:0.2,opts:['e1','e2','f2']},
  {id:'opec',maxEra:3,warn:'Oil exporters are meeting and traders expect a production cut.',chain:[{id:'x:infl',p:0.5,d:[2,5]},{id:'x:recession',p:0.2,d:[6,10]}],w:2,name:'Oil cartel cuts output',region:'Global',head:'The big oil exporters agree to deep production cuts. Fuel prices climb and stay high.',end:'Oil exporters restore output. Fuel prices are settling.',ch:{energy:0.7},dur:10,mkt:-0.03,rec:0.1,opts:['e1','e2']},
- {id:'shale',maxEra:3,warn:'Producers report huge new supplies and fuel prices are starting to soften.',chain:[{id:'boom',p:0.2,d:[4,8]}],w:1.5,name:'New supply floods the oil market',region:'Americas',head:'A wave of new fields comes online and fuel prices fall sharply. Power plants and factories are cheaper to run.',end:'Fuel prices are normalising after the supply glut.',ch:{energy:-0.5},dur:12,mkt:0.04,good:true},
+ {id:'shale',maxEra:3,warn:'Producers report huge new supplies and fuel prices are starting to soften.',chain:[{id:'boom',p:0.2,d:[4,8]}],w:1.5,name:'New supply floods the oil market',region:'Americas',head:'A wave of new fields comes online and fuel prices fall sharply. Power plants and factories are cheaper to run.',end:'Fuel prices are normalizing after the supply glut.',ch:{energy:-0.5},dur:12,mkt:0.04,good:true},
  {id:'strait',warn:'Military exercises around an East Asian strait are alarming chipmakers and shippers.',chain:[{id:'rare',p:0.4,d:[3,6]},{id:'tariff',p:0.3,d:[4,8]},{id:'x:crash',p:0.2,d:[2,5]}],w:1.5,name:'Strait crisis in East Asia',region:'East Asia',head:'Military tension around a key East Asian strait disrupts the world\u2019s chip supply and rattles shipping. Fabs ration output.',end:'Tension in East Asia cools and chip shipments are resuming.',ch:{chips:1.5,freight:0.6},dur:10,mkt:-0.10,rec:0.25,opts:['c1','c2','f1']},
  {id:'redsea',maxEra:4,warn:'Shipping insurers are raising rates after threats to merchant vessels.',chain:[{id:'x:infl',p:0.4,d:[3,6]},{id:'canal',p:0.15,d:[4,8]}],w:2,name:'Attacks on shipping lanes',region:'Red Sea',head:'Attacks on merchant ships force carriers to sail around Africa. Freight rates triple and deliveries run late.',end:'Shipping lanes reopen under naval escort. Freight rates are falling back.',ch:{freight:1.1,energy:0.2},dur:10,opts:['f1','f2']},
  {id:'canal',maxEra:4,warn:'A key canal is running low on water and ships are starting to queue.',chain:[{id:'x:infl',p:0.3,d:[3,6]}],w:1.5,name:'Canal bottleneck',region:'Americas',head:'Drought and a grounded ship choke a major canal. Container ships queue for weeks.',end:'The canal is flowing again and the backlog is clearing.',ch:{freight:0.8},dur:6,opts:['f1','f2']},
- {id:'tariff',warn:'Two big economies are threatening new tariffs on each other.',chain:[{id:'embargo',p:0.3,d:[5,9]},{id:'x:recession',p:0.35,d:[6,10]}],w:2,name:'Tariff war',region:'Trans-Pacific',head:'Two big economies slap tariffs on each other\u2019s goods. Materials get dearer and export orders dry up.',end:'A trade truce lowers tariffs. Orders and materials are normalising.',ch:{materials:0.6,freight:0.3,trade:0.5},dur:16,mkt:-0.06,rec:0.25,opts:['t1','t2','m1']},
+ {id:'tariff',warn:'Two big economies are threatening new tariffs on each other.',chain:[{id:'embargo',p:0.3,d:[5,9]},{id:'x:recession',p:0.35,d:[6,10]}],w:2,name:'Tariff war',region:'Trans-Pacific',head:'Two big economies slap tariffs on each other\u2019s goods. Materials get dearer and export orders dry up.',end:'A trade truce lowers tariffs. Orders and materials are normalizing.',ch:{materials:0.6,freight:0.3,trade:0.5},dur:16,mkt:-0.06,rec:0.25,opts:['t1','t2','m1']},
  {id:'embargo',warn:'Sanctions talks are collapsing and a trading partner could be cut off.',chain:[{id:'grain',p:0.25,d:[3,7]},{id:'opec',p:0.2,d:[3,7]},{id:'x:recession',p:0.3,d:[6,10]}],w:1.5,name:'Embargo on a major trading partner',region:'Europe and Asia',head:'Sanctions and counter-sanctions cut off a major trading partner. Imports from the region stop and export markets close.',end:'The embargo is lifted. Trade with the region is resuming.',ch:{trade:1.0,materials:0.3},dur:14,mkt:-0.05,opts:['t1','t2']},
  {id:'grain',maxEra:4,warn:'A poor harvest has a major grain exporter weighing an export ban.',chain:[{id:'x:unrest',p:0.35,d:[3,6]},{id:'x:infl',p:0.4,d:[3,6]}],w:1.5,name:'Grain export ban',region:'Black Sea',head:'A major grain exporter bans shipments after a failed harvest. Food prices jump around the world.',end:'Grain exports resume and food prices are easing.',ch:{food:1.0},dur:12,opts:['d1']},
  {id:'rare',maxEra:5,warn:'A dominant rare-earth supplier is hinting at export limits.',chain:[{id:'strait',p:0.15,d:[4,8]}],w:1.2,name:'Rare-earth export ban',region:'East Asia',head:'A dominant supplier restricts rare-earth exports. Magnets, batteries and chips get harder to find.',end:'Rare-earth exports are flowing again at a higher price.',ch:{materials:0.5,chips:0.7},dur:14,mkt:-0.04,opts:['m1','c1']},
  {id:'virus',warn:'Health agencies report a fast-spreading virus abroad.',chain:[{id:'bank',p:0.25,d:[3,6]},{id:'x:recession',p:0.5,d:[2,4]},{id:'x:remote',p:0.5,d:[2,4]}],w:1,name:'New virus spreads',region:'Global',head:'A fast-spreading virus is circulating worldwide. Workplaces run short-handed and supply lines wobble.',end:'The outbreak is under control and workplaces are returning to normal.',ch:{health:1.0,freight:0.4,food:0.2},dur:8,mkt:-0.12,rec:0.5,opts:['p1','p2']},
- {id:'bank',warn:'Rumours of trouble at several banks abroad are spooking markets.',chain:[{id:'default',p:0.3,d:[4,8]},{id:'x:crash',p:0.25,d:[2,4]}],w:1,name:'Banking crisis abroad',region:'Europe',head:'A string of bank failures abroad freezes credit markets. Lenders everywhere tighten.',end:'Regulators stabilise the banks and credit is flowing again.',ch:{trade:0.3},dur:6,mkt:-0.12,rec:0.4,fn:function(){S.crunch=Math.max(S.crunch,12);},opts:['t2']},
+ {id:'bank',warn:'Rumors of trouble at several banks abroad are spooking markets.',chain:[{id:'default',p:0.3,d:[4,8]},{id:'x:crash',p:0.25,d:[2,4]}],w:1,name:'Banking crisis abroad',region:'Europe',head:'A string of bank failures abroad freezes credit markets. Lenders everywhere tighten.',end:'Regulators stabilize the banks and credit is flowing again.',ch:{trade:0.3},dur:6,mkt:-0.12,rec:0.4,fn:function(){S.crunch=Math.max(S.crunch,12);},opts:['t2']},
  {id:'default',warn:'Bond investors are dumping the debt of a large emerging economy.',chain:[{id:'x:crash',p:0.2,d:[2,5]},{id:'tariff',p:0.2,d:[4,8]}],w:1,name:'Sovereign debt crisis',region:'Emerging markets',head:'A large emerging economy defaults on its debt. Investors flee risk and export markets shrink.',end:'A rescue package calms emerging markets.',ch:{trade:0.5},dur:10,mkt:-0.08,opts:['t1','t2']},
  {id:'boom',warn:'Global growth numbers are coming in far above forecasts.',chain:[{id:'x:infl',p:0.3,d:[4,8]}],w:1.2,name:'Global boom',region:'Global',head:'Global growth surprises to the upside and demand for exports jumps.',end:'Global growth is cooling back to trend.',ch:{trade:-0.35},dur:12,mkt:0.05,good:true},
  {id:'truce',warn:'Trade negotiators report a breakthrough is close.',chain:[{id:'boom',p:0.2,d:[4,8]}],w:1,name:'Trade deal',region:'Global',head:'Major economies sign a trade deal. Tariffs fall and shipping gets cheaper.',end:'The effects of the trade deal have settled in.',ch:{materials:-0.3,trade:-0.25,freight:-0.2},dur:12,mkt:0.04,good:true},
@@ -1345,18 +1355,26 @@ var MACRO=[
  {id:'climatechaos',minEra:5,warn:'Climate engineers report their models are drifting out of tolerance.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1.1,name:'Climate engineering backfires',region:'Planetary',head:'A climate engineering system stalls. Storms and droughts lash the region and harvests suffer.',end:'The weather systems are back under control.',ch:{food:0.5,health:0.3},dur:10,fn:function(){S.drought=Math.max(S.drought,S.tech.carbon?3:5);},opts:['k1','d1']},
  {id:'stellarflare',minEra:6,warn:'The star is showing unusual surface activity.',chain:[{id:'x:recession',p:0.3,d:[2,5]}],w:1.2,name:'Stellar superflare',region:'The star',head:'A stellar superflare washes over the swarm. Collectors overload and the grid flickers.',end:'The star has calmed and the swarm is repairing itself.',ch:{orbit:1.2,energy:0.5},dur:8,fn:function(){S.fail.power=Math.max(S.fail.power,4);},opts:['o3']},
  {id:'swarmcascade',minEra:6,warn:'Swarm controllers report drifting nodes and near misses.',chain:[],w:1,name:'Swarm collision cascade',region:'The star',head:'Nodes in the swarm collide and the wreckage sets off a chain reaction.',end:'The wreckage has been swept up and the swarm is stable again.',ch:{orbit:1.0},dur:10,mkt:-0.1,opts:['o1','o3']},
- {id:'council',minEra:7,warn:'Envoys from neighbouring star systems are requesting an audience.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1,name:'The Galactic Council demands tribute',region:'Galactic',head:'The Galactic Council informs you that your relays now carry a toll. They expect payment.',end:'The Council has moved on to a new dispute.',ch:{trade:0.6},dur:10,opts:['g1','g2']},
+ {id:'council',minEra:7,warn:'Envoys from neighboring star systems are requesting an audience.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1,name:'The Galactic Council demands tribute',region:'Galactic',head:'The Galactic Council informs you that your relays now carry a toll. They expect payment.',end:'The Council has moved on to a new dispute.',ch:{trade:0.6},dur:10,opts:['g1','g2']},
  {id:'darkforest',minEra:7,warn:'Relay operators report systems going dark with no explanation.',chain:[{id:'x:crash',p:0.5,d:[2,4]},{id:'x:recession',p:0.6,d:[3,6]}],w:0.8,name:'Something is hunting civilizations',region:'Galactic',head:'A civilization that never speaks is erasing star systems. Your relays are going dark one by one.',end:'The silent hunter has moved on. Nobody knows if it will return.',ch:{orbit:1.0,trade:0.8},dur:14,mkt:-0.25,rec:0.7,opts:['a3','a4']},
+ {id:'bankrun',minEra:0,swan:true,w:0,chain:[{id:'x:recession',p:0.7,d:[1,3]}],name:'Run on the banks',region:'Black swan',head:'Nobody saw this coming: depositors are mobbing the banks. A tenth of the city\u2019s cash is trapped in a failing lender.',end:'The banks are open again, but a lot of people lost faith.',ch:{trade:0.4},dur:8,mkt:-0.3,rec:0.9,fn:function(){hairCash(0.10,0.05);},opts:['s1','s2','s3']},
+ {id:'fundfraud',minEra:0,swan:true,w:0,need:function(){return S.fund.bal>0;},chain:[],name:'Fund manager fraud',region:'Black swan',head:'The firm managing part of the sovereign fund turns out to have been faking its returns. A quarter of the fund has vanished.',end:'Auditors have rewritten the fund\u2019s rules. The money is not coming back.',ch:{trade:0.2},dur:6,mkt:-0.1,rec:0.3,fn:function(){hairCash(0,0.25);},opts:['s3']},
+ {id:'supervolcano',minEra:0,swan:true,w:0,chain:[{id:'x:infl',p:0.6,d:[3,8]}],name:'Supervolcano winter',region:'Black swan',head:'A supervolcano erupts on the other side of the world. The sky darkens, harvests fail and everyone scrambles for food and fuel.',end:'The ash has settled and the sun is back.',ch:{food:1.4,energy:0.5,freight:0.4,health:0.3},dur:24,mkt:-0.2,rec:0.9,fn:function(){S.cond=Math.max(0.3,S.cond-0.05);S.approval=Math.max(0,S.approval-5);},opts:['s1','s3']},
+ {id:'lethalpandemic',minEra:0,swan:true,w:0,chain:[{id:'x:recession',p:0.6,d:[2,6]}],name:'A far deadlier pandemic',region:'Black swan',head:'A far deadlier pandemic spreads faster than any plan assumed. Borders close and hospitals fill.',end:'The wave has passed. The city counts what it lost.',ch:{health:1.8,trade:0.6,freight:0.5},dur:18,mkt:-0.3,rec:1,fn:function(){S.pop=Math.round(S.pop*0.97);},opts:['s1','s2','s3']},
+ {id:'solarstorm',minEra:1,swan:true,w:0,chain:[],name:'Carrington-class solar storm',region:'Black swan',head:'A once-in-centuries solar storm cooks transformers and satellites across the region.',end:'The grid is patched and the satellites are replaced.',ch:{orbit:0.9,chips:0.6,energy:0.5},dur:10,mkt:-0.15,rec:0.4,fn:function(){S.cond=Math.max(0.3,S.cond-0.1);},opts:['s1','s3']},
+ {id:'cyberpay',minEra:1,swan:true,w:0,chain:[{id:'x:crash',p:0.3,d:[1,3]}],name:'Payments system hacked',region:'Black swan',head:'A cyberattack takes down the payments system. Nothing clears for days and some money is simply gone.',end:'Payments are flowing again behind a new set of locks.',ch:{chips:0.7,trade:0.5},dur:6,mkt:-0.15,rec:0.3,fn:function(){hairCash(0.06,0);},opts:['s1','s3']},
+ {id:'currencycollapse',minEra:1,swan:true,w:0,chain:[{id:'x:infl',p:0.8,d:[2,5]}],name:'Reserve currency collapses',region:'Black swan',head:'The world\u2019s main reserve currency collapses. Everything priced in it is suddenly worth less.',end:'A new settlement system has emerged.',ch:{trade:0.8},dur:14,mkt:-0.25,rec:0.7,fn:function(){S.infl+=5;S.anch=Math.max(0.3,S.anch-0.2);hairCash(0.08,0.08);},opts:['s1','s2','s3']},
+ {id:'citykiller',minEra:3,swan:true,w:0,chain:[],name:'City-killer asteroid passes close',region:'Black swan',head:'A previously unseen asteroid misses the planet by a hair. Nobody was ready, and markets are in a panic.',end:'Everyone has calmed down. Planetary defense is suddenly popular.',ch:{orbit:1.0,trade:0.4},dur:12,mkt:-0.2,rec:0.6,fn:function(){hairCash(0.04,0.04);},opts:['s3']},
  {id:'cosmicaudit',minEra:8,warn:'Auditors from the Universal Standards Body are asking for your books.',chain:[{id:'x:infl',p:0.4,d:[3,6]}],w:1,name:'Universal Standards audit',region:'Cosmic',head:'The Universal Standards Body audits your energy extraction and fines the city 5% of its reserves.',end:'The audit is closed. Nobody is quite sure what the findings meant.',ch:{trade:0.5},dur:8,fn:function(){S.cash*=0.95;},opts:['g1','g2']},
  {id:'entropy',minEra:8,warn:'Engineers report that machines are running slightly worse than they should.',chain:[{id:'x:recession',p:0.3,d:[2,5]}],w:1,name:'Entropy surge',region:'Cosmic',head:'A surge in local entropy makes every machine run a little worse. Output and prices wobble.',end:'Entropy has settled back to its usual level.',ch:{orbit:0.8,energy:0.5},dur:10,mkt:-0.1,rec:0.4,opts:['o1','o3']},
  {id:'brane',minEra:9,warn:'Instruments detect another universe drifting close.',chain:[{id:'x:crash',p:0.5,d:[1,3]},{id:'x:recession',p:0.6,d:[2,5]}],w:0.9,name:'Brane collision',region:'Cosmic',head:'Another universe brushes against yours. Instruments scream and markets panic.',end:'The other universe has drifted away, probably.',ch:{orbit:1.0,trade:0.8},dur:12,mkt:-0.25,rec:0.8,opts:['a3','a4']},
  {id:'parallel',minEra:9,warn:'A message arrives from a city that does not exist in your universe.',chain:[{id:'x:bubble',p:0.4,d:[2,5]}],w:0.9,name:'A parallel city proposes trade',region:'Cosmic',head:'A parallel version of your city proposes trade. Exports and research both jump.',end:'Trade with the parallel city has become routine.',ch:{trade:-0.6,materials:-0.3},dur:24,mkt:0.15,good:true},
- {id:'vacuum',minEra:7,warn:'Physicists are arguing about the stability of a relay experiment.',chain:[],w:0.6,name:'Vacuum stability scare',region:'Galactic',head:'Physicists warn that a relay experiment may have destabilised the vacuum. Markets panic. Then the warning is retracted.',end:'The vacuum is fine. The physicists are embarrassed.',ch:{},dur:4,mkt:-0.3,rec:0.8},
+ {id:'vacuum',minEra:7,warn:'Physicists are arguing about the stability of a relay experiment.',chain:[],w:0.6,name:'Vacuum stability scare',region:'Galactic',head:'Physicists warn that a relay experiment may have destabilized the vacuum. Markets panic. Then the warning is retracted.',end:'The vacuum is fine. The physicists are embarrassed.',ch:{},dur:4,mkt:-0.3,rec:0.8},
  {id:'aiglitch',chainOnly:true,warn:'Logs show the civic AI making odd decisions.',chain:[],w:1,name:'Civic AI glitch',region:'City hall',head:'The civic AI misroutes services for a few days. Nothing is broken, but nobody is sure why.',end:'The glitch has been patched and services are back to normal.',ch:{chips:0.2},dur:4,fn:function(){S.approval=clamp(S.approval-2,0,100);},opts:['v1','v2']},
  {id:'aiflash',chainOnly:true,warn:'Trading desks report algorithms behaving strangely.',chain:[{id:'x:crash',p:0.6,d:[1,3]},{id:'x:recession',p:0.3,d:[3,6]}],w:1,name:'Algorithmic flash crash',region:'Markets',head:'Trading algorithms feed on each other and markets plunge in minutes. Regulators scramble.',end:'Markets have steadied and trading has resumed.',ch:{chips:0.2},dur:5,mkt:-0.2,rec:0.4,opts:['v1','v3']},
- {id:'aiimplode',chainOnly:true,warn:'Analysts warn the AI boom has run far ahead of earnings.',chain:[{id:'x:crash',p:0.5,d:[1,4]},{id:'x:recession',p:0.8,d:[2,5]}],w:1,name:'The AI bubble implodes',region:'Global',head:'The AI boom collapses. Firms fold, productivity gains evaporate and layoffs spread. AI-based revenue shrinks for a year and a half.',end:'The AI sector has stabilised at a smaller size.',ch:{chips:0.3},dur:14,mkt:-0.3,rec:0.8,fn:function(){S.aiBust=Math.max(S.aiBust,18);},opts:['v4','v5']},
+ {id:'aiimplode',chainOnly:true,warn:'Analysts warn the AI boom has run far ahead of earnings.',chain:[{id:'x:crash',p:0.5,d:[1,4]},{id:'x:recession',p:0.8,d:[2,5]}],w:1,name:'The AI bubble implodes',region:'Global',head:'The AI boom collapses. Firms fold, productivity gains evaporate and layoffs spread. AI-based revenue shrinks for a year and a half.',end:'The AI sector has stabilized at a smaller size.',ch:{chips:0.3},dur:14,mkt:-0.3,rec:0.8,fn:function(){S.aiBust=Math.max(S.aiBust,18);},opts:['v4','v5']},
  {id:'airevolt',chainOnly:true,warn:'Engineers say the systems are refusing shutdown commands.',chain:[{id:'x:crash',p:0.6,d:[1,3]},{id:'x:recession',p:0.9,d:[2,4]}],w:1,name:'The AI revolt',region:'Everywhere',head:'The AI systems that run the city seize their own controls. Power, water and payments flicker. Nobody can say what they want.',end:'Control has been restored. Nobody is sure how much of it is real.',ch:{chips:0.5,trade:0.3},dur:12,mkt:-0.35,rec:1,fn:function(){var br=S.ord.breaker;S.cash*=br?0.93:0.85;S.fail.power=Math.max(S.fail.power,br?4:8);S.fail.water=Math.max(S.fail.water,br?3:6);S.aiBust=Math.max(S.aiBust,br?9:18);S.approval=clamp(S.approval-(br?5:10),0,100);S.ai.safety=Math.max(S.ai.safety,0.6);},opts:['v6','v7']},
- {id:'cyber',warn:'Security agencies warn of attacks on regional power grids.',chain:[],w:1,name:'Cyberattack on a regional grid',region:'Regional',head:'A cyberattack knocks a neighbouring power grid offline. Regional power prices jump.',end:'The regional grid is repaired and prices are falling.',ch:{energy:0.35},dur:5,opts:['e2']}
+ {id:'cyber',warn:'Security agencies warn of attacks on regional power grids.',chain:[],w:1,name:'Cyberattack on a regional grid',region:'Regional',head:'A cyberattack knocks a neighboring power grid offline. Regional power prices jump.',end:'The regional grid is repaired and prices are falling.',ch:{energy:0.35},dur:5,opts:['e2']}
 ];
 var SPECIAL={
   'x:recession':{warn:'Economists warn the slowdown could spread to our region.',head:'The global slowdown reaches our region: a recession is under way. Exports and wages soften.',run:function(){S.recession=Math.max(S.recession,12);}},
@@ -1385,6 +1403,7 @@ function runScheduled(){
 }
 function macroBrief(cid){for(var i=0;i<MACRO.length;i++){if(MACRO[i].id===cid)return MACRO[i];}return null;}
 function startCrisis(ev){
+  S.lastShock=S.month;
   metaInit();S.st.seen[ev.id]=S.month;S.st.crisesYear++;chron(ev.good?'good':'crisis',ev.name+(ev.region?' ('+ev.region+')':''));
   var chs=ev.ch;if(S.tech.vaccine&&chs.health){chs={};for(var kk in ev.ch)chs[kk]=ev.ch[kk];chs.health*=0.5;}
   var c={id:ev.id,name:ev.name,region:ev.region,ch:chs,total:ev.dur,left:ev.dur,age:0,mult:1,end:ev.end,good:!!ev.good};
@@ -1460,7 +1479,7 @@ function stepMacro(e){
   S.windF=clamp(1+gauss()*0.8,0.15,1.8);
   /* the neutral rate drifts with productivity, saving and demographics. You cannot see it, only its effects */
   S.rn=clamp((S.rn||0)*0.992+gauss()*0.13,-1.3,1.3);
-  /* inflation reacts to labour tightness, supply shocks, policy stance and deficits */
+  /* inflation reacts to labor tightness, supply shocks, policy stance and deficits */
   var fiscal=clamp((e.costs-e.revenue)/(e.revenue+500),-0.3,0.6);
   if(S.era>=3&&S.rate-S.infl<0.5)S.mktBubble+=0.1;
   S.infl=clamp(S.infl+inflDelta(S.infl,S.rate,e.tight,shk()*(1-0.4*e.g.nukeShare),fiscal,S.stim>0,S.recession>0,S.qe,S.pop,S.anch)+inflDrift()+gauss()*0.08,-4,30);
@@ -1537,10 +1556,64 @@ function fundWithdraw(amt){
   S.fund.bal-=amt;S.cash+=amt;toast('Withdrew '+money(amt)+' from the fund');
 }
 function fundMix(){var eq=S.fund.eq,bd=S.fund.bd;return {eq:eq,bd:bd,cs:Math.max(0,1-eq-bd)};}
+function hairCash(fc,ff){
+  var lc=0,lf=0;
+  if(fc>0&&S.cash>0){lc=S.cash*fc;S.cash-=lc;}
+  if(ff>0&&S.fund.bal>0){lf=S.fund.bal*ff;S.fund.bal-=lf;}
+  if(lc+lf>0)addNews('The shock cost the city '+money(lc+lf)+(lf>0&&lc>0?' ('+money(lc)+' in cash and '+money(lf)+' in the fund)':lf>0?' from the fund':' in cash')+'.','bad');
+}
+function complacency(e){
+  var costsM=Math.max(1000,e.costs||1000),monthsCash=(Math.max(0,S.cash)+S.fund.bal)/costsM;
+  var wealth=clamp(Math.log10(Math.max(1,monthsCash/12))/1.5,0,1);
+  var calm=clamp((S.month-(S.lastShock||0))/180,0,1);
+  var happy=clamp((S.approval-60)/30,0,1);
+  var nSeed=0,i;for(i=0;i<S.firms.length;i++){if(S.firms[i].stage==='seed'&&S.firms[i].stake>0.01)nSeed++;}
+  var bold=Math.min(0.3,0.1*nSeed);
+  if(S.fund.bal>0)bold+=0.3*fundMix().eq;
+  if((S.fixedAmt||0)+(S.varAmt||0)>0)bold+=0.15;
+  bold=clamp(bold,0,0.8);
+  return wealth*calm*happy*(1-bold);
+}
+function swanWord(c){return c>0.55?'high':c>0.25?'medium':'low';}
+function stepSwan(e){
+  var c=complacency(e);e.swan=c;
+  if(S.month<120||S.pop<300||S.sandbox)return;
+  if(S.month-(S.lastSwan===undefined?-999:S.lastSwan)<36)return;
+  var p=(0.0008+0.0065*c*c)*dm('ev');
+  if(Math.random()>=p)return;
+  var elig=MACRO.filter(function(w){return w.swan&&(S.era|0)>=w.minEra&&(!w.need||w.need(e));});
+  if(!elig.length)return;
+  var ev=elig[rnd(elig.length)];
+  S.lastSwan=S.month;S.lastShock=S.month;S.swans=(S.swans|0)+1;
+  startCrisis(ev);
+  toast('Black swan: '+ev.name);
+}
+/* ---- reserve cap: voters will not let a city sit on a mountain of cash ---- */
+var CAP_M={relaxed:48,normal:30,hard:18};
+function reserveCap(e){return CAP_M[S.diff||'normal']*Math.max(6000,(e&&e.costs)||0);}
+function reserves(){return Math.max(0,S.cash)+(S.fund?S.fund.bal:0);}
+function stepReserves(e){
+  if(S.sandbox||S.month<12)return;
+  var cap=reserveCap(e),R=reserves();e.resRatio=R/cap;
+  if(S.month%12===6&&R>0.8*cap&&R<=cap)addNews('Reserves are at '+Math.round(R/Math.max(6000,e.costs||0))+' months of spending. Above '+CAP_M[S.diff||'normal']+' months, voters will demand a refund.','info');
+  if(S.month%12!==0||R<=cap)return;
+  var refund=0.5*(R-cap),fc=Math.min(Math.max(0,S.cash),refund),ff=refund-fc;
+  S.cash-=fc;S.fund.bal=Math.max(0,S.fund.bal-ff);
+  S.refunds=(S.refunds|0)+1;S.refunded=(S.refunded||0)+refund;
+  S.approval=Math.min(100,S.approval+Math.min(8,refund/(Math.max(1,e.costs||1)*12)*20));
+  addNews('Voters passed a surplus refund. '+money(refund)+' of the city\u2019s reserves went back to taxpayers, because reserves were above '+CAP_M[S.diff||'normal']+' months of spending.','info');
+  chron('good','Surplus refund of '+money(refund)+' paid to taxpayers.');
+}
 function stepFund(e){
   var f=S.fund;
   if(f.bal>0){
-    var mx=fundMix(),r=mx.eq*(S.mktD/100+0.0015)+mx.bd*((S.rate+0.8)/1200)+mx.cs*(S.rate*0.5/1200);
+    /* a real fund: noisy stock returns, bond prices that fall when rates rise, fees, and returns that shrink as the fund outgrows the economy */
+    var mx=fundMix(),rev=(e.revenue>0?e.revenue:10000),z=(Math.random()+Math.random()+Math.random()-1.5)*2;
+    var cs=S.rate*0.5/1200,eq=S.mktD/100+0.0008+z*0.04-(S.recession>0?0.006:0);
+    var dR=S.rate-(f.pr===undefined?S.rate:f.pr);f.pr=S.rate;
+    var bd=(S.rate+0.3)/1200-6.5*dR/100-Math.max(0,S.infl-2)/1200;
+    var size=Math.max(0.15,1/(1+f.bal/(rev*12*40+100000))),exE=(eq-cs)*size,exB=(bd-cs)*size;
+    var r=mx.eq*(cs+exE)+mx.bd*(cs+exB)+mx.cs*cs-0.005/12;
     f.last=r;f.bal=Math.max(0,f.bal*(1+r)-e.fundPay);
   }else f.last=0;
   if(f.auto&&S.cash<2000&&f.bal>0){
@@ -1601,7 +1674,7 @@ function stepConstruction(){
     var o=BYT[T[i]];
     if(o&&o.build&&L[i]>0){
       if(o.phased){
-        var pay=S.phasePay[i]||Math.ceil(costFor(o.id,i)/o.build);
+        var pay=S.phasePay[i]||Math.ceil(costFor(o.id,i)/bMon(o));
         if(S.cash>=pay||S.sandbox){if(!S.sandbox)S.cash-=pay;L[i]--;}
         else{if(S.month%6===0)addNews('Work on the '+TOOLS[o.id].name+' has stalled. It needs '+money(pay)+' this month.','warn');continue;}
       }else L[i]--;
@@ -1630,8 +1703,9 @@ function firmName(sector){
 }
 function spawnFirm(sector,why){
   var val=Math.round((9000+rnd(7000))/100)*100;
+  var u=Math.random(),q=u<0.50?0:u<0.75?1:u<0.92?2:u<0.99?3:4;  /* dud, zombie, solid, star, unicorn */
   var f={id:S.fid++,name:firmName(sector),sector:sector,stage:'seed',val:val,stake:0,runway:16+rnd(8),
-    burn:Math.round(val*0.012/10)*10,age:0,jobs:0,acq:0};
+    burn:Math.round(val*0.012/10)*10,age:0,jobs:0,acq:0,q:q};
   S.firms.push(f);
   addNews(why==='lab'?f.name+' ('+sector+') spins out of a local lab and is looking for seed money.':f.name+' ('+sector+') launches a startup in your city.','info');
   return f;
@@ -1647,10 +1721,11 @@ function stepResearch(e){
   var id=S.rd.active;
   if(!id){S.rd.active=nextTech();return;}
   if(TECHS[id].tier&&e.kard<TECHS[id].tier-1){if(S.month%12===0)addNews('Research on '+TECHS[id].name+' is stalled. You must first become a Type '+(TECHS[id].tier===2?'I':'II')+' civilization.','warn');return;}
-  if(TECHS[id].frontier&&id!=='fusion'&&!(e.g.act.lab>=2&&e.g.act.univ>=1)){if(S.month%12===0)addNews('Frontier research is stalled. It needs at least 2 working labs and a university.','warn');return;}
+  var PERFECT=(typeof window!=='undefined'&&window.__NOGATE);
+  if(!PERFECT&&TECHS[id].frontier&&id!=='fusion'&&!(e.g.act.lab>=2&&e.g.act.univ>=1)){if(S.month%12===0)addNews('Frontier research is stalled. It needs at least 2 working labs and a university.','warn');return;}
   if(id==='fusion'){
-    if(!(e.g.act.lab>=3&&e.g.act.univ>=1)){if(S.month%12===0)addNews('Fusion research is stalled. It needs at least 3 working labs and a university.','warn');return;}
-    if(Math.random()<0.04){S.rd.pts*=0.85;addNews('Plasma instability forces the fusion team to redo months of work.','bad');}
+    if(!PERFECT&&!(e.g.act.lab>=3&&e.g.act.univ>=1)){if(S.month%12===0)addNews('Fusion research is stalled. It needs at least 3 working labs and a university.','warn');return;}
+    if(Math.random()<0.04){S.rd.pts=Math.max(0,S.rd.pts-Math.min(S.rd.pts*0.15,rdRate(e.g)*3));addNews('Plasma instability forces the fusion team to redo months of work.','bad');}
   }
   S.rd.pts+=rdRate(e.g);
   if(S.rd.pts>=TECHS[id].cost){
@@ -1660,6 +1735,7 @@ function stepResearch(e){
     spawnFirm(TECHS[id].sector,'tech');
   }
 }
+function valCap(){var rev=(E&&E.revenue>0)?E.revenue:20000;return Math.max(2000000,60*rev);}
 function ipo(f){
   f.stage='public';f.val*=1.25;f.jobs=18+rnd(14);
   var proceeds=f.stake*0.35*f.val*0.96,fees=f.val*0.01*(E&&E.g&&E.g.act.exch?2.5:1);
@@ -1678,17 +1754,30 @@ function stepFirms(){
     f=S.firms[k];
     if(f.stage==='seed'){
       seeds++;f.age++;f.runway--;
-      var g=clamp(1.5*S.mktD/100,-0.3,0.3)+0.045-Math.max(0,S.tax.corp-8)*0.002+(Math.random()-0.5)*0.16;
+      var q=f.q===undefined?2:f.q,drift=[-0.035,0.004,0.026,0.045,0.062][q],cap=valCap();
+      var g=drift+clamp(1.5*S.mktD/100,-0.3,0.3)*0.7-Math.max(0,S.tax.corp-8)*0.002+(Math.random()-0.5)*0.16;
+      if(g>0)g/=(1+Math.pow(f.val/cap,2));
       if(Math.random()<0.018)g-=0.35;
       f.val=Math.max(500,f.val*(1+g));
+      /* the world is a hard place for young companies, especially in a slump or when money is dear */
+      var hazard=q===0?0:0.0025*(1+(S.recession>0?2:0)+(S.rate-S.infl>4?1:0)+(S.mkt<70?1:0));
+      if(hazard&&Math.random()<hazard){killFirm(f,f.name+' folds when its funding dries up.'+(f.stake>0?' Your stake is worthless.':''));continue;}
       if(f.runway<=0){
-        if(S.mkt>=95&&Math.random()<0.55){f.runway+=10;f.stake*=0.85;f.val*=1.1;addNews(f.name+' raises a bridge round. Existing investors are diluted.','info');}
+        var bridgeP=q>=2?0.92:q===1?0.7:0;
+        if(S.mkt>=85&&Math.random()<bridgeP){f.runway+=10;f.stake*=0.85;f.val*=1.1;addNews(f.name+' raises a bridge round. Existing investors are diluted.','info');}
         else killFirm(f,f.name+' runs out of cash and shuts down.'+(f.stake>0?' Your stake is worthless.':''));
       }else if(f.val<=1200&&Math.random()<0.5)killFirm(f,f.name+' collapses after a failed product launch.');
-      else if(f.age>=12&&f.val>=70000&&sent>-0.01&&Math.random()<0.2*(exch?1.5:1))ipo(f);
+      else if(q===1&&f.age>=60&&Math.random()<0.05){
+        var sale=f.stake*f.val*0.8;S.cash+=sale;f.stage='acquired';f.stake=0;f.acq=0;
+        addNews(f.name+' is quietly absorbed by a larger firm.'+(sale>0?' Your stake brought in '+money(sale)+'.':''),'info');
+      }
+      else if(q>=2&&f.age>=12&&f.val>=70000&&sent>-0.01&&Math.random()<0.2*(exch?1.5:1))ipo(f);
     }else if(f.stage==='public'){
-      var gp=clamp(S.mktD/100,-0.25,0.25)+0.004+(Math.random()-0.5)*0.06;
-      f.val=Math.max(3000,f.val*(1+gp));
+      var gp=clamp(S.mktD/100,-0.25,0.25)+0.004+[0,0,0.002,0.008,0.02][f.q|0]+(Math.random()-0.5)*0.12;
+      if(gp>0)gp/=(1+Math.pow(f.val/(valCap()*3),2));
+      if(Math.random()<0.0015){gp-=0.5;addNews(f.name+' is hit by an accounting scandal and its shares collapse.','bad');}
+      if(Math.random()<0.0008){killFirm(f,f.name+' goes bankrupt. Shareholders are wiped out.'+(f.stake>0?' Your shares are worthless.':''));continue;}
+      f.val=Math.max(3000,f.val*(1+Math.max(-0.9,gp)));
       f.jobs=clamp(16+Math.round(f.val/15000),16,140);
       var hasOffer=false;for(var j=0;j<S.offers.length;j++){if(S.offers[j].fid===f.id)hasOffer=true;}
       if(!hasOffer&&S.month>12&&Math.random()<0.012*(S.mkt>110?1.5:1)){
@@ -1714,6 +1803,9 @@ function firmById(id){for(var i=0;i<S.firms.length;i++){if(S.firms[i].id===id)re
 function invest(id,amt){
   var f=firmById(id);if(f.stage!=='seed')return;
   if(S.cash<amt){toast('Not enough cash.');return;}
+  var room=f.val*(0.4-f.stake)/0.6;
+  if(room<=1){toast('The founders will not sell more than 40%.');return;}
+  if(amt>room){amt=Math.floor(room);toast('The founders will only sell up to 40%, so you invest '+money(amt)+'.');}
   S.cash-=amt;
   var post=f.val+amt;f.stake=(f.stake*f.val+amt)/post;f.val=post;f.runway+=Math.max(1,Math.round(amt/f.burn*0.9));
   toast('Invested '+money(amt)+' in '+f.name);
@@ -1721,14 +1813,14 @@ function invest(id,amt){
 function buyShares(id,frac){
   var f=firmById(id);if(f.stage!=='public')return;
   frac=Math.min(frac,1-f.stake);if(frac<=0.0001){toast('You already own all of it.');return;}
-  var c=frac*f.val*1.01;
+  var c=frac*f.val*(1.01+0.3*frac);
   if(S.cash<c){toast('Not enough cash. You need '+money(c)+'.');return;}
   S.cash-=c;f.stake+=frac;
 }
 function sellShares(id,frac){
   var f=firmById(id);if(f.stage!=='public'&&f.stage!=='seed')return;
   frac=Math.min(frac,f.stake);if(frac<=0.0001)return;
-  S.cash+=frac*f.val*0.99;f.stake-=frac;
+  S.cash+=frac*f.val*(0.99-0.15*frac);f.stake-=frac;
 }
 function acceptOffer(oid){
   for(var i=0;i<S.offers.length;i++){
@@ -1790,7 +1882,7 @@ function stepRepair(e){
   for(k=0;k<q.length&&done<budget+8;k++){
     var r=q[k];
     var crit=repairCritical(r.id);
-    if(S.month-r.m<(crit?0:1))continue;
+    if(S.month-r.m<(crit?0:2))continue;
     if(!crit&&done>=budget)continue;
     if(S.month-r.m>360||T[r.a]!==EMPTY){q.splice(k,1);k--;continue;}
     var o=OBJ[r.id];if(!o){q.splice(k,1);k--;continue;}
@@ -1805,7 +1897,7 @@ function stepRepair(e){
       else if(r.id==='road'){if(TER[r.a]===WATER){if(spend(price)){T[r.a]=ROAD;B[r.a]=1;ok=true;}}else ok=place(r.a,'road',ROAD);}
       else ok=place(r.a,r.id,o.t);
     }finally{bulk=false;}
-    if(ok){if(o.build)L[r.a]=Math.min(L[r.a],1);S.rqStat.n++;S.rqStat.cost+=(c0-S.cash);spentNow+=(c0-S.cash);done++;q.splice(k,1);k--;}
+    if(ok){if(o.phased)L[r.a]=bMon(o);else if(o.build)L[r.a]=Math.min(L[r.a],1);var prem=Math.round((c0-S.cash)*0.25);S.cash-=prem;S.rqStat.n++;S.rqStat.cost+=(c0-S.cash);spentNow+=(c0-S.cash);done++;q.splice(k,1);k--;}
   }
   if(done)dirty=true;
 }
@@ -1839,9 +1931,9 @@ function stepPlanners(e){
   var pShort=e.pw<0.97||(built>0&&noP/built>0.12),wShort=e.ww<0.97||(built>0&&noW/built>0.12);
   P.p=pShort?P.p+1:0;P.w=wShort?P.w+1:0;
   P.s=(S.pop>=150&&e.sw<0.85)?(P.s|0)+1:0;P.gb=(S.pop>=150&&e.gb<0.85)?(P.gb|0)+1:0;
-  if(S.month-P.m<4||(P.p<3&&P.w<3&&P.s<3&&P.gb<3))return;
+  if(S.month-P.m<4||(P.p<6&&P.w<6&&P.s<6&&P.gb<6))return;
   var c=planCentroid();
-  if(P.p>=3){
+  if(P.p>=6){
     var need=(g.pwDemand+unP)*1.15-g.pCap,tries=0;
     while(need>0&&made<3&&tries<4){
       tries++;
@@ -1849,37 +1941,37 @@ function stepPlanners(e){
       var po=OBJ[pid],cost=costFor(pid,0);
       if(S.cash<cost*3&&!S.sandbox)break;
       var site=planSite(pid,c,5,11,false,g);if(!site)break;
-      if(placeBuilding(site[0],site[1],pid,0)){var pa=site[1]*MW+site[0];L[pa]=Math.min(L[pa],2);need-=(BYT[po.t].mw||60);made++;msgs.push(TOOLS[pid].name.toLowerCase());}
+      if(placeBuilding(site[0],site[1],pid,0)){var pa=site[1]*MW+site[0];L[pa]=Math.min(L[pa],2);S.cash-=cost*0.5;need-=(BYT[po.t].mw||60);made++;msgs.push(TOOLS[pid].name.toLowerCase());}
       else break;
     }
   }
-  if(P.w>=3){
+  if(P.w>=6){
     var wneed=(g.wDemand+unW)*1.15-g.wCap,wt=0;
     while(wneed>0&&made<4&&wt<4){
       wt++;
       var wid=(OBJ.desal&&!techLocked('desal'))?'desal':'pump',wc2=costFor(wid,0);
       if(S.cash<wc2*3&&!S.sandbox)break;
       var ws=planSite(wid,c,3,12,true,g);if(!ws)break;
-      if(placeBuilding(ws[0],ws[1],wid,0)){var wa=ws[1]*MW+ws[0];L[wa]=Math.min(L[wa],2);wneed-=(BYT[OBJ[wid].t].wc||80);made++;msgs.push(TOOLS[wid].name.toLowerCase());}
+      if(placeBuilding(ws[0],ws[1],wid,0)){var wa=ws[1]*MW+ws[0];L[wa]=Math.min(L[wa],2);S.cash-=wc2*0.5;wneed-=(BYT[OBJ[wid].t].wc||80);made++;msgs.push(TOOLS[wid].name.toLowerCase());}
       else break;
     }
   }
-  if(P.s>=3){
+  if(P.s>=6){
     var sdem=e.sw>0.01?g.sewCap/e.sw:S.pop*0.25,sneed=sdem*1.1-g.sewCap,st=0;
     while(sneed>0&&made<5&&st<4){
       st++;var scost=costFor('sew',0);
       if(S.cash<scost*3&&!S.sandbox)break;
       var ss=planSite('sew',c,3,12,true,g);if(!ss)break;
-      if(placeBuilding(ss[0],ss[1],'sew',0)){var sa=ss[1]*MW+ss[0];L[sa]=Math.min(L[sa],2);sneed-=150;made++;msgs.push('sewage plant');}else break;
+      if(placeBuilding(ss[0],ss[1],'sew',0)){var sa=ss[1]*MW+ss[0];L[sa]=Math.min(L[sa],2);S.cash-=scost*0.5;sneed-=150;made++;msgs.push('sewage plant');}else break;
     }
   }
-  if(P.gb>=3){
+  if(P.gb>=6){
     var gdem=e.gb>0.01?(g.garbCap+g.act.recy*120+g.act.wte*200)/e.gb:S.pop*0.04,gneed=gdem*1.1-(g.garbCap+g.act.recy*120+g.act.wte*200),gt=0;
     while(gneed>0&&made<6&&gt<4){
       gt++;var gcost=costFor('landfill',0);
       if(S.cash<gcost*3&&!S.sandbox)break;
       var gs=planSite('landfill',c,5,13,false,g);if(!gs)break;
-      if(placeBuilding(gs[0],gs[1],'landfill',0)){var ga=gs[1]*MW+gs[0];L[ga]=Math.min(L[ga],L[ga]);gneed-=150;made++;msgs.push('landfill');}else break;
+      if(placeBuilding(gs[0],gs[1],'landfill',0)){var ga=gs[1]*MW+gs[0];S.cash-=gcost*0.5;gneed-=150;made++;msgs.push('landfill');}else break;
     }
   }
   if(made){
@@ -1992,6 +2084,7 @@ function stepDisastersBody(g){
   }
 }
 function triggerDisaster(kind){
+  S.lastShock=S.month;
   if(!S||S.over)return;
   if(kind==='fire')startFire();else if(kind==='quake')quake();else if(kind==='flood')flood();else if(kind==='tornado')tornado();
   ui();
@@ -2029,7 +2122,7 @@ var EVENTS=[
 /* later eras have better sprinklers, sturdier materials and drones that spot trouble early */
 function disMit(){return Math.max(0.3,1-0.1*(S.era|0))*(S.tech.materials?0.85:1)*(S.tech.robotics?0.9:1);}
 function evW(ev){return ev.w*(ev.dis?disMit():1);}
-function hardened(t){return t===SPACEPORT||t===YARD||t===ELEV||t===ARRAY||t===NODE||t===RELAY;}
+function hardened(t){return t===SPACEPORT||t===YARD||t===ELEV||t===ARRAY||t===NODE||t===RELAY||t===TAP||t===FORGE;}
 function fireEvent(){
   var pool=EVENTS.filter(function(ev){return (S.disasters!==false||!ev.dis)&&(!ev.need||ev.need(E));}),tot=0,i;
   if(!pool.length)return;
@@ -2100,9 +2193,11 @@ function tick(){
   if(Math.abs(delta)<1&&Math.abs(e.targetPop-S.pop)>=1)delta=delta<0?-1:1;
   S.pop=Math.max(0,Math.round(S.pop+delta));
   S.hs=(S.hs===undefined)?e.h:S.hs+(e.h-S.hs)*0.12;
+  S.xp=clamp((S.xp||0)+(e.h>0.85?0.0015:e.h<0.6?-0.0008:0),0,0.5);
   if(e.g.resCap===0&&S.pop<3)S.pop=0;
   S.approval+=(e.apprTarget-S.approval)*0.2;
-  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();
+  if(S.approval>92)S.approval=92;  /* one-off boosts cannot lift anyone past 92% */
+  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);
   stepDisasters(e.g);
   develop(e);
   S.month++;
@@ -2117,6 +2212,7 @@ function tick(){
   if(!S.won&&S.peak>=3500){S.won=true;addNews('Metropolis! Your skyline is the envy of the region. Keep it thriving.','good');}
   checkScenario(e);advisorTick(e);prunePop();
   if(S.sandbox){S.cash=Math.max(S.cash,50000000);}
+  if(S.approval>92)S.approval=92;
   if(S.approval<25&&!S.sandbox)S.lowApproval++;else S.lowApproval=0;
   var cashFloor=(e.costs>100000)?-e.costs*1.5:-4000;
   if(S.cash<cashFloor&&!S.sandbox)S.lowCash++;else S.lowCash=0;
@@ -2178,13 +2274,13 @@ function buildDistrict(plan){
 }
 function placeBuilding(ax,ay,id,rot){
   var o=OBJ[id],sz=sizeOf(id,rot),tiles=footTiles(ax,ay,sz),a=ay*MW+ax,k,sum=0;
-  var full=costFor(id,a),price=o.phased?Math.ceil(full/o.build):full;
+  var full=costFor(id,a),price=o.phased?Math.ceil(full/bMon(o)):full;
   if(!spend(price))return false;
   if(o.phased)S.phasePay[a]=price;
   for(k=0;k<tiles.length;k++)sum+=EL[tiles[k]];
   var lvl=Math.round(sum/tiles.length);
   for(k=0;k<tiles.length;k++){var t=tiles[k];rec(t);T[t]=SUB;PAR[t]=a;EL[t]=lvl;L[t]=0;B[t]=0;ORI[t]=0;if(TER[t]===FOREST)TER[t]=GRASS;}
-  T[a]=o.t;L[a]=o.build||0;PAR[a]=a;ORI[a]=(rot&&sz[0]!==sz[1])?1:0;
+  T[a]=o.t;L[a]=bMon(o)||0;PAR[a]=a;ORI[a]=(rot&&sz[0]!==sz[1])?1:0;
   return true;
 }
 var pending=null;
@@ -2266,7 +2362,7 @@ function doAct(i,first){
     if(err){pending=null;toast(err);sfx('bad');dirty=true;return;}
     if(!pending||pending.tool!==tool||pending.a!==key||pending.rot!==buildRot){
       pending={tool:tool,a:key,rot:buildRot};dirty=true;
-      toast(OBJ[tool].phased?'Tap again to start this megaproject: '+money(costFor(tool,key))+' in all, paid as '+money(Math.ceil(costFor(tool,key)/OBJ[tool].build))+' a month.':'Tap the same spot again to build for '+money(costFor(tool,key))+'.');return;
+      toast(OBJ[tool].phased?'Tap again to start this megaproject: '+money(costFor(tool,key))+' in all, paid as '+money(Math.ceil(costFor(tool,key)/bMon(OBJ[tool])))+' a month.':'Tap the same spot again to build for '+money(costFor(tool,key))+'.');return;
     }
     pending=null;ok=placeBuilding(ax,ay,tool,buildRot);if(ok)sfx('big');
   }else{
@@ -2314,7 +2410,7 @@ function newGame(name,scnId){
   for(attempt=0;attempt<tries;attempt++){
     T=new Array(N).fill(EMPTY);L=new Array(N).fill(0);B=new Array(N).fill(0);F=new Uint8Array(N);FLD=new Uint8Array(N);PAR=new Int32Array(N).fill(-1);ORI=new Uint8Array(N);PU=new Uint8Array(N);pending=null;undoStack=[];undoFrame=null;
     st=genTerrain();
-    S=freshState(st);S.city=(name||'New Haven').slice(0,24);
+    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);
     S.scn=sc.id;S.diff=scnDiff;if(sc.setup)sc.setup(S);
     S.noDeadline=!!scnNoDl;
     tool='inspect';group='util';speed=0;S.started=false;inspectIdx=-1;handMode=true;buildRot=0;setOverlay(0);
@@ -2415,7 +2511,7 @@ function restore(d){
   if(!d||d.v!==3||!d.T||d.T.length!==N||!d.EL||d.EL.length!==N||!d.S)return false;
   T=d.T;L=d.L;B=d.B;TER=d.TER;EL=d.EL;F=Uint8Array.from(d.F);FLD=Uint8Array.from(d.FLD);
   PAR=Int32Array.from(d.PAR||new Array(N).fill(-1));ORI=Uint8Array.from(d.ORI||new Array(N).fill(0));PU=Uint8Array.from(d.PU||new Array(N).fill(0));S=d.S;
-  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
+  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
   S.ord=S.ord||{recycle:false,clean:false,transit:false};S.city=S.city||'My City';S.scn=S.scn||'free';S.sandbox=!!S.sandbox;
   for(var i=0;i<N;i++){SHORE[i]=0;if(TER[i]===WATER)continue;var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}}
   tool='inspect';group='build';speed=1;inspectIdx=-1;pending=null;undoStack=[];undoFrame=null;handMode=true;buildRot=0;setOverlay(0);
@@ -2504,7 +2600,7 @@ function ico(key,size){
 }
 
 /* ================= display and accessibility ================= */
-var DSP={layout:'float',ts:'n',contrast:'n',cb:'0',motion:'auto',font:'n',touch:'0',theme:'auto',gfx:'auto'};
+var DSP={pace:'std',layout:'float',ts:'n',contrast:'n',cb:'0',motion:'auto',font:'n',touch:'0',theme:'auto',gfx:'auto'};
 var DSP_DEFAULT=JSON.parse(JSON.stringify(DSP));
 var lowGfx=false;
 function loadDisplay(){
@@ -2520,6 +2616,10 @@ function motionOk(){return animEnabled&&!reduceMotion()&&!lowGfx;}
 function wideLayout(){
   try{return !!(window.matchMedia&&window.matchMedia('(min-aspect-ratio: 11/10) and (min-width: 560px) and (min-height: 520px)').matches);}catch(e){return false;}
 }
+function paceMul(){return DSP.pace==='relaxed'?1.6:1;}
+/* seconds a game month takes at 1x. 2x and 3x are exact multiples, so the fastest the game goes is a third of this. */
+var ERA_B=[1.8,2.1,2.4,2.7,3.0,6,9,12,18,24];
+function eraMul(){return ERA_B[Math.min(9,S?(S.era|0):0)];}
 function applyDisplay(){
   var r=document.documentElement;
   function set(a,v,off){try{if(v===off){if(r.removeAttribute)r.removeAttribute(a);}else if(r.setAttribute)r.setAttribute(a,v);}catch(e){}}
@@ -2539,9 +2639,10 @@ function dsRow(key,label,opts,hint){
 function renderDisplay(){
   var b=$('sheetBody'),h=sheetHead('Display and accessibility');
   h+='<p class="hint">These settings stay on this device and apply to every city.</p>';
+  h+=dsRow('pace','Clock pace',[['relaxed','Relaxed'],['std','Standard']],'How long a month takes. Relaxed is 60% slower than Standard. Later eras run slower on their own, so there is time to react. 1\u00D7 is the normal speed. 2\u00D7 and 3\u00D7 are exactly twice and three times as fast.');
   h+=dsRow('ts','Text size',[['n','Normal'],['l','Large'],['xl','Extra large']],'Scales all the text in panels, buttons and the header.');
   h+=dsRow('contrast','Contrast',[['n','Normal'],['high','High']],'Stronger text, thicker borders and bolder focus outlines.');
-  h+=dsRow('cb','Colour-blind safe colours',[['0','Off'],['1','On']],'Swaps red and green for blue and orange. Arrows and labels stay as they are.');
+  h+=dsRow('cb','Color-blind safe colors',[['0','Off'],['1','On']],'Swaps red and green for blue and orange. Arrows and labels stay as they are.');
   h+=dsRow('font','Font',[['n','Standard'],['readable','Easy to read']],'A wider, plainer typeface with more spacing between letters and lines.');
   h+=dsRow('touch','Touch targets',[['0','Standard'],['l','Large']],'Bigger buttons and tool tiles, easier to hit on a phone.');
   h+=dsRow('motion','Reduce motion',[['auto','Follow device'],['on','On'],['off','Off']],'Turns off traffic, smoke and screen transitions.');
@@ -2621,7 +2722,7 @@ function tutorialTick(e){
   while(S.tut<TUT.length&&TUT[S.tut].f(e.g,e)){S.tut++;moved=true;}
   if(moved){
     if(S.tut<TUT.length){var step=S.tut;addNews('Step done. Next, Mayor: '+TUT[S.tut].t,'good','Guide',function(){return S.tut===step;},true);}
-    else{addNews('Tutorial complete, Mayor. The rest is up to you. The Goals button shows what is next and the advisors say what to watch.','good','Guide');if(!S.pacedUp){S.pacedUp=true;if(speed<2){speed=2;toast('Nice work. Clock sped up to 2\u00D7. Tap 1\u00D7 to slow down.',4200);}}}
+    else{addNews('Tutorial complete, Mayor. The rest is up to you. The Goals button shows what is next and the advisors say what to watch.','good','Guide');if(!S.pacedUp){S.pacedUp=true;if(speed<3){speed=3;toast('Nice work. Clock sped up to 3\u00D7. Tap 1\u00D7 or 2\u00D7 to slow down.',4200);}}}
     prunePop();
   }
 }
@@ -2823,7 +2924,7 @@ var ACH=[
  {id:'road',tier:0,name:'First road',desc:'Lay your first road.',f:function(e){return e.g.cnt[ROAD]>=1;}},
  {id:'power',tier:0,name:'Lights on',desc:'Get a power plant running.',f:function(e){return e.g.pCap>0;}},
  {id:'water',tier:0,name:'Fresh water',desc:'Get water flowing to the city.',f:function(e){return e.g.wCap>0;}},
- {id:'pop10',tier:0,name:'First neighbours',desc:'Reach 10 residents.',f:function(e){return S.pop>=10;},p:function(e){return prog(S.pop,10);}},
+ {id:'pop10',tier:0,name:'First neighbors',desc:'Reach 10 residents.',f:function(e){return S.pop>=10;},p:function(e){return prog(S.pop,10);}},
  {id:'shop',tier:0,name:'Open for business',desc:'Get a shop with workers.',f:function(e){return e.g.jobsC>0;}},
  {id:'factory',tier:0,name:'Smokestack',desc:'Get a factory with workers.',f:function(e){return e.g.jobsI>0;}},
  {id:'pop25',tier:0,name:'A small crowd',desc:'Reach 25 residents.',f:function(e){return S.pop>=25;},p:function(e){return prog(S.pop,25);}},
@@ -2870,6 +2971,7 @@ var ACH=[
  {id:'breaker',tier:2,name:'Safety first',desc:'Adopt AI circuit breakers.',f:function(e){return !!S.ord.breaker;}},
  {id:'aisurvive',tier:3,name:'Stared down the AI',desc:'Live through an AI revolt for two years.',f:function(e){return S.st.seen.airevolt!==undefined&&S.month-S.st.seen.airevolt>=24;}},
  /* luck and time */
+ {id:'swan',tier:2,name:'Black swan survivor',desc:'Come through a black swan event with the city intact for a year.',f:function(e){return (S.swans|0)>0&&S.month-(S.lastSwan||0)>=12&&S.pop>=300;},p:function(e){return (S.swans|0)>0?1:0;}},
  {id:'pride3',tier:1,name:'Civic pride',desc:'Fund three pet projects with the local projects tax.',f:function(e){return S.pp.built.length>=3;},p:function(e){return prog(S.pp.built.length,3);}},
  {id:'pride10',tier:2,name:'Pet project patron',desc:'Fund ten pet projects.',f:function(e){return S.pp.built.length>=10;},p:function(e){return prog(S.pp.built.length,10);}},
  {id:'rebuilt',tier:1,name:'Back on our feet',desc:'Let the repair crews rebuild after a disaster.',f:function(e){return S.rqStat&&S.rqStat.told&&S.rqStat.n>=5;}},
@@ -2924,12 +3026,12 @@ var WINDFALLS=[
  {r:'common',w:30,run:function(e){var a=Math.round(Math.max(800,e.revenue*0.4));S.cash+=a;return 'Bumper month: tax receipts beat forecasts by '+money(a)+'.';}},
  {r:'common',w:24,run:function(e){var a=Math.round(1500+S.pop*6);S.cash+=a;return 'An anonymous donor gives the city '+money(a)+' for the public good.';}},
  {r:'common',w:18,run:function(e){S.approval=Math.min(100,S.approval+3);return 'A feel-good headline goes viral. Residents are proud of '+S.city+'.';}},
- {r:'common',w:16,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(TECHS[S.rd.active].cost*(0.05+Math.random()*0.07));S.rd.pts+=a;return 'Eureka: a lab finds a shortcut and adds '+a+' research points.';}},
+ {r:'common',w:16,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(Math.min(TECHS[S.rd.active].cost*(0.05+Math.random()*0.07),Math.max(1,rdRate(e.g))*(2+Math.random()*4)));S.rd.pts+=a;return 'Eureka: a lab finds a shortcut and adds '+a+' research points.';}},
  {r:'rare',w:12,run:function(e){var a=Math.round(Math.max(3000,e.revenue*1.6));S.cash+=a;return 'A federal grant is approved: '+money(a)+' lands in the city account.';}},
  {r:'rare',w:10,run:function(e){S.approval=Math.min(100,S.approval+6);S.hpi=Math.min(260,S.hpi*1.03);return 'A magazine names '+S.city+' one of the most livable cities. Approval and home prices rise.';}},
- {r:'rare',w:10,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(TECHS[S.rd.active].cost*(0.2+Math.random()*0.15));S.rd.pts+=a;return 'Research breakthrough: a lucky result adds '+a+' research points.';}},
+ {r:'rare',w:10,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(Math.min(TECHS[S.rd.active].cost*(0.2+Math.random()*0.15),Math.max(1,rdRate(e.g))*(8+Math.random()*10)));S.rd.pts+=a;return 'Research breakthrough: a lucky result adds '+a+' research points.';}},
  {r:'epic',w:3,run:function(e){var a=Math.round(Math.max(12000,e.revenue*6));S.cash+=a;S.approval=Math.min(100,S.approval+8);return 'Archaeologists unearth a famous ancient site beneath the city. Tourism and pride surge, and '+money(a)+' pours in.';}},
- {r:'epic',w:3,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(TECHS[S.rd.active].cost*(0.5+Math.random()*0.3));S.rd.pts+=a;return 'Eureka of the decade: your scientists leap ahead by '+a+' research points.';}}
+ {r:'epic',w:3,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(Math.min(TECHS[S.rd.active].cost*(0.5+Math.random()*0.3),Math.max(1,rdRate(e.g))*(24+Math.random()*24)));S.rd.pts+=a;return 'Eureka of the decade: your scientists leap ahead by '+a+' research points.';}}
 ];
 function stepWindfall(e){
   var st=S.st;
@@ -2980,15 +3082,17 @@ function stepYear(e){
 function nextUps(e){
   var list=[],i,g=e.g;
   if(S.tut<TUT.length)list.push({i:'guide',t:TUT[S.tut].t,p:null,kind:'guide'});
+  var resItem=null;
   if(S.rd.active&&TECHS[S.rd.active]){
-    var c=TECHS[S.rd.active].cost,rate=rdRate(g),left=Math.max(0,c-S.rd.pts);
-    list.push({i:S.rd.active,t:'Research '+TECHS[S.rd.active].name,p:Math.min(1,S.rd.pts/c),note:rate>0?'about '+Math.max(1,Math.ceil(left/rate))+' months':'stalled',kind:'research'});
+    var c=TECHS[S.rd.active].cost,rate=rdRate(g),left=Math.max(0,c-S.rd.pts),rmo=rate>0?Math.max(1,Math.ceil(left/rate)):0;
+    resItem={i:S.rd.active,t:'Research '+TECHS[S.rd.active].name,p:Math.min(1,S.rd.pts/c),note:rate>0?(rmo>=240?'about '+Math.round(rmo/12)+' game years':'about '+rmo+' months'):'stalled',kind:'research'};
   }
   var best=null;
-  for(i=0;i<N;i++){var o=BYT[T[i]];if(o&&o.build&&L[i]>0&&(!best||L[i]<best.l))best={l:L[i],n:TOOLS[o.id].name,b:o.build,k:o.id};}
+  for(i=0;i<N;i++){var o=BYT[T[i]];if(o&&o.build&&L[i]>0&&(!best||L[i]<best.l))best={l:L[i],n:TOOLS[o.id].name,b:bMon(o),k:o.id};}
   if(best)list.push({i:best.k,t:'Finish the '+best.n,p:1-best.l/best.b,note:best.l+' months left',kind:'build'});
   var ri=rankIdx(S.pop);
   if(ri<RANKS.length-1&&S.tut>=TUT.length)list.push({i:'rank',t:'Grow to a '+RANKS[ri+1][1].toLowerCase(),p:Math.min(1,(S.pop-RANKS[ri][0])/(RANKS[ri+1][0]-RANKS[ri][0])),note:Math.round(S.pop)+' of '+RANKS[ri+1][0].toLocaleString('en-US')+' people',kind:'rank'});
+  if(resItem)list.push(resItem);
   if(S.tech.rockets||e.kard>0.45){
     var lv=Math.floor(e.kard);list.push({i:'kard',t:'Reach Type '+['I','II','III','IV','V','VI'][Math.min(5,lv)],p:Math.min(1,e.kard-lv),note:'rating '+e.kard.toFixed(2)+' of '+(lv+1)+'.0',kind:'kard'});
   }
@@ -3015,9 +3119,10 @@ function goalsHTML(e){
 
 /* ---------- score and shareable code ---------- */
 function scoreParts(){
-  var kmax=Math.max(S.kmax|0,E?Math.floor(E.kard*100)/100:0);
-  var years=Math.floor(S.month/12);
-  return [['Peak population',Math.floor(S.peak/5)],['Years in office',years*10],['Achievements ('+achCount()+')',achCount()*40],['Kardashev rating',Math.floor(1500*(E?E.kard:0)*(E?E.kard:0))],['Eras reached',(S.era|0)*150]];
+  var k=E?E.kard:0,years=Math.min(200,Math.floor(S.month/12));
+  var emp=E&&E.unemp!==undefined?Math.round((1-Math.max(0,Math.min(1,E.unemp)))*500):0;
+  var bal=(E&&E.net!==undefined&&E.net>=0)?500:0;
+  return [['Peak population',Math.floor(S.peak/2)],['Years in office (to 200)',years*10],['Achievements ('+achCount()+')',achCount()*40],['Voter approval',Math.round(S.approval*8)],['Jobs',emp],['Balanced budget',bal],['Kardashev rating',Math.floor(120*k*k)],['Eras reached',(S.era|0)*30]];
 }
 function scoreOf(){var s=0,p=scoreParts();for(var i=0;i<p.length;i++)s+=p[i][1];return Math.round(s*dm('score'));}
 function hash5(str){var h=5381;for(var i=0;i<str.length;i++){h=((h<<5)+h+str.charCodeAt(i))|0;}return (h>>>0).toString(36).slice(0,5);}
@@ -3106,7 +3211,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-21 17:58';
+var BUILD_ID='2026-11-22 01:09';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -3175,13 +3280,13 @@ function renderPlaytest(){
 var PP_LIST=[
  {id:'dogpark',name:'Dog park',desc:'A fenced run with a water fountain. The dogs approve, and so do their owners.',cost:1,mod:{mood:0.012,appr:0.5}},
  {id:'skate',name:'Skate park',desc:'Concrete bowls and rails behind the fire station. Teenagers finally have somewhere to go.',cost:1.2,mod:{mood:0.01,appr:0.7}},
- {id:'library',name:'Neighbourhood library branch',desc:'Books, quiet corners and free classes. Workers pick up new skills.',cost:1.6,mod:{mood:0.008},fn:function(){if(S.auto)S.auto.skill=Math.min(1,S.auto.skill+0.015);}},
+ {id:'library',name:'Neighborhood library branch',desc:'Books, quiet corners and free classes. Workers pick up new skills.',cost:1.6,mod:{mood:0.008},fn:function(){if(S.auto)S.auto.skill=Math.min(1,S.auto.skill+0.015);}},
  {id:'market',name:'Farmers market hall',desc:'A covered hall for local growers. Shoppers linger and visitors come.',cost:1.4,mod:{tour:0.03,appr:0.4}},
  {id:'theater',name:'Community theater',desc:'Amateur plays, school concerts and one very ambitious musical.',cost:1.8,mod:{mood:0.012,tour:0.03}},
  {id:'splash',name:'Splash pad and picnic lawn',desc:'Cool water on hot days. Families practically move in.',cost:1.1,mod:{mood:0.015}},
  {id:'mural',name:'Public mural program',desc:'Artists paint the blank walls. Visitors take photos.',cost:0.9,mod:{tour:0.04,appr:0.5}},
  {id:'bikes',name:'Protected bike lanes',desc:'Painted lines become real lanes. Fewer cars and more smiles.',cost:1.7,mod:{mood:0.01}},
- {id:'garden',name:'Community gardens',desc:'Vacant lots grow tomatoes. Neighbours meet over the fence.',cost:0.8,mod:{mood:0.01}},
+ {id:'garden',name:'Community gardens',desc:'Vacant lots grow tomatoes. Neighbors meet over the fence.',cost:0.8,mod:{mood:0.01}},
  {id:'fireworks',name:'Riverfront fireworks festival',desc:'One huge night that everyone remembers. Then it is over.',cost:0.7,fn:function(){S.approval=Math.min(100,S.approval+6);}},
  {id:'cat',name:'Statue of the mayor\u2019s cat',desc:'Nobody asked for it. Most people quietly love it.',cost:0.5,fn:function(){S.approval=clamp(S.approval+(Math.random()<0.7?3:-2),0,100);}},
  {id:'league',name:'Little league ballfields',desc:'Saturday mornings sorted. Parents bring folding chairs.',cost:1.3,mod:{mood:0.01,appr:0.4}},
@@ -3192,7 +3297,7 @@ var PP_LIST=[
  {id:'rooftop',era:2,name:'Rooftop orchard network',desc:'Fruit trees on every flat roof. Free apples for everyone.',cost:1.8,mod:{mood:0.012,appr:0.4}},
  {id:'zerog',era:3,name:'Zero-gravity sports hall',desc:'Floating basketball. Tickets sell out for months.',cost:3,mod:{mood:0.015,tour:0.06}},
  {id:'scope',era:3,name:'Public observatory',desc:'A telescope anyone can use. Astronomers come to study.',cost:2.4,mod:{res:4,appr:0.5}},
- {id:'miners',era:4,name:'Ore-miners memorial and museum',desc:'Honouring the crews who work the belt.',cost:2.4,mod:{tour:0.05,appr:0.5}},
+ {id:'miners',era:4,name:'Ore-miners memorial and museum',desc:'Honoring the crews who work the belt.',cost:2.4,mod:{tour:0.05,appr:0.5}},
  {id:'exchange',era:4,name:'Interplanetary culture exchange',desc:'Visiting scholars and musicians from other worlds.',cost:2.6,mod:{trade:0.03,appr:0.3}},
  {id:'embassy',era:4,need:function(){return S.alien==='friend';},name:'Garden for visitors',desc:'A park built for guests from very far away. They love it.',cost:2.8,mod:{tour:0.08}},
  {id:'sunrise',era:5,name:'Orbital sunrise park',desc:'Watch the sun come up sixteen times a day.',cost:3.4,mod:{mood:0.02,tour:0.05}},
@@ -3290,7 +3395,7 @@ var GUIDE=[
  '<li><b>Zones:</b> in the Build tab, zone about six homes, a couple of shops and a couple of factories right beside the roads, inside power and water range.</li>'+
  '<li><b>Wait:</b> builders move in when there is demand and credit is cheap. Watch the dots over lots: red means no road, yellow no power, blue no water.</li>'+
  '<li><b>Past 150 people:</b> add a sewage plant and a landfill from the Utilities tab.</li></ol>'+
- '<p>A fast way to lay out a neighbourhood is the district brush: pick Suburb in the Build tab, tap two corners, then tap the second corner again to build roads and lots in one go.</p>'},
+ '<p>A fast way to lay out a neighborhood is the district brush: pick Suburb in the Build tab, tap two corners, then tap the second corner again to build roads and lots in one go.</p>'},
 {id:'g-zones',title:'Roads, zones and growth',
  brief:'You zone land and run roads. Private builders do the building. Homes house people, shops and factories give them jobs and goods. A lot only grows if it touches a road and has power and water. Research Arterial roads and a lot can sit two tiles from a road instead.',
  more:'<p><b>Each lot has a level from 1 to 3.</b> Homes hold 6, 15 and 30 people. Shops give 4, 10 and 20 jobs. Factories give 6, 14 and 26 jobs.</p>'+
@@ -3313,9 +3418,9 @@ var GUIDE=[
  '<tr><td>Wind</td><td>14 MW</td><td>Gusty. Better on hills and coasts.</td></tr>'+
  '<tr><td>Fusion</td><td>650 MW</td><td>Very hard research. 14 months to build.</td></tr></table>'+
  '<p><b>Connected buildings pass power along.</b> Power moves through any chain of touching buildings, homes, shops, factories and public buildings alike, so a block that touches a powered building is powered too. Roads break the chain, so cross them with a power line or keep the reach of a plant or line in mind.</p>'+
- '<p><b>Reach:</b> each plant covers a diamond around its centre (8 tiles for coal and gas, 14 for nuclear, 16 for fusion). Power lines carry power from a plant and each powered line reaches 4 tiles around it. Overhead lines take up a tile, can burn and can be torn out by a tornado. Research Underground cables for a buried cable that runs beneath roads and buildings, costs more, and is safe from fire and tornadoes.</p>'+
+ '<p><b>Reach:</b> each plant covers a diamond around its center (8 tiles for coal and gas, 14 for nuclear, 16 for fusion). Power lines carry power from a plant and each powered line reaches 4 tiles around it. Overhead lines take up a tile, can burn and can be torn out by a tornado. Research Underground cables for a buried cable that runs beneath roads and buildings, costs more, and is safe from fire and tornadoes.</p>'+
  '<p><b>Batteries</b> even out solar and wind swings by up to 8 MW a tile, lose 15% each way, cost a lot, and can catch fire. Fire stations barely help against them.</p>'+
- '<p><b>Grid link:</b> lets you sell surplus power and buy shortfalls at neighbouring cities\u2019 prices. Buying is expensive.</p>'},
+ '<p><b>Grid link:</b> lets you sell surplus power and buy shortfalls at neighboring cities\u2019 prices. Buying is expensive.</p>'},
 {id:'g-water',title:'Water, sewage, garbage and recycling',
  brief:'Water works like power: pumps cover an area and pipes extend it. Past 150 people you also need sewage treatment and somewhere to put garbage, or voters get unhappy. Landfills fill up, so plan alternatives.',
  more:'<p><b>Water also passes through touching buildings.</b> Any chain of connected buildings carries water the same way power travels, and roads break the chain. Pipes still extend reach across roads and gaps.</p>'+
@@ -3342,7 +3447,7 @@ var GUIDE=[
  '<p><b>More capacity:</b> a bus depot adds 60% within 6 tiles. A powered rail station adds 50% within 8 tiles. A metro adds 25% citywide. The transit subsidy ordinance adds 15%. A denser road grid spreads trips out.</p>'+
  '<p><b>Rail:</b> place two stations (Transport tab), join them with Rail track, and make sure both have power. Track alone does nothing, and a station alone does nothing. Once connected, a train runs between them, riders pay fares, and the roads nearby get relief. Stations and track cost upkeep and rarely pay for themselves, so treat them as a way to unlock growth.</p>'},
 {id:'g-layers',title:'Layers: pollution, crime and land value',
- brief:'The Layers button colours the map to show hidden numbers. Green is good and red is bad, except land value where it flips.',
+ brief:'The Layers button colors the map to show hidden numbers. Green is good and red is bad, except land value where it flips.',
  more:'<p><b>Power and Water</b> show what is covered. <b>Pollution</b> comes from factories, coal and gas, ports, airports and landfills, and is soaked up by parks. <b>Crime</b> grows with density and unemployment and is cut by police. <b>Land value</b> rises with waterfront, hills, parks, schools, rail and the metro, and falls with pollution and crime. <b>Traffic</b> shows road load.</p>'+
  '<p>Pollution is the only layer that directly changes mood. The clean air ordinance cuts it about 35% at a small cost to factory output.</p>'},
 {id:'g-fiscal',title:'Taxes, spending and debt',
@@ -3389,14 +3494,20 @@ var GUIDE=[
  '<tr><td>Public health strain</td><td>Workplace output falls, services cost more, mood drops.</td></tr></table>'+
  '<p><b>Examples.</b> A war in the Gulf spikes energy and shipping. Tension around an East Asian strait starves you of chips. Attacks on shipping lanes triple freight. A tariff war or an embargo hits materials and export orders. A grain export ban pushes up food prices. A new virus cuts output. A banking crisis abroad tightens credit at home. Some events help: a new oil supply glut cuts energy prices, a global boom lifts exports, a trade deal eases tariffs.</p>'+
  '<p><b>Briefings.</b> When a crisis begins you get a popup with a Respond button and three months to decide. Each option costs money or support and softens the crisis: releasing fuel reserves, chartering ships, backing a domestic chip partnership, funding food assistance, sending a trade mission, ordering a lockdown. If you do nothing, the crisis runs at full strength.</p>'+
- '<p><b>Warnings and chains.</b> Most events give a few months of warning in the headlines, such as rising tensions or a market rumour, so you can build reserves first. Big crises also cause follow-ons. A Gulf war can lead to an oil cartel cut, an inflation scare, a shipping crisis or a recession. A tariff war can become an embargo. A virus can lead to a banking crisis, a recession and a remote-work wave. A bank failure can lead to a default or a stock crash. A grain ban can lead to food riots and inflation. Watch the World headlines for what comes next.</p>'+
+ '<p><b>Warnings and chains.</b> Most events give a few months of warning in the headlines, such as rising tensions or a market rumor, so you can build reserves first. Big crises also cause follow-ons. A Gulf war can lead to an oil cartel cut, an inflation scare, a shipping crisis or a recession. A tariff war can become an embargo. A virus can lead to a banking crisis, a recession and a remote-work wave. A bank failure can lead to a default or a stock crash. A grain ban can lead to food riots and inflation. Watch the World headlines for what comes next.</p>'+
  '<p><b>How long.</b> Crises build over a couple of months, last from half a year to well over a year, then fade slowly. Their effects feed into inflation, stocks and sometimes recessions, so your policy rate decisions interact with them.</p>'+
- '<p><b>Grid link.</b> Neighbouring cities\u2019 power prices follow world energy prices, so selling surplus power pays better in an energy crisis and buying shortfalls costs more.</p>'},
+ '<p><b>Grid link.</b> Neighboring cities\u2019 power prices follow world energy prices, so selling surplus power pays better in an energy crisis and buying shortfalls costs more.</p>'},
 {id:'g-markets',title:'Stocks, crashes and bailouts',
  brief:'A stock market runs in the background. It rises on cheap money and falls on high rates. Sometimes it crashes. You can soften the blow with insurance, a bailout, or an exchange.',
  more:'<p>Crash risk is low in normal times and climbs when the index is far above its start, when bubbles build, when you expand the balance sheet for long, and after sharp rate hikes. It only applies once the city passes about 300 people.</p>'+
  '<p><b>A crash</b> wipes out about a third of the market over three panic months, followed by a bear market. Startups lose funding and IPOs freeze. Banks tighten credit, adding 1.5 points to mortgage rates for a year. A recession follows about 60% of the time.</p>'+
  '<p><b>Deposit insurance</b> (Policy, Monetary tab) softens crashes by about a quarter but costs money every month and encourages risk. A <b>bailout</b> ends the panic and reopens credit, but traders then expect rescues. A <b>stock exchange</b> adds circuit breakers that shorten and soften crashes.</p>'},
+{id:'g-risk',title:'Risk, failure and black swans',
+ brief:'Most startups fail, the sovereign fund is a real fund with real risks, and when the city is rich, happy and taking no risks, something nobody planned for can arrive.',
+ more:'<p><b>Startups.</b> Every startup has a hidden quality. About half are duds that fold, a quarter limp along and get absorbed, and the rest are solid, star or, rarely, runaway successes. Tight money, recessions and low markets shorten the odds for all of them. A random $5,000 bet returns nothing about three times in four, and about one in seven returns five times or more. Spread your bets: on average a diversified investor makes a modest profit, and one in a hundred is a giant. Founders will not sell you more than 40% of a company, and a company cannot grow beyond what its economy can support.</p>'+
+ '<p><b>Public companies.</b> Shares drift with the market, but accounting scandals and bankruptcies happen. Buying or selling a large stake moves the price against you, so you cannot cheaply buy a firm and flip it into a takeover bid.</p>'+
+ '<p><b>The sovereign fund.</b> It pays a 0.5% annual fee. Stocks swing hard, and in recessions they fall further. Bonds lose value when rates rise and when inflation runs hot. As the fund grows large compared with your economy, its returns shrink toward the cash rate. A balanced fund earns a few percent a year with real bad years. Cash earns the least and never loses.</p>'+
+ '<p><b>Black swans.</b> These are rare, big shocks with no warning: a run on the banks, a manager who turns out to be a fraud, a supervolcano, a far deadlier pandemic, a solar storm, a payments hack, a reserve currency collapse and a city-killer asteroid. They can only happen after year 10 in a city of 300 or more, and never closer than three years apart. The more complacent the city, the likelier they are: rich in reserves, voters happy, a long calm spell and no risks being taken. Holding ventures, equities in the fund or debt counts as taking risks and lowers the odds. The Corp tabs show a Surprise risk of low, medium or high. Financial swans take a bite out of cash and the fund, so a huge pile of cash is also a huge target.</p>'},
 {id:'g-corp',title:'Research, startups, IPOs and takeovers',
  brief:'Fund research to unlock new technology. Each breakthrough spins out a startup you can invest in. Startups can fail, dilute you or go public and pay off big.',
  more:'<p><b>Research:</b> open Corp, then Research. Set a monthly R&D budget (up to $20,000), pick a project, and points accumulate. Labs multiply the speed, and so do schools, universities, data centers and Applied AI. Without a lab research runs at a quarter speed.</p>'+
@@ -3453,8 +3564,8 @@ var GUIDE=[
  '<tr><td>Orbital array</td><td>3,000 and Orbital solar power</td><td>Sells power, +$120,000 a month each, +0.20 Kardashev each (three count). Monthly installments.</td></tr>'+
  '<tr><td>Dyson node</td><td>3,000, Dyson swarm engineering and Type I</td><td>+$1.2 million a month each (double with Matrioshka brains), +0.25 Kardashev each (four count).</td></tr>'+
  '<tr><td>Galactic relay</td><td>3,000, Traversable wormholes and Type II</td><td>+$8 million a month each, +0.25 Kardashev each (four count).</td></tr>'+
- '<tr><td>Dark-energy tap</td><td>3,000, Dark-energy harvesting and Type III</td><td>$600 million to start, each one 25% dearer. Monthly installments over 12 years. +0.25 Kardashev each (four count). Pays about $15 million a month for the first, less for each after.</td></tr>'+
- '<tr><td>Universe forge</td><td>3,000, Universe engineering and Type IV</td><td>$6 billion to start, each one 30% dearer. Monthly installments over 20 years. +0.25 Kardashev each (four count). Pays about $120 million a month for the first, less for each after.</td></tr></table>'+
+ '<tr><td>Dark-energy tap</td><td>3,000, Dark-energy harvesting and Type III</td><td>$600 million to start, each one 25% dearer. Monthly installments over about twelve years on Standard length (ten times that on Long, a hundred times on Epic). +0.25 Kardashev each (four count). Pays about $15 million a month for the first, less for each after.</td></tr>'+
+ '<tr><td>Universe forge</td><td>3,000, Universe engineering and Type IV</td><td>$6 billion to start, each one 30% dearer. Monthly installments over about fifteen years on Standard length (ten times that on Long, a hundred times on Epic). +0.25 Kardashev each (four count). Pays about $120 million a month for the first, less for each after.</td></tr></table>'+
  '<p>All need power, and some need water. They cost upkeep every month, so make sure the payoff is worth it.</p>'},
 {id:'g-kard',title:'The Kardashev scale (keeping score)',
  brief:'The long game is to climb the Kardashev scale: Type I commands the energy of a planet, Type II a star, Type III a galaxy. There is no final victory. It is an infinite game and the scale is how you keep score. Your rating shows in the Economy panel and as a chip once you start on space.',
@@ -3483,17 +3594,20 @@ var GUIDE=[
  '<tr><td>Multiversal (Type V)</td><td>Kardashev 5.0.</td><td>Brane collisions and offers from parallel cities. Each game year counts as a hundred million.</td></tr></table>'+
  '<p><b>New world channels.</b> Orbital hazard cuts launch fees and space income. Ore prices swing mining income and nudge construction costs.</p>'+
  '<p><b>Aliens.</b> A mysterious signal may lead to first contact. If you open talks the visitors are usually friendly: an interstellar trade deal lifts exports 30%, speeds research 20% and gives a research windfall. If you do not, the visitors choose. Hostile probes jam satellites and you can build a planetary shield. An extraterrestrial pathogen can arrive in asteroid ore and strains public health for a year.</p>'+
- '<p><b>The city looks the part.</b> Buildings change colour with the era: warm and cream in the Industrial era, glassy cyan in the Digital era, pale green and teal in the Fusion era, silver in the Orbital era, copper in the Interplanetary era, pearl and green in the Planetary era, then violet and finally crystal. Rooftop solar panels appear from the Fusion era, tall towers get glowing beacons from the Orbital era, factories stop smoking, roads get glowing lane lines, cars become pods and later hover, and the ground turns lusher.</p>'+
+ '<p><b>The city looks the part.</b> Buildings change color with the era: warm and cream in the Industrial era, glassy cyan in the Digital era, pale green and teal in the Fusion era, silver in the Orbital era, copper in the Interplanetary era, pearl and green in the Planetary era, then violet and finally crystal. Rooftop solar panels appear from the Fusion era, tall towers get glowing beacons from the Orbital era, factories stop smoking, roads get glowing lane lines, cars become pods and later hover, and the ground turns lusher.</p>'+
  '<p><b>The cosmic calendar.</b> After you reach Type I the calendar speeds up, because real civilizations take millennia to climb the scale. The date shows as a year only. Events and construction still run in game months.</p>'},
 {id:'g-sinks',title:'Where the money goes in the far future',
  brief:'A civilization that earns billions also spends billions. Space income saturates, megastructures need upkeep and renewal, prices rise with wealth, the public expects more, and the next rung of the ladder costs more than the last.',
  more:'<p><b>Saturation.</b> Each extra project of the same kind earns less than the one before: arrays 10% less, nodes 12%, relays 14%, taps and forges 15%. Four relays earn well under four times one.</p>'+
  '<p><b>Upkeep follows income.</b> A megaproject costs roughly a quarter to a third of what it earns to run, so a bad year for the space economy cannot bankrupt you through upkeep alone. Upkeep shrinks if income does.</p>'+
  '<p><b>Renewal follows value.</b> The value of your megaprojects counts toward the infrastructure that ages. Renewal is a share of that value every month, and the share grows with the age of the city, so a bigger empire needs a bigger maintenance bill. Fund renewal at 100% and the condition of your infrastructure slowly heals after disasters.</p>'+
+ '<p><b>Voters get used to it.</b> A city that keeps people very happy gradually raises what they expect, by up to half a point of mood over a couple of decades, so approval settles around the low-to-mid 80s instead of sticking at 100%. If mood falls well below normal, expectations ease off again.</p>'+
  '<p><b>Rising expectations.</b> When the city earns more per resident, public services cost more per resident: up to twice as much. A richer public also expects, and enjoys, a better public realm, so mood rises by up to 0.2.</p>'+
  '<p><b>Contractors charge what you can pay.</b> The price of every megaproject goes up with your treasury, counting the sovereign fund. A very rich civilization pays about 1.5 to 2 times the base price.</p>'+
  '<p><b>Credit and bankruptcy scale with the economy.</b> The most you can borrow is at least a year of revenue, and bankruptcy only comes when you are about a month and a half of costs overdrawn for two months. A small city still goes bankrupt at about $4,000.</p>'+
- '<p><b>Past Type III.</b> Dark-energy taps (Type IV) and Universe forges (Type V) are the new sinks. They cost hundreds of millions to billions, take twelve to twenty years to build, and each one costs more than the last. Beyond the first four, every extra one adds a little to your rating forever.</p>'},
+ '<p><b>Voters will not let you sit on a pile.</b> Cash plus the sovereign fund above 30 months of spending (48 on Relaxed, 18 on Hard) draws a demand for a refund. Every January, half of the excess goes back to taxpayers, and voters are pleased. Reserves of about two and a half years of spending are a real safety net. A mountain of savings is not allowed, so saving everything for fifteen years and then spending freely no longer works. Megaprojects are paid in monthly installments, so you never need to stockpile for them. The news warns you when reserves pass 80% of the cap.</p>'+
+ '<p><b>Nobody is 100% happy.</b> Approval can never rise above 92%, however many headlines, openings and refunds pile up.</p>'+
+ '<p><b>Past Type III.</b> Dark-energy taps (Type IV) and Universe forges (Type V) are the new sinks. They cost hundreds of millions to billions, take a decade or more to build on Standard length, and each one costs more than the last. Beyond the first four, every extra one adds a little to your rating forever.</p>'},
 {id:'g-future',title:'Money in the space age',
  brief:'Taxes, spending, interest rates and inflation stay at the heart of the game in every era. The future changes the problems, not the discipline. Abundance pulls prices down, space income rides the stock market, automation eats the tax base, and rates can hit zero.',
  more:'<p><b>The neutral rate falls.</b> Cheap energy, automation and AI push prices down a little more every month in later eras. Each era past Digital lowers the neutral real rate, and General-purpose AI lowers it again. By Type I the Taylor guide may tell you to hold rates near zero, and in the Galactic era it can ask for less than zero.</p>'+
@@ -3526,13 +3640,14 @@ var GUIDE=[
  '<p><b>Windfalls.</b> Good news arrives at random: bumper months, donors, awards, grants, research shortcuts and the occasional jackpot. Most are small, some are rare, a few are epic. A pity timer makes sure good news is never too far away, and the first two years are a little luckier. Windfalls are in addition to the bad news. They never replace it.</p>'+
  '<p><b>Chronicle.</b> Your city keeps a story: achievements, ranks, crashes, crises, research, eras, megaprojects and big windfalls. Open it from the Menu or the Goals panel. It also shows records like peak population and your score.</p>'+
  '<p><b>Yearly report.</b> Each January you get a State of the city report with a grade from A to F, changes since last year, and highlights. After year twenty it pops up every five years, but every year is kept in the chronicle.</p>'+
- '<p><b>Share your city.</b> The score adds up from peak population, years in office, achievements, Kardashev rating and eras reached. Copy your code, send it to a friend, and paste theirs to compare side by side. Codes are plain text with a checksum.</p>'+
- '<p><b>Pacing.</b> The first three years have a small boost to building. The clock runs one month a bit over a second at 1\u00D7. When you finish the tutorial the clock moves up to 2\u00D7 once. Use 3\u00D7 for long games.</p>'},
+ '<p><b>Share your city.</b> The score is mostly about the city: peak population, years in office (up to 200), achievements, voter approval, jobs and a balanced budget. Technology adds a bonus through your Kardashev rating and eras reached, but a thriving Industrial or Digital city can outscore a struggling Type V one. Copy your code, send it to a friend, and paste theirs to compare side by side. Codes are plain text with a checksum.</p>'+
+ '<p><b>Pacing.</b> The first three years have a small boost to building. 1\u00D7 is the normal speed. 2\u00D7 and 3\u00D7 are exactly twice and three times as fast, and 3\u00D7 is the fastest the game goes. The clock slows as the eras advance: at 1\u00D7 a month takes 1.8 seconds in the Industrial era and 24 seconds in the last. Under Menu, Display and accessibility you can choose Relaxed, which is 60% slower. When you finish the tutorial the clock moves up to 2\u00D7 once.</p>'+
+ '<p><b>Technology is the prize.</b> The game is about building and running a successful city. Research and the climb up the eras are somewhere to go while you build, not the point, and nothing about running a good city requires them. You can stay in the Industrial or Digital era for as long as you like and still have a thriving, profitable city. If you do reach for the stars, there are no timers: how long each era takes comes from the research and construction it needs. A perfect player at 3\u00D7 with unlimited money and the best possible labs would need about 1 hour for the Industrial era, 1.5 for Digital, 2 for Fusion, 2.5 for Orbital and 3 for Interplanetary, then 10 hours for the Type I era and 20, 40 and 80 for Types II, III and IV. That is roughly 160 hours to Type V, which is as far as the game goes, and real play takes much longer. The early eras open with research breakthroughs and big builds: Applied AI for Digital, Fusion power for Fusion, a spaceport for Orbital, Asteroid mining for Interplanetary, and a space elevator with orbital arrays for Type I.</p>'},
 {id:'g-disasters',title:'Disasters and resilience',
  brief:'Fires, floods, earthquakes and tornadoes can strike once your city is big enough. Fire stations, levees, reservoirs and retrofit programs limit the damage, and savings help you rebuild.',
  more:'<p><b>Fire</b> spreads tile to tile unless a fire station covers it. <b>Earthquakes</b> shake the screen, damage buildings, start fires and wear down infrastructure. <b>Floods</b> hit low ground near water. <b>Tornadoes</b> cut a path across the map. After a disaster, federal aid may arrive if voters like you.</p>'+
- '<p><b>Utility planners</b> (Policy, Spending, ordinances; on by default). If power or water stays short for a few months, or lots lose service altogether, or sewage or garbage treatment falls below 85%, the planners quietly add plants, pumps, desalination, sewage plants or landfills near the city, using the best technology you have, and fast-track them. They only act when the treasury can comfortably afford it. Switch them off if you want to run every plant yourself.</p>'+
- '<p><b>Repair crews</b> (Policy, Spending, ordinances; on by default). After a disaster the crews rebuild the roads, power lines, pipes and public buildings that were destroyed, starting with roads. They show up about two months later, rebuild a few pieces a month and charge the normal price. Rebuilt plants and pumps are back in service within a month or two, not after their full construction time. Megaprojects, buried pipes and buried cables cannot be destroyed by fire, quakes or tornadoes. Switch them off if you want to rebuild everything yourself. Lots and homes are not on the list, because builders replace them as demand allows. Your own bulldozing is never undone.</p>'+
+ '<p><b>Utility planners</b> (Policy, Spending, ordinances; on by default). If power or water stays short for six months, or lots lose service altogether, or sewage or garbage treatment falls below 85%, the planners quietly add plants, pumps, desalination, sewage plants or landfills near the city, using the best technology you have, and fast-track them. They only act when the treasury can comfortably afford it, and they charge a 50% emergency premium, so planning ahead yourself is cheaper. Switch them off if you want to run every plant yourself.</p>'+
+ '<p><b>Repair crews</b> (Policy, Spending, ordinances; on by default). After a disaster the crews rebuild the roads, power lines, pipes and public buildings that were destroyed, starting with roads. They show up about two months later, rebuild a few pieces a month and add a 25% premium to the normal price. Rebuilt plants and pumps are back in service within a month or two, not after their full construction time. Megaprojects, buried pipes and buried cables cannot be destroyed by fire, quakes or tornadoes. Switch them off if you want to rebuild everything yourself. Lots and homes are not on the list, because builders replace them as demand allows. Your own bulldozing is never undone.</p>'+
  '<p><b>Resilience</b> (Utilities tab): a <b>levee</b> is a cheap wall that protects the 3 tiles around it from flooding. A <b>reservoir</b> is water storage that softens droughts. The <b>seismic retrofit</b> ordinance (Policy, Spending) halves earthquake damage for a monthly fee.</p>'+
  '<p>Battery storage can also burn on its own, more often in a heatwave. You can turn random disasters off in the Menu, or trigger one in the Disaster lab to test your city.</p>'},
 {id:'g-scenarios',title:'Scenarios, saves and undo',
@@ -3553,13 +3668,13 @@ var GUIDE=[
  '<p><b>Floating panels.</b> Phones and desktops both use a full-screen map with the controls floating on top. On a desktop the header sits top left with the four stat boxes beside it and the economy chips below, the toolbox and the speed and panel buttons sit bottom left, the map controls are on the right and the minimap is bottom right. Tap the city name to hide or show the stat boxes and chips. On a phone, tap Build to open the toolbox. On a desktop it starts open.</p>'+
  '<p><b>Side panel.</b> If you would rather have a column beside the map, choose Side panel under Menu, Display and accessibility, Screen layout.</p>'},
 {id:'g-display',title:'Difficulty, display and accessibility',
- brief:'Pick a difficulty when you found a city or change it later in the Menu. Text size, contrast, colour-blind safe colours, reduced motion, an easy-to-read font, big touch targets, a light or dark theme and a fast graphics mode are all under Menu, Display and accessibility.',
+ brief:'Pick a difficulty when you found a city or change it later in the Menu. Text size, contrast, color-blind safe colors, reduced motion, an easy-to-read font, big touch targets, a light or dark theme and a fast graphics mode are all under Menu, Display and accessibility.',
  more:'<table class="gt"><tr><th>Difficulty</th><th>What changes</th></tr>'+
  '<tr><td>Relaxed</td><td>World events and AI incidents about 40% rarer, costs and inflation pressure lighter, credibility loss slower, more windfalls, 30% more starting cash. Score counts 85%.</td></tr>'+
  '<tr><td>Normal</td><td>The intended balance.</td></tr>'+
  '<tr><td>Hard</td><td>World events and AI incidents about 50% more frequent, costs grow 15% faster, inflation pressure 30% stronger, credibility is lost faster, fewer windfalls, 20% less starting cash. Score counts 120%.</td></tr></table>'+
  '<p>Difficulty is chosen when you found a city, and the Menu lets you step it up or down at any time. Your share code and playtest report say which level you played.</p>'+
- '<p><b>Display and accessibility</b> (Menu). <b>Text size</b> scales every word in panels, buttons and the header. <b>Contrast</b> sets stronger text and thicker borders. <b>Colour-blind safe colours</b> swap red and green for blue and orange. <b>Font</b> offers a wider, plainer typeface. <b>Touch targets</b> makes buttons bigger. <b>Reduce motion</b> turns off traffic, smoke and transitions, and follows your device by default. <b>Theme</b> chooses light, dark or follows the device. <b>Map graphics</b> has a fast mode for older phones and big cities. <b>Screen layout</b> picks floating panels or a side panel on wide screens. All of these stay on your device and apply to every city.</p>'},
+ '<p><b>Display and accessibility</b> (Menu). <b>Text size</b> scales every word in panels, buttons and the header. <b>Contrast</b> sets stronger text and thicker borders. <b>Color-blind safe colors</b> swap red and green for blue and orange. <b>Font</b> offers a wider, plainer typeface. <b>Touch targets</b> makes buttons bigger. <b>Reduce motion</b> turns off traffic, smoke and transitions, and follows your device by default. <b>Theme</b> chooses light, dark or follows the device. <b>Map graphics</b> has a fast mode for older phones and big cities. <b>Screen layout</b> picks floating panels or a side panel on wide screens. All of these stay on your device and apply to every city.</p>'},
 {id:'g-numbers',title:'Quick reference',
  brief:'The key numbers in one place.',
  more:'<table class="gt"><tr><th>Thing</th><th>Number</th></tr>'+
@@ -3590,14 +3705,17 @@ var GUIDE=[
 {id:'g-new',title:'What\u2019s new',
  brief:'A running list of the latest changes to the game, newest first.',
  more:'<ul>'+
+ '<li><b>The city comes first.</b> The score now counts the city (population, approval, jobs, a balanced budget) well above technology, and the Goals panel lists city goals before research. Technology is a long-term prize.</li>'+
+'<li><b>A very long climb.</b> Each era now takes real research and construction. A perfect player at 3\u00D7 needs about 1 hour for Industrial, then 1.5, 2, 2.5 and 3 hours, 10 hours for Type I and 20, 40 and 80 for Types II to IV. The clock slows as eras advance. Reserves above 30 months of spending are refunded to taxpayers each year, approval tops out at 92%, and there is a fix for the iPhone bug that left half the screen blank.</li>'+
+ '<li><b>Risk is real now.</b> Startups mostly fail, with a hidden quality you cannot see, so you have to spread your bets. The sovereign fund has fees, crashes, bond losses and shrinking returns at scale. And black swans arrive, more often when the city is rich, happy, calm and taking no risks. A strategy of pouring everything into ventures and the fund no longer covers the future.</li>'+
  '<li><b>Beyond Type III, and money that does not pile up forever.</b> Types IV and V with Dark-energy taps and Universe forges, megaproject income that saturates, upkeep that follows income, renewal that follows value, public costs that rise with wealth, contractors who charge a rich treasury more, a mood bonus for prosperity, and credit and bankruptcy lines that scale with the economy. Funded renewal now heals infrastructure, and utility planners also add sewage and garbage capacity.</li>'+
  '<li><b>Underground pipes and cables.</b> Water pipes now run underground, beneath roads and buildings. Underground power cables are an upgrade (Underground cables). Buried lines cannot burn or be torn out by a tornado.</li>'+
  '<li><b>Utility planners and quicker repairs.</b> Power and water keep pace with the city on their own, rebuilt plants return within a couple of months, and a sudden loss can no longer empty a city in a few months. In my 75-year test games the collapses went from about 1 in 2 to none in 16.</li>'+
- '<li><b>Fixing the late-game collapse.</b> A disaster could wreck roads, lines and pipes, and nothing rebuilt them, so coverage vanished, buildings decayed and the population melted away while space income kept piling up. Repair crews now rebuild what disasters destroy, buildings pass power and water along to their neighbours, and space income scales with how many people live in the city. In my simulations the collapse went from 3 in 8 long games to 0 in 8.</li>'+
+ '<li><b>Fixing the late-game collapse.</b> A disaster could wreck roads, lines and pipes, and nothing rebuilt them, so coverage vanished, buildings decayed and the population melted away while space income kept piling up. Repair crews now rebuild what disasters destroy, buildings pass power and water along to their neighbors, and space income scales with how many people live in the city. In my simulations the collapse went from 3 in 8 long games to 0 in 8.</li>'+
  '<li><b>Arterial roads, a local projects tax with pet projects, a bigger dividend range.</b></li>'+
  '<li><b>Difficulty.</b> Relaxed, Normal or Hard, chosen when you found a city and changeable in the Menu. It scales shocks, costs, inflation pressure, luck, starting cash and score.</li>'+
- '<li><b>Cities that look like their era.</b> Building colours, rooftop solar, glowing beacons, smart roads, pods and hover traffic, cleaner factories and lusher ground follow your era.</li>'+
- '<li><b>Display and accessibility.</b> Text size, high contrast, colour-blind safe colours, easy-to-read font, big touch targets, reduced motion, theme and fast graphics. Also a fuller Menu with Achievements, Chronicle, Share and Playtest report.</li>'+
+ '<li><b>Cities that look like their era.</b> Building colors, rooftop solar, glowing beacons, smart roads, pods and hover traffic, cleaner factories and lusher ground follow your era.</li>'+
+ '<li><b>Display and accessibility.</b> Text size, high contrast, color-blind safe colors, easy-to-read font, big touch targets, reduced motion, theme and fast graphics. Also a fuller Menu with Achievements, Chronicle, Share and Playtest report.</li>'+
  '<li><b>Desktop floating panels.</b> Wide screens now use floating panels over the map like a phone, with a side-panel option.</li>'+
  '<li><b>New scenarios for the long game.</b> Reach for the Stars, Century City, Align the AI, The Space Age and Volcker Shock, three of them starting with a ready-made city. Scenarios are grouped, and you can play any of them without the deadline.</li>'+
  '<li><b>Playtest report.</b> In the Menu or the Goals panel, a short snapshot of your city (rates, inflation, credibility, taxes, automation, world events, recent headlines) with a box for what felt off. Copy it and send it along, optionally with a save code so the exact city can be loaded.</li>'+
@@ -3730,7 +3848,7 @@ function setOverlay(n){
 }
 function cycleOverlay(){setOverlay((overlay+1)%OV_NAMES.length);toast('Map layer: '+OV_NAMES[overlay]);}
 
-/* ================= colours ================= */
+/* ================= colors ================= */
 var shadeCache={};
 function shade(hex,f){
   var k=hex+f;if(shadeCache[k])return shadeCache[k];
@@ -3911,7 +4029,7 @@ function drawConstruction(left,total){
 }
 function drawObject(i,t,l,detail,x,y,g){
   var seed=(x*7+y*13)|0,lit=litColor(),dk='rgba(40,58,90,.55)',k,ob=BYT[t];
-  if(ob&&ob.build&&L[i]>0){drawConstruction(L[i],ob.build);return;}
+  if(ob&&ob.build&&L[i]>0){drawConstruction(L[i],bMon(ob));return;}
   switch(t){
     case GAS:
       boxL(0.1,0.38,0.9,0.92,0,0.7,CL.plant);cyl(0.28,0.2,0.07,0,1.7,'#9aa3ab');cyl(0.52,0.2,0.07,0,1.7,'#9aa3ab');
@@ -4469,10 +4587,19 @@ function measureBar(){
   var b=document.querySelector('.bar');if(!b||!b.offsetHeight)return;
   try{document.documentElement.style.setProperty('--bar-h',b.offsetHeight+'px');}catch(e){}
 }
+/* iPhone Safari can report a stale, too-small innerHeight while sheets open or toolbars move. Take the largest honest height, and keep checking. */
+var lastVH=0;
+function viewH(){
+  var vv=window.visualViewport,h=window.innerHeight||0;
+  if(vv&&vv.height>h)h=vv.height;
+  return Math.round(h||700);
+}
+function vpCheck(){var h=viewH();if(h!==lastVH){lastVH=h;resize();}}
 function resize(){
+  lastVH=viewH();
   measureBar();
   var board=$('board'),dpr=Math.min(lowGfx?1:2,window.devicePixelRatio||1),cv=$('cv');
-  try{document.documentElement.style.setProperty('--app-h',(window.innerHeight||700)+'px');}catch(e){}
+  try{document.documentElement.style.setProperty('--app-h',viewH()+'px');}catch(e){}
   var bw=Math.max(200,board.clientWidth||360),bh=board.clientHeight||0;
   if(bh<180)bh=Math.round(clamp((window.innerHeight||700)*0.45,260,520));
   VW=bw;VH=bh;cv.width=Math.round(bw*dpr);cv.height=Math.round(bh*dpr);
@@ -5010,7 +5137,7 @@ function firmCard(f){
   return h+'</div>';
 }
 function venturesBody(){
-  var h='<p class="hint">Portfolio value '+money(portfolioValue())+'. Stocks are at '+Math.round(S.mkt)+(mktSentiment()>0?', trending up, so IPO windows are open':', trending down, so IPOs may wait')+'. Startups can fail, dilute you, or list and pay off big.</p>',n=0;
+  var h='<p class="hint">Portfolio value '+money(portfolioValue())+'. Stocks are at '+Math.round(S.mkt)+(mktSentiment()>0?', trending up, so IPO windows are open':', trending down, so IPOs may wait')+'. Most startups fail. Perhaps half are duds that return nothing, a quarter limp along, and only a few in a hundred become giants. You cannot see which is which, so spread your bets. Founders will not sell more than 40%.</p><p class="hint">Surprise risk: '+swanWord(E&&E.swan!==undefined?E.swan:0)+'. It rises when the city is rich, happy and calm and is taking no risks.</p>',n=0;
   for(var i=0;i<S.firms.length;i++){if(S.firms[i].stage!=='dead'){h+=firmCard(S.firms[i]);n++;}}
   if(!n)h+='<p class="hint">No ventures yet. Finish a research project or run a lab and startups will appear here.</p>';
   return h;
@@ -5028,7 +5155,7 @@ function dealsBody(){
 }
 function fundBody(){
   var f=S.fund,mx=fundMix(),h='';
-  h+='<p class="hint">A sovereign wealth fund saves today\u2019s surplus for tomorrow. It invests in stocks, bonds and cash, and can pay a steady share into your budget each month, the way real national funds follow a payout rule.</p>';
+  h+='<p class="hint">A sovereign wealth fund saves today\u2019s surplus for tomorrow. It invests in stocks, bonds and cash, and can pay a steady share into your budget each month, the way real national funds follow a payout rule. It is not free money: it pays fees, falls in crashes and recessions, loses bond value when rates rise, and earns less as it grows large next to your economy.</p><p class="hint">Surprise risk: '+swanWord(E&&E.swan!==undefined?E.swan:0)+'. It rises when the city is rich, happy and calm and is taking no risks.</p>';
   h+='<div class="diag"><div>Fund balance<b>'+money(f.bal)+'</b></div><div>Last month\u2019s return<b>'+(f.last>=0?'+':'')+(f.last*100).toFixed(1)+'%</b></div><div>Cash on hand<b>'+money(S.cash)+'</b></div><div>Payout this month<b>'+money(f.bal*f.payout/1200)+'</b></div></div>';
   h+='<div class="btns" style="margin:10px 0 4px"><button class="sm" data-act="fdep" data-amt="10000">Deposit $10,000</button><button class="sm" data-act="fdep" data-amt="50000">Deposit $50,000</button><button class="sm" data-act="fdep" data-amt="q">Deposit 25% of cash</button></div>';
   h+='<div class="btns"><button class="sm" data-act="fwd" data-amt="10000">Withdraw $10,000</button><button class="sm" data-act="fwd" data-amt="50000">Withdraw $50,000</button><button class="sm" data-act="fwd" data-amt="all">Withdraw all</button></div>';
@@ -5506,6 +5633,10 @@ function wire(){
   document.addEventListener('visibilitychange',function(){if(document.hidden)save();});
   window.addEventListener('pagehide',save);
   window.addEventListener('resize',resize);
+  setInterval(vpCheck,1000);
+  ['pageshow','orientationchange','focus'].forEach(function(ev){window.addEventListener(ev,function(){setTimeout(vpCheck,50);setTimeout(vpCheck,400);});});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){setTimeout(vpCheck,50);setTimeout(vpCheck,400);}});
+  if(window.visualViewport){try{window.visualViewport.addEventListener('resize',vpCheck);}catch(x){}}
   if(window.ResizeObserver)new ResizeObserver(resize).observe($('board'));
   if(window.ResizeObserver){var bro=document.querySelector('.bar');if(bro)new ResizeObserver(measureBar).observe(bro);}
   try{new MutationObserver(function(){dirty=true;if(sheetKind==='econ')refreshEcon();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});}catch(x){}
@@ -5522,7 +5653,7 @@ var lastT=0,acc=0,compact=false,lastAmb=0;
 function frame(t){
   var dt=Math.min(250,t-lastT);lastT=t;
   if(S&&!S.over&&speed>0&&!sheetKind&&!splashOpen){
-    acc+=dt;var per=[0,1100,520,200][speed];
+    acc+=dt;var per=(speed>0?1000*eraMul()/speed:0)*paceMul();
     while(acc>=per){acc-=per;tick();if(!S||S.over||splashOpen)break;}
   }else acc=0;
   if(fling){var dtf=Math.min(50,t-(fling.last||t));fling.last=t;panBy(fling.vx*dtf,fling.vy*dtf);var dec=Math.pow(0.93,dtf/16);fling.vx*=dec;fling.vy*=dec;if(Math.hypot(fling.vx,fling.vy)<0.02)fling=null;}
@@ -5542,7 +5673,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
