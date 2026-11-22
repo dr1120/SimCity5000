@@ -80,6 +80,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .tool.lock{opacity:.55}
 .bar{flex:none;display:flex;gap:6px;align-items:center;justify-content:space-between}
 .barTop,.barBtm{display:contents}
+/* every button in the dock is the same height, including the speed control and its border */
+.bar{--dock-btn:38px}
+html[data-touch="l"] .bar{--dock-btn:44px}
+.bar .act,.bar .seg{height:var(--dock-btn);min-height:0;box-sizing:border-box}
+.bar .seg button{height:100%;min-height:0}
+html[data-touch="l"] .bar .act,html[data-touch="l"] .bar .seg button{min-height:0}
 .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--btn)}
 .seg button{background:transparent;border:0;padding:8px 9px;font-weight:700;min-width:36px;display:flex;align-items:center;justify-content:center}
 .seg button.on{background:var(--btnOn);color:var(--btnOnInk)}
@@ -88,6 +94,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .tabs{margin:8px 0 10px}
 .tabs+.tabs{margin-top:-4px}
 .tabs button{flex:1;font-size:0.875rem;white-space:nowrap;padding:10px 6px}
+.tabs.five button,.tabs.four button{font-size:0.8125rem;padding:10px 2px}
 .field{width:100%;font:inherit;font-size:1.062rem;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);-webkit-user-select:text;user-select:text;resize:none}
 .scn{display:block;width:100%;text-align:left;background:var(--btn);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin:6px 0}
 .scn b{display:block;font-size:0.9375rem}.scn span{display:block;font-size:0.7812rem;color:var(--muted);margin-top:2px}
@@ -124,6 +131,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .overlay.center{align-items:center;padding:16px}
 .sheet,.card{width:100%;max-width:480px;background:var(--panel);color:var(--ink);overflow:auto;-webkit-user-select:none;user-select:none}
 .sheet{border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh}
+/* sheets with tabs keep their top edge fixed, so switching tabs never makes the window jump */
+.overlay.anchorTop{align-items:flex-start;padding-top:var(--sheet-top,92px)}
+.overlay.anchorTop .sheet{border-radius:18px;max-height:calc(100% - 10px)}
 .card{border-radius:18px;padding:20px;max-height:92vh;border:1px solid var(--line)}
 .sh-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 h1{margin:0 0 6px;font-size:2.125rem;font-weight:800;letter-spacing:-.02em;line-height:1}
@@ -243,6 +253,7 @@ button:disabled{opacity:.4;cursor:default}
   .advpop{top:96px}
   .bar{bottom:6px;display:flex;flex-direction:column;gap:6px;align-items:stretch}
   .barTop,.barBtm{display:flex;gap:6px;align-items:center}
+  .barTop{align-items:flex-end}
   .barTop #trayBtn{flex:1 1 auto;min-width:0}
   .barBtm button{flex:1 1 0;min-width:0;padding-left:4px;padding-right:4px}
   .bar .seg{flex:0 0 auto}
@@ -259,10 +270,12 @@ button:disabled{opacity:.4;cursor:default}
   #app.chips .econ{top:50px}
   .advpop{top:50px}
   .floaters{bottom:calc(var(--bar-h,44px) + 12px)}
-  .bar{bottom:6px;right:calc(var(--ir) + 62px)}
+  .bar{bottom:6px;right:calc(var(--ir) + 62px);align-items:flex-end}
+  .bar #mm{position:static;flex:0 0 auto;width:64px;height:64px}
   #app.tray .trayBox{right:calc(var(--ir) + 62px)}
   #mm{bottom:calc(var(--bar-h,44px) + 12px)}
-  .legend{bottom:calc(var(--bar-h,44px) + 12px)}
+  .legend{left:8px;bottom:calc(var(--bar-h,44px) + 12px)}
+  .overlay.anchorTop{padding-top:8px}
   .toast{bottom:calc(var(--bar-h,44px) + 24px)}
 }
 @media (min-aspect-ratio:11/10) and (min-width:560px) and (min-height:520px){
@@ -376,6 +389,9 @@ html[data-motion="reduce"] *{transition:none !important;animation:none !importan
 .dsrow small{display:block;color:var(--muted);font-size:.78rem;margin-top:3px}
 .dseg{display:flex;gap:6px}.dseg button{flex:1}
 .skip{position:absolute;left:-999px;top:0;background:var(--btnOn);color:var(--btnOnInk);padding:8px 12px;z-index:50;border-radius:8px}.skip:focus{left:8px;top:8px}
+@media (min-aspect-ratio:11/10) and (min-width:560px) and (min-height:520px){.overlay.anchorTop{padding-top:5vh}}
+@media (min-aspect-ratio:11/10) and (min-width:560px) and (max-width:759px) and (max-height:519px){.legend{left:100px}.bar .act{padding-left:8px;padding-right:8px;font-size:0.8125rem}}
+@media (max-width:340px){.tabs button,.tabs.five button,.tabs.four button{font-size:0.7rem;padding-left:2px;padding-right:2px}}
 </style>
 </head>
 <body>
@@ -428,7 +444,7 @@ html[data-motion="reduce"] *{transition:none !important;animation:none !importan
       <button class="act" id="btnPolicy">Policy</button>
       <button class="act" id="btnSociety">Society</button>
       <button class="act" id="btnEcon">Economy</button>
-      <button class="act" id="btnCorp">Corp</button>
+      <button class="act" id="btnCorp">Corporate</button>
     </div>
   </div>
 </div>
@@ -1127,7 +1143,7 @@ function computeEconomy(){
   var sold=Math.min(need,produced+imported),shopFill=need>0?sold/need:1;
   var exports=Math.max(0,produced-need)*3.5*(S.recession>0?0.5:1)*(A.airport?1.35:1)*clamp(1-mc.trade,0.3,1.5)*(S.tech.orbital?1.2:1)*(S.alien==='friend'?1.3:1)*(1+Math.min(0.2,ppm.trade||0));
   var wage=90*lb.wageMul*(S.recession>0?0.85:1);
-  var schC=g.schCov*dem.schD,hd=hoodMods(),hl=healthMods(),jm=justiceMods(),hm=housingMods(),imm=immMods(),crimeNow=(S.crimeRate===undefined?8:S.crimeRate),crimeDrag=1-clamp((crimeNow-10)*0.004,0,0.25);
+  var schC=g.schCov*dem.schD,rg=regionMods(),hd=hoodMods(),hl=healthMods(),jm=justiceMods(),hm=housingMods(),imm=immMods(),crimeNow=(S.crimeRate===undefined?8:S.crimeRate),crimeDrag=1-clamp((crimeNow-10)*0.004,0,0.25);
   var incTax=tx.inc/100*((employed-empT)*wage+empT*wage*1.8)*(1+0.05*schC*sp.edu)*(A.univ?1.04:1)*((S.tech.agi&&!(S.aiBust>0))?(ord.breaker?1.08:1.15):1)*(1+0.2*ad*sk-0.08*ad*(1-sk))*imm.taxMul;
   var sx1=tx.sales+(tx.splost?1:0),salesVol=sold*clamp(1-0.025*(sx1-6),0.6,1.15)*(S.stim>0?1.12:1);
   var saleTax=tx.sales/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);
@@ -1141,7 +1157,7 @@ function computeEconomy(){
   var orb=Math.max(0,mc.orbit||0),launch=A.spaceport*2500*(S.tech.orbital?2:1)*(S.tech.antimatter?1.25:1)*(d[ELEV]>0?3:1)*(1-Math.min(0.9,orb*0.8))*spaceConf*humanF,mining=S.tech.asteroid?A.spaceport*1500*clamp(1+(mc.ore||0),0.2,2)*spaceConf*humanF:0,fundPay=S.fund.bal*S.fund.payout/1200;
   var fares=Math.min(S.pop*0.12,A.stn*220)*1.5;
   var tradeIn=expMW*6*npx+expW*2.5*npx,tradeOut=impMW*40*npx+impW*8*npx;
-  var revenue=incTax+saleTax+propTax+bizTax*imm.bizMul*crimeDrag+exports+dividends+tourism*crimeDrag*hm.tourMul*hd.tourMul+cloud+tradeIn+fares+recySales+launch+mining+fundPay+spaceEcon+botTax;
+  var revenue=incTax+saleTax+propTax+bizTax*imm.bizMul*crimeDrag*rg.bizMul+exports+dividends+tourism*crimeDrag*hm.tourMul*hd.tourMul*rg.tourMul+cloud+tradeIn+fares+recySales+launch+mining+fundPay+spaceEcon+botTax;
   var fuelC=Math.max(0.5,1+0.9*mc.energy+0.5*S.shock),fuelG=Math.max(0.5,1+1.4*mc.energy+0.8*S.shock),fuelN=Math.max(0.7,1+0.1*mc.energy+0.1*S.shock),infCost=1+Math.max(0,S.infl-3)*0.012;
   var wealthF=Math.min(2,1+0.22*Math.max(0,Math.log10(Math.max(1,revenue/Math.max(1,S.pop))/12)));
   var creep=(1+0.0012*Math.min(S.month,480))*dm('cost')*wealthF,wear=1+(1-S.cond)*1.2;
@@ -1167,7 +1183,7 @@ function computeEconomy(){
   var hcCreep=(1+0.0015*Math.min(S.month,420))*dm('cost')*wealthF,healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad)*dem.hMul*lb.svcMul+hl.healthExtra;
   var crimeIdx=clamp((1-g.polCov)*0.6+unemp*0.8,0,1),overtime=S.pop*0.05*crimeIdx*creep;
   var resilUp=(d[LEVEE]*3+d[RESV]*30)*sp.infra+(ord.retrofit?S.pop*0.12:0);
-  var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+retrainCost+aiCost+outage+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend+imm.welfare+imm.cost+hm.cost+jm.cost+dem.cost+mandate+fin.contribCost+fin.grantCost+hl.cost+hd.cost;
+  var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+retrainCost+aiCost+outage+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend+imm.welfare+imm.cost+hm.cost+jm.cost+dem.cost+mandate+fin.contribCost+fin.grantCost+hl.cost+hd.cost+rg.cost;
   var wfFrac=Math.min(1,welfare/(S.pop*3+200));
   var afQ=clamp(1.55-0.55*S.hpi/100*mort/5.5,0.15,1.15),socNeed=S.pop*(0.04+0.9*unemp+0.5*Math.max(0,1-afQ))*creep*(1+0.8*Math.max(0,ineq-0.3))*(1-0.15*Math.min(1,sp.udiv||0))*(1-0.01*dem.fam)*lb.socMul,socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
   socNeed+=(imm.socExtra+hm.socExtra)*creep;socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
@@ -1181,7 +1197,7 @@ function computeEconomy(){
   h+=Math.min(0.12,ppm.mood||0)+0.008*Math.min(8,sp.udiv||0)+0.04*g.nukeShare+((S.auto&&S.auto.psc>=12)?0.05:0)-0.15*Math.max(0,ineq-0.4)-(S.xp||0);h=clamp(h,0.15,1.25);
   var payIdx=S.hpi/100*mort/5.5,af=clamp(1.55-0.55*payIdx+0.06*(sp.udiv||0),0.15,1.15);
   var jf=workforce>0?clamp(jobsEff/workforce,0.3,1):1;
-  var hPop=(S.hs===undefined)?h:S.hs,target=g.resCap*hm.capMul*Math.min(1,af*Math.min(hPop,1)*(0.5+0.5*jf)*1.15)*(1-clamp((crimeNow-25)*0.004,0,0.2))*hm.popMul*hd.popMul;
+  var hPop=(S.hs===undefined)?h:S.hs,target=g.resCap*hm.capMul*Math.min(1,af*Math.min(hPop,1)*(0.5+0.5*jf)*1.15)*(1-clamp((crimeNow-25)*0.004,0,0.2))*hm.popMul*hd.popMul*rg.popMul;
   var occ=g.resCap>0?S.pop/(g.resCap*hm.capMul):1;
   var appetite=clamp(1.25-(mort-4)*0.15,0.05,1.25)*(1+0.35*Math.max(0,1-S.month/36))/Math.pow(supply,0.7)*(1-Math.max(0,tx.inc-10)*0.04)*(1-Math.max(0,tx.corp-10)*0.015)
         *(S.recession>0?0.85:1)*(A.metro?1.05:1)*(S.infl<0?0.8:1)*hm.appMul;
@@ -1201,10 +1217,10 @@ function computeEconomy(){
   e.produced=produced;e.need=need;e.imported=imported;e.sold=sold;e.shopFill=shopFill;e.exports=exports;
   e.pwUse=(g.pCap+impMW)>0?pwD/(g.pCap+impMW):(pwD>0?9.99:0);e.wUse=(wCap+impW)>0?wD/(wCap+impW):(wD>0?9.99:0);
   e.sw=sw;e.gb=gb;e.cong=cong;e.pollAvg=g.pollAvg;e.expMW=expMW;e.impMW=impMW;e.expW=expW;e.impW=impW;
-  e.rev=[['State and federal aid',aid],['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax*imm.bizMul*crimeDrag],['Exports',exports],['Dividends',dividends],['Tourism',tourism*crimeDrag*hm.tourMul*hd.tourMul],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
-  e.exp=[['Public services',services],['Immigrant services',imm.welfare],['Immigration control',imm.cost],['Housing programs',hm.cost],['Justice system',jm.cost],['Family support',dem.cost],['Unfunded mandates',mandate],['Pension contributions',fin.contribCost],['Grant office',fin.grantCost],['Public health programs',hl.cost],['Neighborhood programs',hd.cost],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
+  e.rev=[['State and federal aid',aid],['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax*imm.bizMul*crimeDrag*rg.bizMul],['Exports',exports],['Dividends',dividends],['Tourism',tourism*crimeDrag*hm.tourMul*hd.tourMul*rg.tourMul],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
+  e.exp=[['Public services',services],['Immigrant services',imm.welfare],['Immigration control',imm.cost],['Housing programs',hm.cost],['Justice system',jm.cost],['Family support',dem.cost],['Unfunded mandates',mandate],['Pension contributions',fin.contribCost],['Grant office',fin.grantCost],['Public health programs',hl.cost],['Neighborhood programs',hd.cost],['Regional competition',rg.cost],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.crimeT=crimeTarget({unemp:unemp,ineq:ineq,socCov:socCov,polCov:g.polCov,safety:sp.safety,mood:(S.hs===undefined?0.7:S.hs),ii:imm.ii,sanct:!!(S.imm&&S.imm.sanct),homeless:hm.rate,jmul:jm.mul,addict:hl.crimeAdd,hcm:hd.crimeMul});e.crime=crimeNow;e.imm=imm;e.hm=hm;e.jm=jm;e.dem=dem;e.lb=lb;e.fin=fin;e.hl=hl;e.hd=hd;e.aid=aid;e.mandate=mandate;e.penGross=penGross;e.penDraw=penDraw;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.crimeT=crimeTarget({unemp:unemp,ineq:ineq,socCov:socCov,polCov:g.polCov,safety:sp.safety,mood:(S.hs===undefined?0.7:S.hs),ii:imm.ii,sanct:!!(S.imm&&S.imm.sanct),homeless:hm.rate,jmul:jm.mul,addict:hl.crimeAdd,hcm:hd.crimeMul});e.crime=crimeNow;e.imm=imm;e.hm=hm;e.jm=jm;e.dem=dem;e.lb=lb;e.fin=fin;e.hl=hl;e.hd=hd;e.rg=rg;e.aid=aid;e.mandate=mandate;e.penGross=penGross;e.penDraw=penDraw;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop)*dm('infl');
@@ -1841,7 +1857,7 @@ function stepFirms(){
       if(!hasOffer&&S.month>12&&Math.random()<0.012*(S.mkt>110?1.5:1)){
         var prem=0.2+Math.random()*0.4,buyer=pick(BUYERS);
         S.offers.push({id:S.fid++,fid:f.id,buyer:buyer,prem:prem,expires:S.month+3});
-        addNews(buyer+' bids '+Math.round(prem*100)+'% above market for '+f.name+'. Check Corp > Deals.','warn');
+        addNews(buyer+' bids '+Math.round(prem*100)+'% above market for '+f.name+'. Check Corporate > Deals.','warn');
       }
     }else if(f.stage==='acquired'){
       f.acq++;if(f.acq===12)f.jobs=Math.round(f.jobs*0.6);
@@ -2255,7 +2271,7 @@ function tick(){
   if(e.g.resCap===0&&S.pop<3)S.pop=0;
   S.approval+=(e.apprTarget-S.approval)*0.2;
   if(S.approval>92)S.approval=92;  /* one-off boosts cannot lift anyone past 92% */
-  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);stepOffice(e);stepImm(e);stepHousing(e);stepJustice(e);stepDemog(e);stepLabor(e);stepFin(e);stepHealth(e);stepHoods(e);
+  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);stepOffice(e);stepImm(e);stepHousing(e);stepJustice(e);stepDemog(e);stepLabor(e);stepFin(e);stepHealth(e);stepHoods(e);stepRegion(e);
   stepDisasters(e.g);
   develop(e);
   S.month++;
@@ -2469,7 +2485,7 @@ function newGame(name,scnId){
   for(attempt=0;attempt<tries;attempt++){
     T=new Array(N).fill(EMPTY);L=new Array(N).fill(0);B=new Array(N).fill(0);F=new Uint8Array(N);FLD=new Uint8Array(N);PAR=new Int32Array(N).fill(-1);ORI=new Uint8Array(N);PU=new Uint8Array(N);pending=null;undoStack=[];undoFrame=null;
     st=genTerrain();
-    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);officeInit();immInit();housingInit();justiceInit();demogInit();laborInit();finInit();healthInit();hoodsInit();
+    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);officeInit();immInit();housingInit();justiceInit();demogInit();laborInit();finInit();healthInit();hoodsInit();regionInit();
     S.scn=sc.id;S.diff=scnDiff;if(sc.setup)sc.setup(S);
     S.noDeadline=!!scnNoDl;
     tool='inspect';group='util';speed=0;S.started=false;inspectIdx=-1;handMode=true;buildRot=0;setOverlay(0);
@@ -2557,7 +2573,7 @@ function seedOnce(spec){
     for(m=0;m<(spec.months||90);m++){S.cash=Math.max(S.cash,1e7);S.approval=Math.max(S.approval,75);S.rate=2.5;S.crises=[];S.sched=[];S.briefs=[];S.shock=0;S.recession=0;tick();}
   }finally{seeding=false;bulk=false;}
   if(!hadWater&&!(spec.keepWater))S.tech.water=true;
-  S.mayors=[];S.office={mode:'mayor'};S.scand=0;S.scandalsTotal=0;S.recallPen=0;officeInit();S.imm=null;S.crimeRate=undefined;S.regPen=0;S.crimeBump=0;immInit();S.housing=null;S.rent=undefined;S.homeless=undefined;S.burden=undefined;S.nimby=0;S.yimby=0;S.dispBump=0;housingInit();S.dem=null;S.age=null;S.popPrev=undefined;S.fert=undefined;demogInit();S.lab=null;S.wageIdx=undefined;S.union=undefined;S.unionAnger=0;S.strike=0;laborInit();S.fin=null;S.penFund=undefined;S.ratingIdx=undefined;S.revHead=undefined;finInit();S.hlth=null;S.addict=undefined;S.wave=0;S.odDeaths=0;S.odYr=0;healthInit();S.hoods=null;S.culture=undefined;S.cohes=undefined;S.dist=null;hoodsInit();S.justice=null;S.inmates=undefined;S.trust=undefined;S.recid=undefined;S.backlog=0;S.jailOver=0;justiceInit();
+  S.mayors=[];S.office={mode:'mayor'};S.scand=0;S.scandalsTotal=0;S.recallPen=0;officeInit();S.imm=null;S.crimeRate=undefined;S.regPen=0;S.crimeBump=0;immInit();S.housing=null;S.rent=undefined;S.homeless=undefined;S.burden=undefined;S.nimby=0;S.yimby=0;S.dispBump=0;housingInit();S.dem=null;S.age=null;S.popPrev=undefined;S.fert=undefined;demogInit();S.lab=null;S.wageIdx=undefined;S.union=undefined;S.unionAnger=0;S.strike=0;laborInit();S.fin=null;S.penFund=undefined;S.ratingIdx=undefined;S.revHead=undefined;finInit();S.hlth=null;S.addict=undefined;S.wave=0;S.odDeaths=0;S.odYr=0;healthInit();S.hoods=null;S.culture=undefined;S.cohes=undefined;S.dist=null;hoodsInit();S.rgn=null;S.nbr=null;S.rgnBump=0;S.rgnPull=undefined;S.rgnRank=undefined;regionInit();S.justice=null;S.inmates=undefined;S.trust=undefined;S.recid=undefined;S.backlog=0;S.jailOver=0;justiceInit();
   S.hs=undefined;S.news=[];S.chron=[];S.ach={};S.yrs=[];S.st=undefined;S.crashes=0;S.crises=[];S.sched=[];S.briefs=[];S.shock=0;S.recession=0;S.mktBubble=0;
   S.rate=4;S.prevRate=4;S.infl=2;S.mort=5.2;S.anch=1;S.rn=0;S.hpi=100;S.hpiMom=0;S.mkt=100;S.approval=70;S.hist={rate:[],mort:[],hpi:[],supply:[],pop:[],mkt:[],infl:[]};
   S.cash=cash0;undoStack=[];undoFrame=null;pending=null;tool='inspect';
@@ -2571,7 +2587,7 @@ function restore(d){
   if(!d||d.v!==3||!d.T||d.T.length!==N||!d.EL||d.EL.length!==N||!d.S)return false;
   T=d.T;L=d.L;B=d.B;TER=d.TER;EL=d.EL;F=Uint8Array.from(d.F);FLD=Uint8Array.from(d.FLD);
   PAR=Int32Array.from(d.PAR||new Array(N).fill(-1));ORI=Uint8Array.from(d.ORI||new Array(N).fill(0));PU=Uint8Array.from(d.PU||new Array(N).fill(0));S=d.S;
-  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();officeInit();immInit();housingInit();justiceInit();demogInit();laborInit();finInit();healthInit();hoodsInit();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
+  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();officeInit();immInit();housingInit();justiceInit();demogInit();laborInit();finInit();healthInit();hoodsInit();regionInit();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
   S.ord=S.ord||{recycle:false,clean:false,transit:false};S.city=S.city||'My City';S.scn=S.scn||'free';S.sandbox=!!S.sandbox;
   for(var i=0;i<N;i++){SHORE[i]=0;if(TER[i]===WATER)continue;var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}}
   tool='inspect';group='build';speed=1;inspectIdx=-1;pending=null;undoStack=[];undoFrame=null;handMode=true;buildRot=0;setOverlay(0);
@@ -2807,7 +2823,7 @@ function adviceList(e){
   if(hasBuilt&&e.cong>1.2)add('traffic','Growth','warn',3,'Mayor, traffic is jammed at '+Math.round(e.cong*100)+'% of road capacity. Add bus depots, a rail line, a metro or more roads.');
   if(hasBuilt&&e.pollAvg>0.5)add('pollution','Growth','warn',3,'Mayor, pollution is hurting residents. Use clean air rules, add parks, or keep industry away from homes.');
   if(S.varAmt>0&&S.infl>4)add('varyield','Finance','warn',3,'Mayor, you carry variable-rate debt while inflation runs hot. A rate hike would make it costlier. Consider locking a fixed bond.');
-  if(S.offers.length)add('offer','Finance','info',3,'Mayor, a takeover bid is waiting in Corp, under Deals.');
+  if(S.offers.length)add('offer','Finance','info',3,'Mayor, a takeover bid is waiting in Corporate, under Deals.');
   if(S.cond<0.85&&e.assets>3000)add('aging','Utilities',S.cond<0.7?'bad':'warn',S.cond<0.7?4:3,'Mayor, infrastructure condition is '+Math.round(S.cond*100)+'%. Pipes, wires and roads are wearing out and failures start below 75%. Raise infrastructure renewal in Policy, Spending.');
   if(S.mc.energy>0.3&&g.cnt[PLANT]+g.cnt[GAS]>0)add('wenergy','Economy','warn',3,'Mayor, world energy prices are up '+Math.round(S.mc.energy*100)+'%. Coal and gas plants cost more to run and prices are rising. Nuclear and renewables are far less exposed.');
   if(S.mc.freight>0.35&&(g.portsOK>0||g.cnt[IND]>2))add('wfreight','Economy','warn',3,'Mayor, shipping costs are up '+Math.round(S.mc.freight*100)+'%. Imported goods and construction are costing more and deliveries are late.');
@@ -2815,7 +2831,7 @@ function adviceList(e){
   if(S.mc.food>0.3&&S.pop>=100)add('wfood','Economy','warn',3,'Mayor, world food prices are up '+Math.round(S.mc.food*100)+'%. It is feeding inflation and souring mood.');
   if(S.mc.trade>0.3&&(g.portsOK>0||e.exports>0))add('wtrade','Economy','warn',3,'Mayor, trade disruption is cutting export orders and port imports. Look for new markets.');
   if(S.mc.health>0.3)add('whealth','Economy','warn',3,'Mayor, an outbreak abroad is cutting workplace output and raising service costs.');
-  if(S.pop>=100&&e.net>0&&S.cash>Math.max(60000,e.costs*24)&&S.fund.bal<S.cash*0.2)add('idlecash','Finance','info',1,'Mayor, you are sitting on '+money(S.cash)+'. Consider the sovereign fund in Corp, a capital project, or lower taxes.');
+  if(S.pop>=100&&e.net>0&&S.cash>Math.max(60000,e.costs*24)&&S.fund.bal<S.cash*0.2)add('idlecash','Finance','info',1,'Mayor, you are sitting on '+money(S.cash)+'. Consider the sovereign fund in Corporate, a capital project, or lower taxes.');
   if(S.mc.orbit>0.3&&g.cnt[SPACEPORT]>0)add('worbit','Economy','warn',3,'Mayor, orbital hazards are cutting launch and space income. Debris sweeps and hardening can help.');
   if(S.mc.ore>0.3&&S.tech.asteroid)add('wore','Economy','info',2,'Mayor, asteroid ore prices are up '+Math.round(S.mc.ore*100)+'%. Mining income is booming.');
   if(S.mc.ore<-0.3&&S.tech.asteroid)add('wore2','Economy','warn',2,'Mayor, an ore glut is cutting mining income. Cheap materials may help your builders.');
@@ -2849,13 +2865,15 @@ function adviceList(e){
   if(S.pop>=300&&S.ratingIdx>=3)add('rating','Finance','warn',S.ratingIdx>=5?4:3,'Mayor, rating agencies rate the city '+ratingName()+'. Borrowing costs more and your credit limit is smaller. Pay down debt, build reserves and fund pensions in Policy, Finance.');
   if(S.pop>=300&&S.month>240&&S.age.o>0.15&&fundedRatio()<0.25)add('pension','Finance','warn',3,'Mayor, the pension fund covers only '+Math.round(fundedRatio()*100)+'% of ten years of benefits and the city is aging. Contributions in Policy, Finance build a cushion.');
   if(S.pop>=200&&S.addict/S.pop>0.04)add('addiction','Health','warn',S.addict/S.pop>0.07?4:3,'Mayor, '+(S.addict/S.pop*100).toFixed(1)+'% of residents are struggling with addiction'+(S.wave>0?' and a deadly drug wave is running':'')+'. It drives crime, homelessness and health costs. Treatment and harm reduction in Society, Health bring it down.');
-  if(S.pop>=200&&hoodAvg('gent')>0.4)add('gentry','Culture','warn',3,'Mayor, old neighborhoods are being priced out: '+Math.round(hoodAvg('gent')*100)+'% gentrified and '+Math.round(hoodAvg('char')*100)+'% of their character left. Neighborhood protection in Society, Neighborhoods slows it.');
+  if(S.pop>=200&&hoodAvg('gent')>0.4)add('gentry','Culture','warn',3,'Mayor, old neighborhoods are being priced out: '+Math.round(hoodAvg('gent')*100)+'% gentrified and '+Math.round(hoodAvg('char')*100)+'% of their character left. Neighborhood protection in Society, Community slows it.');
   if(S.pop>=300&&S.cohes<0.4)add('cohesion','Culture','warn',3,'Mayor, the city feels divided: social cohesion is '+Math.round(S.cohes*100)+'%. Arts funding, neighborhood protection and slower change help bring people together.');
+  if(S.pop>=300&&S.rgn&&regionMods().gap>2)add('bizgap','Region','warn',3,'Mayor, your business tax is '+regionMods().gap.toFixed(1)+' points above your neighbors\u2019 and employers are being lured away. Cut it, or offer incentives in Society, Region.');
+  if(S.pop>=300&&S.rgnRank>=4)add('rank','Region','info',2,'Mayor, you are the least attractive of the four cities in the region. Residents and firms are leaving for the neighbors. Safety, jobs, rents and your taxes all count.');
   if(S.pop>=200&&S.crimeRate>18)add('crime','Safety','warn',S.crimeRate>30?4:3,'Mayor, crime is '+S.crimeRate.toFixed(0)+' per 1,000 residents ('+crimeWord(S.crimeRate)+'). It drags on mood, business and population. Police coverage, jobs and fewer illegal residents bring it down.');
   if(S.pop>=300&&S.imm&&S.imm.ii>0.04)add('illegal','Growth','warn',3,'Mayor, about '+Math.round(S.imm.ii*100)+'% of residents are here illegally. They add to crime and social costs and pay little tax. Raise border enforcement or require employer verification.');
   if(S.pop>=300&&S.imm&&S.imm.sanct)add('sanct','Economy','warn',2,'Mayor, your sanctuary status is drawing illegal arrivals and costing you grants and business confidence.');
   if(S.pop>=300&&S.imm&&S.imm.quota===0&&e.tight>0.4)add('labor','Economy','info',1,'Mayor, employers cannot find enough workers. A legal admissions quota in Society, Immigration would help.');
-  if(g.act.lab>0&&S.rd.budget===0)add('rd','Growth','info',1,'Mayor, your labs are idle. Set an R&D budget in Corp to research new tech.');
+  if(g.act.lab>0&&S.rd.budget===0)add('rd','Growth','info',1,'Mayor, your labs are idle. Set an R&D budget in Corporate to research new tech.');
   return a;
 }
 var advBadge=false;
@@ -3292,7 +3310,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-22 15:54';
+var BUILD_ID='2026-11-22 17:15';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -3474,9 +3492,9 @@ function blocCalc(v){
   var hsg=(S&&S.housing)?S.housing:{zone:5,stab:false},bd=(S&&S.burden!==undefined)?S.burden:0.3,ny=S?(S.nimby||0):0,yy=S?(S.yimby||0):0;
   var jd=S&&S.justice?(S.justice.style-5)/5:0,jt=(S&&S.trust!==undefined)?clamp((S.trust-0.7)*20,-6,3):0;
   var tx=v.tx,hp=clamp((v.hpi-100)/100,-1.3,1.3),i,adj={},list=[],mw=0,h=S&&S.office&&S.office.hostile,im=(S&&S.imm)?S.imm:{ii:0,quota:0,verify:false,sanct:false},cr=S&&S.crimeRate!==undefined?S.crimeRate:8;
-  adj.homeowners=-(tx.prop-1)*8+hp*6-(v.mort-5)*1.2-clamp((cr-10)/20,0,1)*6-(hsg.zone-5)*0.8-ny*1.5-(hsg.stab?3:0)+3*jd-0.4*((S&&S.hlth)?S.hlth.harm:0)+4*(hoodAvg('gent')-0.05);
+  adj.homeowners=-(tx.prop-1)*8+hp*6-(v.mort-5)*1.2-clamp((cr-10)/20,0,1)*6-(hsg.zone-5)*0.8-ny*1.5-(hsg.stab?3:0)+3*jd-0.4*((S&&S.hlth)?S.hlth.harm:0)+4*(hoodAvg('gent')-0.05)-0.15*((S&&S.rgn)?S.rgn.incent:0);
   adj.renters=-8*(hoodAvg('gent')-0.05)+0.3*((S&&S.hlth)?S.hlth.harm:0)-hp*6+6*(v.socCov-0.5)-(tx.sales-6)*0.8-clamp((bd-0.3)*40,-4,12)+(hsg.zone-5)*0.8-yy*1.5+(hsg.stab?4:0)-4*jd+jt;
-  adj.business=-(tx.corp-6)*1.5+clamp((v.mkt-100)/100*6,-6,6)+4*clamp(v.tight,0,1)*Math.min(1,im.quota/6)-4*(im.verify?1:0)-3*(im.sanct?1:0)+(hsg.zone-5)*0.4-(hsg.stab?2:0)+2*jd-1.0*(((S&&S.lab)?S.lab.minw:3)-3)-0.3*(((S&&S.lab)?S.lab.pay:5)-5);
+  adj.business=-(tx.corp-6)*1.5+clamp((v.mkt-100)/100*6,-6,6)+4*clamp(v.tight,0,1)*Math.min(1,im.quota/6)-4*(im.verify?1:0)-3*(im.sanct?1:0)+(hsg.zone-5)*0.4-(hsg.stab?2:0)+2*jd-1.0*(((S&&S.lab)?S.lab.minw:3)-3)-0.3*(((S&&S.lab)?S.lab.pay:5)-5)+0.5*((S&&S.rgn)?S.rgn.incent:0);
   adj.workers=-v.unemp*60-(tx.inc-9)*1.2+4*clamp(v.tight,0,1)-im.ii*30-jd+1.5*(((S&&S.lab)?S.lab.minw:3)-3)+0.4*(((S&&S.lab)?S.lab.pay:5)-5)+0.3*(((S&&S.fin)?S.fin.benefit:5)-5)+0.2*((S&&S.hlth)?S.hlth.treat:0);
   adj.retirees=8*(v.hc-0.5)-(v.infl-2)*2.5-(tx.prop-1)*5-im.ii*25+3*jd+0.6*(((S&&S.fin)?S.fin.benefit:5)-5)-0.3*((S&&S.hlth)?S.hlth.harm:0);
   adj.young=0.05*(((S&&S.culture!==undefined)?S.culture:30)-30)+0.3*((S&&S.hlth)?S.hlth.harm:0)+0.4*((S&&S.dem)?S.dem.fam:0)+8*(v.schCov-0.5)-hp*5-v.unemp*30-clamp((bd-0.3)*30,-3,10)+(hsg.zone-5)*0.6-yy*1.5-4*jd+jt;
@@ -4439,6 +4457,105 @@ function refreshHoods(){
   set('hdNote',S.pop<100?'Neighborhoods start to matter once the city has about 100 people.':(m.gent>0.4?'Old neighborhoods are being priced out. ':'')+(m.cohes<0.4?'The city feels divided. ':'')+'Culture and cohesion shape tourism, mood and crime.');
 }
 
+/* ================= regional competition: neighboring cities, business tax wars, poaching and marketing ================= */
+/* Three neighboring cities compete with you for residents and employers. Whoever is the more attractive place to live and do business
+   draws people and firms. Neighbors set their own taxes, boom and bust, lure employers with tax breaks and sometimes lose them to you. */
+var RGN_POOL=['Ashford','Brookfield','Cedar Falls','Dunmore','Eastgate','Fairhaven','Glenwood','Hartwell','Ironbridge','Kingsley','Lakeshore','Millbrook','Northgate','Oakdale','Pinecrest','Redmond'];
+function regionInit(){
+  if(!S.rgn)S.rgn={incent:0,market:0,compact:false};
+  if(!S.nbr||S.nbr.length!==3){
+    var h=0,i,nm=String(S.city||'x');for(i=0;i<nm.length;i++)h=(h*31+nm.charCodeAt(i))>>>0;
+    var pool=RGN_POOL.filter(function(n){return n!==S.city;}),out=[];
+    while(out.length<3){var k=h%pool.length;out.push(pool.splice(k,1)[0]);h=(h*1103515245+12345)>>>0;}
+    S.nbr=out.map(function(n,j){return {n:n,base:0.5,att:0.5,inc:9,corp:6,boom:0};});
+  }
+  S.rgnBump=S.rgnBump||0;
+  if(S.rgnPull===undefined)S.rgnPull=0;
+  if(S.rgnRank===undefined)S.rgnRank=2;
+}
+function nbrAvg(k){var n=(S&&S.nbr)?S.nbr:null,i,s=0;if(!n||!n.length)return k==='att'?0.5:k==='inc'?9:6;for(i=0;i<n.length;i++)s+=n[i][k];return s/n.length;}
+function yourPull(e){
+  var tx=S.tax,r=S.rgn,burden=(S.burden===undefined?0.3:S.burden),culture=(S.culture===undefined?30:S.culture);
+  return clamp(0.5+0.004*(S.approval-70)-0.004*((S.crimeRate||8)-10)-0.6*(burden-0.3)-0.02*(tx.inc-nbrAvg('inc'))-0.3*(((e&&e.unemp)||0.04)-0.04)+0.003*(culture-30)+0.02*r.market,0.05,0.95);
+}
+function regionMods(){
+  var r=(S&&S.rgn)?S.rgn:{incent:0,market:0,compact:false},pop=S?S.pop:0,tx=S?S.tax:{corp:6};
+  var rel=(S&&S.rgnPull!==undefined&&S.nbr)?S.rgnPull-nbrAvg('att'):0;
+  var gap=(tx.corp||6)-nbrAvg('corp');
+  var inc=0.2*(1-Math.exp(-r.incent/5));
+  return {
+    popMul:clamp(1+0.25*rel,0.88,1.12),
+    bizMul:clamp(1-0.015*gap+inc+(S&&S.rgnBump?S.rgnBump:0),0.7,1.35),   /* firms drift to the cheaper, more generous city */
+    tourMul:1+0.03*r.market,
+    cost:Math.round(r.incent*pop*0.03+r.market*pop*0.03+(r.compact?pop*0.02:0)),
+    rel:rel,gap:gap,incent:r.incent,market:r.market,compact:r.compact
+  };
+}
+function stepRegion(e){
+  regionInit();
+  var r=S.rgn,i,pop=S.pop;
+  /* the neighbors drift: taxes wander, fortunes rise and fall */
+  for(i=0;i<S.nbr.length;i++){
+    var n=S.nbr[i];
+    n.inc=clamp(n.inc+(Math.random()-0.5)*0.05+(9-n.inc)*0.002,5,13);
+    n.corp=clamp(n.corp+(Math.random()-0.5)*0.04+(6-n.corp)*0.002,3,10);
+    if(n.boom!==0){n.boom+=(n.boom>0?-1:1);if(Math.abs(n.boom)<2)n.boom=0;}
+    var tgt=n.base+(n.boom>0?0.14:n.boom<0?-0.14:0);
+    n.att=clamp(n.att+(tgt-n.att)*0.04+(Math.random()-0.5)*0.01,0.15,0.9);
+    if(pop>=200&&n.boom===0&&Math.random()<0.003*dm('ev')){
+      var up=Math.random()<0.5;n.boom=up?24:-24;
+      addNews(n.n+(up?' is booming. New employers and residents are flocking there.':' is hit by layoffs and people are leaving.'),'info','Region');
+    }
+  }
+  S.rgnPull+=(yourPull(e)-S.rgnPull)*0.1;
+  var all=[S.rgnPull].concat(S.nbr.map(function(n){return n.att;})),rank=1;
+  for(i=1;i<all.length;i++)if(all[i]>S.rgnPull)rank++;
+  S.rgnRank=rank;
+  S.rgnBump*=0.985;if(Math.abs(S.rgnBump)<0.002)S.rgnBump=0;
+  if(pop<300)return;
+  var m=regionMods(),cm=r.compact?0.5:1;
+  /* a neighbor lures an employer away with tax breaks, likelier when your business tax is higher */
+  if(Math.random()<0.004*(1+0.15*Math.max(0,m.gap))*(1-0.06*r.incent)*cm*dm('ev')){
+    var who=S.nbr[Math.floor(Math.random()*3)].n;
+    S.rgnBump=Math.max(-0.2,S.rgnBump-0.1);S.approval=Math.max(0,S.approval-1);
+    addNews(who+' lures a major employer away with a package of tax breaks. Business revenue takes a hit.','bad','Region');
+  }
+  /* you lure one away, likelier with generous incentives and a strong pull */
+  if(Math.random()<0.003*(1+0.2*r.incent)*(m.rel>0?1.3:0.8)*cm*dm('ev')){
+    var from=S.nbr[Math.floor(Math.random()*3)].n,c=Math.round(pop*4);
+    S.rgnBump=Math.min(0.15,S.rgnBump+0.08);S.cash+=c;S.approval=Math.min(92,S.approval+1);
+    addNews('You lure an employer away from '+from+'. Jobs and a '+money(c)+' relocation payment arrive.','good','Region');
+  }
+}
+
+/* ---- the Region tab in Society ---- */
+function renderRegion(body){
+  body.innerHTML='<div class="diag"><div>Regional rank<b id="rgRank"></b></div><div>Your pull<b id="rgPull"></b></div><div>Business tax gap<b id="rgGap"></b></div><div>Monthly cost<b id="rgCost"></b></div></div>'
+   +'<p class="hint" id="rgNote"></p><div id="rgRows"></div>'
+   +'<h3>Competing</h3>'+sliderRow('rgInc','Business incentives',0,10,1)+sliderRow('rgMkt','City marketing',0,10,1)
+   +'<div class="btns col"><button class="sm" data-pol="rgn" data-k="compact" id="rgCmp"></button></div>'
+   +'<p class="hint">Business incentives (tax breaks and site help) raise business revenue and lure employers, with diminishing returns, and make it harder for neighbors to poach yours. City marketing draws residents and tourists. A regional compact halves both the poaching and the luring, which steadies the region, and brings a little extra state aid. All cost money every month.</p>'
+   +'<p class="hint">Your pull comes from approval, safety, affordable rent, jobs, culture and what you tax. Residents and firms drift toward the more attractive city. If your income tax or business tax runs above your neighbors\u2019, you lose ground.</p>';
+  bindSlider('rgInc',function(){return S.rgn.incent;},function(v){S.rgn.incent=Math.round(v);},function(v){return v===0?'None':String(v);});
+  bindSlider('rgMkt',function(){return S.rgn.market;},function(v){S.rgn.market=Math.round(v);},function(v){return v===0?'None':String(v);});
+  refreshRegion();
+}
+function refreshRegion(){
+  if(!$('rgRank'))return;
+  var m=regionMods(),set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('rgRank',S.rgnRank+' of 4');set('rgPull',(m.rel>=0?'+':'')+Math.round(m.rel*100)+' vs neighbors');
+  set('rgGap',(m.gap>=0?'+':'')+m.gap.toFixed(1)+' pts');set('rgCost',money(m.cost));
+  var rows='<div class="diag">',i;
+  for(i=0;i<S.nbr.length;i++){var n=S.nbr[i];rows+='<div>'+n.n+(n.boom>0?' (booming)':n.boom<0?' (struggling)':'')+'<b>pull '+Math.round(n.att*100)+', income tax '+n.inc.toFixed(1)+'%, business tax '+n.corp.toFixed(1)+'%</b></div>';}
+  rows+='</div>';var el=$('rgRows');if(el)el.innerHTML=rows;
+  set('rgNote',S.pop<200?'The region starts to matter once the city has about 200 people.':'Your pull is '+Math.round(S.rgnPull*100)+' and the neighbors average '+Math.round(nbrAvg('att')*100)+'. '+(m.gap>1?'Your business tax is above theirs, so firms are looking elsewhere.':m.gap<-1?'Your business tax undercuts theirs.':'Your business tax is in line with theirs.'));
+  set('rgCmp','Regional compact: '+(S.rgn.compact?'on':'off'));
+}
+function setRegion(k){
+  if(locked()){lockMsg();return;}
+  if(k==='compact'){S.rgn.compact=!S.rgn.compact;addNews(S.rgn.compact?'The city joined a regional compact with its neighbors. Poaching eases on both sides.':'The city left the regional compact.','info','Region');}
+}
+
 /* ================= the manual ================= */
 var GUIDE=[
 {id:'g-goal',title:'The goal and how the game works',
@@ -4451,7 +4568,7 @@ var GUIDE=[
  brief:'The map is in the middle. Numbers across the top show your money and the economy. Tools are at the bottom. Drag to move the map, tap to build, pinch to zoom.',
  more:'<p><b>Top:</b> your city name (tap it to collapse the stats), Goals for what to do next, advice and objectives, and Menu. The four boxes show Cash, People, Approval and Cash per month. The row of chips below shows the policy rate, inflation, mortgage rate, jobless rate, home prices, stocks, supply costs, power use and water use. Tap any chip to learn what it means and what to do.</p>'+
  '<p><b>Map buttons (right side):</b> zoom in and out, rotate the view, the hand button switches between pan mode (drag moves the map, tap builds) and paint mode (drag paints roads and zones), and Layers opens a list of data views to choose from.</p>'+
- '<p><b>Bottom:</b> Build opens the toolbox, with five tabs: Build (zoning and districts), Utilities (power, water and waste), Services (police, fire, schools, parks), Transport (roads, buses, rail, metro, port, airport) and Growth (labs, university, data center, exchange, stadium, convention). The bottom dock has two rows. The top row holds the minimap, the pause and speed buttons and Build. The bottom row holds Policy (money: interest rates, taxes, spending, finance, books), Society (housing, justice, people, health, immigration), Economy and Corp. On the map, a floating Undo button reverses your last build and refunds it, and a Turn button appears when you pick a long building.</p>'+
+ '<p><b>Bottom:</b> Build opens the toolbox, with five tabs: Build (zoning and districts), Utilities (power, water and waste), Services (police, fire, schools, parks), Transport (roads, buses, rail, metro, port, airport) and Growth (labs, university, data center, exchange, stadium, convention). The bottom dock has two rows. The top row holds the minimap, the pause and speed buttons and Build. The bottom row holds Policy (money: interest rates, taxes, spending, finance, books), Society (housing, justice, people, health, immigration), Economy and Corporate. On the map, a floating Undo button reverses your last build and refunds it, and a Turn button appears when you pick a long building.</p>'+
  '<p><b>Building:</b> small things build on one tap. Big buildings show a green footprint first and ask for a second tap on the same spot. Tap a tile with the Move tool to see what it does and what it is missing.</p>'+
  '<p><b>Two fingers</b> always pan and zoom. Double-tap with the Move tool zooms in. A quick flick keeps the map gliding. The small map in the corner jumps you to any spot.</p>'},
 {id:'g-start',title:'Your first fifteen minutes',
@@ -4570,12 +4687,19 @@ var GUIDE=[
  more:'<p>Crash risk is low in normal times and climbs when the index is far above its start, when bubbles build, when you expand the balance sheet for long, and after sharp rate hikes. It only applies once the city passes about 300 people.</p>'+
  '<p><b>A crash</b> wipes out about a third of the market over three panic months, followed by a bear market. Startups lose funding and IPOs freeze. Banks tighten credit, adding 1.5 points to mortgage rates for a year. A recession follows about 60% of the time.</p>'+
  '<p><b>Deposit insurance</b> (Policy, Monetary tab) softens crashes by about a quarter but costs money every month and encourages risk. A <b>bailout</b> ends the panic and reopens credit, but traders then expect rescues. A <b>stock exchange</b> adds circuit breakers that shorten and soften crashes.</p>'},
+{id:'g-region',title:'Regional competition',
+ brief:'Three neighboring cities compete with you for residents and employers. The more attractive city draws people and firms, and neighbors lure employers away with tax breaks.',
+ more:'<p><b>Your pull.</b> Residents and firms drift toward the more attractive city. Your pull comes from approval, safety, affordable rent, jobs, culture, city marketing and what you tax. The neighbors have their own pull, set their own taxes, boom and bust. Society, Region shows your rank among the four cities, your pull against the neighbors\u2019 average and each neighbor\u2019s taxes.</p>'+
+ '<p><b>Taxes.</b> If your business tax runs above the neighbors\u2019, firms drift away and your business revenue shrinks. If your income tax runs above theirs, your pull falls and fewer people come. Undercutting them does the reverse.</p>'+
+ '<p><b>Poaching.</b> A neighbor can lure a major employer away with tax breaks, which dents your business revenue for a couple of years. It is likelier when your business tax is high. You can lure one away too, with a relocation payment, more likely when you offer incentives and are the more attractive city.</p>'+
+ '<p><b>Business incentives.</b> Tax breaks and site help. They raise business revenue and make poaching harder, with diminishing returns: the first few points pay for themselves, the last ones do not. Business owners like them and some other voters do not.</p>'+
+ '<p><b>City marketing.</b> Draws residents and tourists. <b>Regional compact:</b> halves both the poaching and the luring, which steadies the region. Everything here costs money every month and is frozen under a caretaker or control board.</p>'},
 {id:'g-hoods',title:'Neighborhoods and culture',
  brief:'Culture draws tourists and young people. Money and fashion push into old neighborhoods, raising rents and property values and pushing out the people and places that gave them their character. Cohesion is how well residents stick together.',
  more:'<p><b>Culture.</b> A score out of 100, neutral at 30. Parks, a stadium, a convention center, a university, newcomers and arts funding raise it, and a lot of crime lowers it. High culture brings tourism, lifts mood, draws young people and slightly grows the city. It also raises rents.</p>'+
  '<p><b>Gentrification.</b> Four neighborhoods, Old Town, Riverside, Midtown and Eastside, each have a gentrification level and a character level. Rising rents, rising home prices and a strong culture push money in, fastest in Old Town and slowest in Eastside. Gentrified neighborhoods pay more property tax and have less crime, but their longtime residents are pushed out, which adds to homelessness, and their character fades. Homeowners like it and renters do not.</p>'+
  '<p><b>Cohesion.</b> How well residents stick together. Character, culture and protection raise it. Displacement and illegal arrivals tear at it. A frayed city has more crime and gloom, and can have street clashes. Protests follow heavy displacement. A well-loved city holds the occasional street festival that fills the treasury.</p>'+
- '<p><b>Programs.</b> Arts and culture builds the culture score. Neighborhood protection (land trusts, tenant help) slows gentrification and displacement. Historic preservation keeps each neighborhood\u2019s character but trims how much housing the city can hold. They cost money every month and live in Society, Neighborhoods. A caretaker mayor or control board freezes them.</p>'},
+ '<p><b>Programs.</b> Arts and culture builds the culture score. Neighborhood protection (land trusts, tenant help) slows gentrification and displacement. Historic preservation keeps each neighborhood\u2019s character but trims how much housing the city can hold. They cost money every month and live in Society, Community. A caretaker mayor or control board freezes them.</p>'},
 {id:'g-health',title:'Public health and addiction',
  brief:'About two in a hundred residents struggle with addiction in a normal city. Joblessness, inequality, gloom and street homelessness push it up, treatment brings it down, and a deadly new street drug can sweep through for a year or two.',
  more:'<p><b>What drives it.</b> Unemployment, inequality, a gloomy mood and people sleeping rough push addiction up. Strong social services pull it down. The Economy panel and Society, Health show how many residents are in addiction, the overdose deaths over the last year and whether a drug wave is running.</p>'+
@@ -4642,10 +4766,10 @@ var GUIDE=[
  more:'<p><b>Startups.</b> Every startup has a hidden quality. About half are duds that fold, a quarter limp along and get absorbed, and the rest are solid, star or, rarely, runaway successes. Tight money, recessions and low markets shorten the odds for all of them. A random $5,000 bet returns nothing about three times in four, and about one in seven returns five times or more. Spread your bets: on average a diversified investor makes a modest profit, and one in a hundred is a giant. Founders will not sell you more than 40% of a company, and a company cannot grow beyond what its economy can support.</p>'+
  '<p><b>Public companies.</b> Shares drift with the market, but accounting scandals and bankruptcies happen. Buying or selling a large stake moves the price against you, so you cannot cheaply buy a firm and flip it into a takeover bid.</p>'+
  '<p><b>The sovereign fund.</b> It pays a 0.5% annual fee. Stocks swing hard, and in recessions they fall further. Bonds lose value when rates rise and when inflation runs hot. As the fund grows large compared with your economy, its returns shrink toward the cash rate. A balanced fund earns a few percent a year with real bad years. Cash earns the least and never loses.</p>'+
- '<p><b>Black swans.</b> These are rare, big shocks with no warning: a run on the banks, a manager who turns out to be a fraud, a supervolcano, a far deadlier pandemic, a solar storm, a payments hack, a reserve currency collapse and a city-killer asteroid. They can only happen after year 10 in a city of 300 or more, and never closer than three years apart. The more complacent the city, the likelier they are: rich in reserves, voters happy, a long calm spell and no risks being taken. Holding ventures, equities in the fund or debt counts as taking risks and lowers the odds. The Corp tabs show a Surprise risk of low, medium or high. Financial swans take a bite out of cash and the fund, so a huge pile of cash is also a huge target.</p>'},
+ '<p><b>Black swans.</b> These are rare, big shocks with no warning: a run on the banks, a manager who turns out to be a fraud, a supervolcano, a far deadlier pandemic, a solar storm, a payments hack, a reserve currency collapse and a city-killer asteroid. They can only happen after year 10 in a city of 300 or more, and never closer than three years apart. The more complacent the city, the likelier they are: rich in reserves, voters happy, a long calm spell and no risks being taken. Holding ventures, equities in the fund or debt counts as taking risks and lowers the odds. The Corporate tabs show a Surprise risk of low, medium or high. Financial swans take a bite out of cash and the fund, so a huge pile of cash is also a huge target.</p>'},
 {id:'g-corp',title:'Research, startups, IPOs and takeovers',
  brief:'Fund research to unlock new technology. Each breakthrough spins out a startup you can invest in. Startups can fail, dilute you or go public and pay off big.',
- more:'<p><b>Research:</b> open Corp, then Research. Set a monthly R&D budget (up to $20,000), pick a project, and points accumulate. Labs multiply the speed, and so do schools, universities, data centers and Applied AI. Without a lab research runs at a quarter speed.</p>'+
+ more:'<p><b>Research:</b> open Corporate, then Research. Set a monthly R&D budget (up to $20,000), pick a project, and points accumulate. Labs multiply the speed, and so do schools, universities, data centers and Applied AI. Without a lab research runs at a quarter speed.</p>'+
  '<table class="gt"><tr><th>Technology</th><th>Unlocks</th></tr>'+
  '<tr><td>Photovoltaics</td><td>Solar farms produce 50% more.</td></tr>'+
  '<tr><td>Underground cables</td><td>Power cables can be buried beneath roads and buildings. They cannot burn.</td></tr>'+
@@ -4680,7 +4804,7 @@ var GUIDE=[
  '<tr><td>Traversable wormholes</td><td>Unlocks Galactic relays. Stalls until you are Type II. Needs Matrioshka brains.</td></tr>'+
  '<tr><td>Dark-energy harvesting</td><td>Unlocks Dark-energy taps. Stalls until you are Type III. Needs Traversable wormholes and Matrioshka brains.</td></tr>'+
  '<tr><td>Universe engineering</td><td>Unlocks Universe forges. Stalls until you are Type IV. Needs Dark-energy harvesting.</td></tr></table>'+
- '<p><b>Sovereign wealth fund</b> (Corp, Fund tab): park surplus cash in a fund that invests in stocks, bonds and cash. Stocks follow the market and crash with it, bonds earn a bit above cash when rates are high. You can set a yearly payout into the budget (3% is the classic rule), withdraw any time, and let the fund auto-cover cash shortfalls. If the fund grows beyond about two years of revenue while income tax is above 9%, voters grumble.</p>'+
+ '<p><b>Sovereign wealth fund</b> (Corporate, Fund tab): park surplus cash in a fund that invests in stocks, bonds and cash. Stocks follow the market and crash with it, bonds earn a bit above cash when rates are high. You can set a yearly payout into the budget (3% is the classic rule), withdraw any time, and let the fund auto-cover cash shortfalls. If the fund grows beyond about two years of revenue while income tax is above 9%, voters grumble.</p>'+
  '<p><b>Data centers</b> are 3 by 3, must touch water for closed-loop cooling that uses none, and draw a lot of power. They bring construction work, 70 high-wage jobs, cloud revenue and faster research.</p>'+
  '<p><b>Ventures:</b> each startup shows its value, runway and your stake. Invest to raise your stake and extend its runway. A startup lists when it passes $70,000 after at least a year if the market is calm. At the IPO you sell 35% of your stake and the city collects listing fees. Listed firms pay dividends, bring jobs and can be bought, sold, merged or taken over.</p>'+
  '<p><b>Deals:</b> now and then a buyer bids for a listed firm. Accepting pays you and the city, but takeovers usually cut headquarters jobs 40% within two years.</p>'},
@@ -5705,7 +5829,11 @@ function drawIdle(v){
   ctx.fillStyle=isDark()?'#10202c':'#dbe9f1';ctx.fillRect(0,0,VW,VH);
 }
 /* on a phone held upright, the minimap sits in the top row of the bottom dock, beside the speed and Build buttons */
-function dockPortrait(){return !!(window.matchMedia&&window.matchMedia('(max-aspect-ratio: 11/10)').matches);}
+function dockPortrait(){
+  if(!overlayMode())return false;
+  if(window.matchMedia&&window.matchMedia('(max-aspect-ratio: 11/10)').matches)return true;
+  return (window.innerWidth||0)>=760;      /* a phone on its side has room for the minimap in the bar only when it is wide enough */
+}
 function placeDock(){
   try{
     var mm=$('mm'),top=document.querySelector('.barTop'),board=$('board');
@@ -5881,7 +6009,7 @@ function sheetHead(title){return '<div class="sh-head"><h2>'+title+'</h2><button
 function openSheet(kind){
   sheetKind=kind;var b=$('sheetBody');
   if(kind==='policy'||kind==='society'){
-    $('sheet').className='overlay open';renderPolicy();
+    $('sheet').className='overlay open anchorTop';renderPolicy();
   }else if(kind==='econ'){
     b.innerHTML=sheetHead('Economy')
     +'<p class="hint">The game is paused while this panel is open.</p><div class="diag" id="eDiag"></div><h3>World watch</h3><div id="worldBox"></div><h3>Voters</h3><div id="blocBox"></div><h3>Civilization</h3><div id="kardBox"></div><h3>Automation and AI</h3><div id="autoBox"></div>'
@@ -5893,7 +6021,7 @@ function openSheet(kind){
     +'<h3>Headlines</h3><ul class="news" id="eNews"></ul>';
     $('sheet').className='overlay open';refreshEcon();
   }else if(kind==='corp'){
-    $('sheet').className='overlay open';refreshCorp();
+    $('sheet').className='overlay open anchorTop';refreshCorp();
   }else if(kind==='pp'){
     $('sheet').className='overlay open';renderPP();b.scrollTop=0;
   }else if(kind==='display'){
@@ -5978,15 +6106,15 @@ function bindSlider(id,get,set,fmt){
   el.value=get();$(id+'L').textContent=fmt(get());
   el.oninput=function(){if(locked()&&id!=='iQuota'&&id!=='iEnf'){lockMsg();el.value=get();return;}set(parseFloat(el.value));$(id+'L').textContent=fmt(get());ui();};
 }
-var POL_GROUPS={policy:[['monetary','Monetary'],['taxes','Taxes'],['spending','Spending'],['finance','Finance'],['books','Books']],society:[['housing','Housing'],['justice','Justice'],['people','People'],['health','Health'],['immigration','Immigration'],['hoods','Neighborhoods']]};
+var POL_GROUPS={policy:[['monetary','Monetary'],['taxes','Taxes'],['spending','Spending'],['finance','Finance'],['books','Books']],society:[['housing','Housing'],['justice','Justice'],['people','People'],['health','Health'],['immigration','Immigration'],['hoods','Community'],['region','Region']]};
 function polGroupOf(tab){var i,g=POL_GROUPS.society;for(i=0;i<g.length;i++)if(g[i][0]===tab)return 'society';return 'policy';}
 function renderPolicy(){
   var grp=(sheetKind==='society')?'society':'policy',tabs=POL_GROUPS[grp],b=$('sheetBody'),i,h;
   if(polGroupOf(polTab)!==grp)polTab=tabs[0][0];
   h=sheetHead(grp==='society'?'Society':'Policy');
-  var nRows=Math.ceil(tabs.length/4),perRow=Math.ceil(tabs.length/nRows),r;
+  var rowMax=(grp==='policy')?5:4,nRows=Math.ceil(tabs.length/rowMax),perRow=Math.ceil(tabs.length/nRows),r;
   for(r=0;r<nRows;r++){
-    h+='<div class="seg tabs">';
+    h+='<div class="seg tabs'+(Math.min(tabs.length,(r+1)*perRow)-r*perRow>=5?' five':Math.min(tabs.length,(r+1)*perRow)-r*perRow>=4?' four':'')+'">';
     for(i=r*perRow;i<Math.min(tabs.length,(r+1)*perRow);i++)h+='<button data-pol="tab" data-tab="'+tabs[i][0]+'" class="'+(polTab===tabs[i][0]?'on':'')+'">'+tabs[i][1]+'</button>';
     h+='</div>';
   }
@@ -6051,6 +6179,8 @@ function renderPolicy(){
     bindSlider('sWel',function(){return S.sp.welfare;},function(v){S.sp.welfare=v;},function(v){return money(v);});
   }else if(polTab==='finance'){
     renderFinance(body);
+  }else if(polTab==='region'){
+    renderRegion(body);
   }else if(polTab==='hoods'){
     renderHoods(body);
   }else if(polTab==='health'){
@@ -6111,6 +6241,7 @@ function refreshPolicyLive(){
   if(polTab==='people'){refreshPeople();return;}
   if(polTab==='health'){refreshHealth();return;}
   if(polTab==='hoods'){refreshHoods();return;}
+  if(polTab==='region'){refreshRegion();return;}
   if(polTab==='finance'){refreshFinance();return;}
   var set=function(id,t){var el=$(id);if(el)el.textContent=t;};
   set('mRate',S.rate.toFixed(2)+'%');set('mInfl',S.infl.toFixed(1)+'%');set('mMort',S.mort.toFixed(1)+'%');set('mJob',Math.round(E.unemp*100)+'%');
@@ -6157,6 +6288,7 @@ function polAct(el){
   if(a==='imm'){var ik=el.getAttribute('data-k');if(ik==='reg')regularize();else setImm(ik);ui();return;}
   if(locked()){lockMsg();return;}
   if(a==='hous'){setHousing(el.getAttribute('data-k'));ui();return;}
+  if(a==='rgn'){setRegion(el.getAttribute('data-k'));ui();return;}
   if(a==='ord'){var k=el.getAttribute('data-k');setOrd(k,!S.ord[k]);ui();return;}
   if(a==='splost'){S.tax.splost=S.tax.splost?0:1;ui();return;}
   if(a==='dins'){setDeposit(!S.dins);ui();return;}
@@ -6245,7 +6377,7 @@ function refreshEcon(){
   if($('blocBox')){var bh='',bl=e.blocs||[];for(var bi=0;bi<bl.length;bi++){var bb=bl[bi];bh+='<div style="margin:5px 0"><div style="display:flex;justify-content:space-between"><span>'+bb.name+'</span><b>'+Math.round(bb.appr)+'%</b></div><div style="background:#243;height:5px;border-radius:3px"><div style="width:'+Math.round(bb.appr)+'%;height:5px;border-radius:3px;background:#5ac"></div></div><div class="hint">They care about '+BLOC_WHY[bb.id]+'.</div></div>';}$('blocBox').innerHTML=bh;}
   $('eDiag').innerHTML=
     '<div>Buyer affordability<b>'+pct(clamp(e.af,0,1))+'</b></div><div>Builder appetite<b>'+pct(e.appetite)+'</b></div>'+
-    '<div>Homes filled<b>'+pct(e.occ)+'</b></div><div>Shelves stocked<b>'+pct(e.shopFill)+'</b></div>'+'<div>Crime<b>'+S.crimeRate.toFixed(0)+' per 1,000</b></div><div>Illegal residents<b>'+pct(e.imm?e.imm.ii:0)+'</b></div>'+'<div>Rent burden<b>'+Math.round(S.burden*100)+'%</b></div><div>Homeless<b>'+Math.round(S.homeless)+'</b></div>'+'<div>Inmates<b>'+Math.round(S.inmates)+'</b></div><div>Court backlog<b>'+(e.jm?e.jm.backlogMonths.toFixed(1):'0')+' mo</b></div><div>Police trust<b>'+Math.round(S.trust*100)+'%</b></div>'+'<div>Culture<b>'+Math.round(S.culture)+'</b></div><div>Cohesion<b>'+Math.round(S.cohes*100)+'%</b></div><div>Addiction<b>'+(S.pop>0?(S.addict/S.pop*100).toFixed(1):'0')+'%</b></div><div>Bond rating<b>'+ratingName()+'</b></div><div>Pension funded<b>'+Math.round(fundedRatio()*100)+'%</b></div><div>Seniors<b>'+Math.round(S.age.o*100)+'%</b></div><div>Workers per senior<b>'+(e.dem?e.dem.perSenior.toFixed(1):'')+'</b></div>'+
+    '<div>Homes filled<b>'+pct(e.occ)+'</b></div><div>Shelves stocked<b>'+pct(e.shopFill)+'</b></div>'+'<div>Crime<b>'+S.crimeRate.toFixed(0)+' per 1,000</b></div><div>Illegal residents<b>'+pct(e.imm?e.imm.ii:0)+'</b></div>'+'<div>Rent burden<b>'+Math.round(S.burden*100)+'%</b></div><div>Homeless<b>'+Math.round(S.homeless)+'</b></div>'+'<div>Inmates<b>'+Math.round(S.inmates)+'</b></div><div>Court backlog<b>'+(e.jm?e.jm.backlogMonths.toFixed(1):'0')+' mo</b></div><div>Police trust<b>'+Math.round(S.trust*100)+'%</b></div>'+'<div>Regional rank<b>'+S.rgnRank+' of 4</b></div><div>Culture<b>'+Math.round(S.culture)+'</b></div><div>Cohesion<b>'+Math.round(S.cohes*100)+'%</b></div><div>Addiction<b>'+(S.pop>0?(S.addict/S.pop*100).toFixed(1):'0')+'%</b></div><div>Bond rating<b>'+ratingName()+'</b></div><div>Pension funded<b>'+Math.round(fundedRatio()*100)+'%</b></div><div>Seniors<b>'+Math.round(S.age.o*100)+'%</b></div><div>Workers per senior<b>'+(e.dem?e.dem.perSenior.toFixed(1):'')+'</b></div>'+
     '<div>Mood<b>'+pct(e.h)+'</b></div><div>Power supply<b>'+pct(e.pw)+'</b></div>'+
     '<div>Water supply<b>'+pct(e.ww)+'</b></div><div>Real mortgage rate<b>'+e.mortReal.toFixed(1)+'%</b></div>'+
     '<div>Infrastructure condition<b>'+pct(S.cond)+'</b></div><div>Renewal needed a month<b>'+money(e.renewNeed)+'</b></div>'+
@@ -6854,7 +6986,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={OV_INFO:OV_INFO,OV_NAMES:OV_NAMES,setOverlay:setOverlay,layerPickHTML:layerPickHTML,openLayerPicker:openLayerPicker,closeLayerPicker:closeLayerPicker,pickLayer:pickLayer,toggleLayerPicker:toggleLayerPicker,placeDock:placeDock,measureBar:measureBar,dockPortrait:dockPortrait,getLayer:function(){return {overlay:overlay,open:layerOpen};},hoodMods:hoodMods,stepHoods:stepHoods,hoodsInit:hoodsInit,renderHoods:renderHoods,hoodAvg:hoodAvg,polGroupOf:polGroupOf,POL_GROUPS:POL_GROUPS,healthMods:healthMods,stepHealth:stepHealth,healthInit:healthInit,renderHealth:renderHealth,finMods:finMods,stepFin:stepFin,finInit:finInit,ratingName:ratingName,ratingScore:ratingScore,ratingFor:ratingFor,fundedRatio:fundedRatio,benefitChanged:benefitChanged,creditLimit:creditLimit,creditMul:creditMul,ratingSpread:ratingSpread,renderFinance:renderFinance,laborMods:laborMods,stepLabor:stepLabor,laborInit:laborInit,payChanged:payChanged,skillsGap:skillsGap,renderLabor:renderLabor,demMods:demMods,stepDemog:stepDemog,demogInit:demogInit,renderPeople:renderPeople,oldBase:oldBase,justiceMods:justiceMods,stepJustice:stepJustice,justiceInit:justiceInit,renderJustice:renderJustice,jailCap:jailCap,courtCap:courtCap,arrestRate:arrestRate,housingMods:housingMods,stepHousing:stepHousing,setHousing:setHousing,zoneChanged:zoneChanged,burdenOf:burdenOf,housingInit:housingInit,renderHousing:renderHousing,rentWord:rentWord,immMods:immMods,crimeTarget:crimeTarget,crimeWord:crimeWord,stepImm:stepImm,regularize:regularize,setImm:setImm,immInit:immInit,renderImm:renderImm,addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={regionMods:regionMods,stepRegion:stepRegion,regionInit:regionInit,renderRegion:renderRegion,setRegion:setRegion,yourPull:yourPull,nbrAvg:nbrAvg,OV_INFO:OV_INFO,OV_NAMES:OV_NAMES,setOverlay:setOverlay,layerPickHTML:layerPickHTML,openLayerPicker:openLayerPicker,closeLayerPicker:closeLayerPicker,pickLayer:pickLayer,toggleLayerPicker:toggleLayerPicker,placeDock:placeDock,measureBar:measureBar,dockPortrait:dockPortrait,getLayer:function(){return {overlay:overlay,open:layerOpen};},hoodMods:hoodMods,stepHoods:stepHoods,hoodsInit:hoodsInit,renderHoods:renderHoods,hoodAvg:hoodAvg,polGroupOf:polGroupOf,POL_GROUPS:POL_GROUPS,healthMods:healthMods,stepHealth:stepHealth,healthInit:healthInit,renderHealth:renderHealth,finMods:finMods,stepFin:stepFin,finInit:finInit,ratingName:ratingName,ratingScore:ratingScore,ratingFor:ratingFor,fundedRatio:fundedRatio,benefitChanged:benefitChanged,creditLimit:creditLimit,creditMul:creditMul,ratingSpread:ratingSpread,renderFinance:renderFinance,laborMods:laborMods,stepLabor:stepLabor,laborInit:laborInit,payChanged:payChanged,skillsGap:skillsGap,renderLabor:renderLabor,demMods:demMods,stepDemog:stepDemog,demogInit:demogInit,renderPeople:renderPeople,oldBase:oldBase,justiceMods:justiceMods,stepJustice:stepJustice,justiceInit:justiceInit,renderJustice:renderJustice,jailCap:jailCap,courtCap:courtCap,arrestRate:arrestRate,housingMods:housingMods,stepHousing:stepHousing,setHousing:setHousing,zoneChanged:zoneChanged,burdenOf:burdenOf,housingInit:housingInit,renderHousing:renderHousing,rentWord:rentWord,immMods:immMods,crimeTarget:crimeTarget,crimeWord:crimeWord,stepImm:stepImm,regularize:regularize,setImm:setImm,immInit:immInit,renderImm:renderImm,addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
