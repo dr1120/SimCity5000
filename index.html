@@ -79,6 +79,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .tool.on{background:var(--btnOn);color:var(--btnOnInk);border-color:var(--btnOn)}
 .tool.lock{opacity:.55}
 .bar{flex:none;display:flex;gap:6px;align-items:center;justify-content:space-between}
+.barTop,.barBtm{display:contents}
 .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--btn)}
 .seg button{background:transparent;border:0;padding:8px 9px;font-weight:700;min-width:36px;display:flex;align-items:center;justify-content:center}
 .seg button.on{background:var(--btnOn);color:var(--btnOnInk)}
@@ -94,10 +95,22 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .adv{border-radius:10px;padding:8px 10px;margin:6px 0;font-size:0.8125rem;background:var(--panel2);border-left:4px solid var(--accent)}
 .adv.bad{border-left-color:var(--bad)}.adv.warn{border-left-color:var(--warn)}.adv.info{border-left-color:var(--good)}
 .adv b{margin-right:4px}
-.legend{position:absolute;left:100px;bottom:8px;background:rgba(10,20,30,.72);color:#fff;border-radius:8px;padding:5px 9px;font-size:0.7188rem;min-width:112px}
-.legend .bar{display:block;height:8px;border-radius:4px;margin:4px 0 2px;background:linear-gradient(90deg,hsl(125,78%,46%),hsl(62,78%,46%),hsl(0,78%,46%))}
-.legend .bar.inv{background:linear-gradient(90deg,hsl(0,78%,46%),hsl(62,78%,46%),hsl(125,78%,46%))}
-.legend .lr{display:flex;justify-content:space-between;opacity:.85}.legend i{font-style:normal}
+.legend{position:absolute;left:100px;bottom:8px;background:rgba(10,20,30,.86);color:#fff;border-radius:12px;padding:8px 12px;font-size:0.8125rem;min-width:168px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35);z-index:3}
+.legend .lt{display:flex;flex-direction:column;line-height:1.15}.legend .lt span{font-size:0.625rem;letter-spacing:.07em;text-transform:uppercase;opacity:.7}.legend .lt b{font-size:1.0625rem}
+.legend .grad{display:block;height:10px;border-radius:5px;margin:7px 0 4px;background:linear-gradient(90deg,hsl(125,78%,46%),hsl(62,78%,46%),hsl(0,78%,46%))}
+.legend .grad.inv{background:linear-gradient(90deg,hsl(0,78%,46%),hsl(62,78%,46%),hsl(125,78%,46%))}
+.legend .lr{display:flex;justify-content:space-between;gap:14px;font-weight:700;font-size:0.8125rem}.legend i{font-style:normal}
+.legend .lh{font-size:0.65rem;opacity:.6;margin-top:4px}
+.laypop{position:absolute;right:calc(var(--ir) + 66px);bottom:calc(var(--bar-h,82px) + 12px);z-index:8;width:min(310px,calc(100% - 84px));max-height:74%;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px 6px 6px;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+#app.side .laypop{bottom:12px}
+.laypop h4{margin:6px 10px 4px;font-size:0.75rem;color:var(--muted);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.lyrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:5px 10px;border-radius:10px;border:1px solid transparent;background:transparent;margin:0}
+.lyrow.on{background:var(--btnOn);color:var(--btnOnInk)}
+.lyrow .sw{flex:0 0 44px;height:10px;border-radius:5px}
+.sw.g1{background:linear-gradient(90deg,hsl(125,78%,46%),hsl(62,78%,46%),hsl(0,78%,46%))}.sw.g2{background:linear-gradient(90deg,hsl(0,78%,46%),hsl(62,78%,46%),hsl(125,78%,46%))}.sw.off{border:1px dashed currentColor;opacity:.5}
+.lyrow .tt{flex:1;min-width:0}.lyrow b{display:block;font-size:0.95rem}.lyrow small{display:block;font-size:0.72rem;opacity:.75;line-height:1.2}
+.lyrow .ck{flex:0 0 auto;font-weight:800}
+.navbtns button.tx.on{background:var(--btnOn);color:var(--btnOnInk)}
 .navbtns button.on{background:var(--btnOn);color:var(--btnOnInk)}
 .act{position:relative;background:var(--btn);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:700;font-size:0.8125rem}
 .ghost.badge::after{content:"";position:absolute;right:-3px;top:-3px;width:11px;height:11px;border-radius:50%;background:var(--bad);border:2px solid var(--bg)}
@@ -228,10 +241,13 @@ button:disabled{opacity:.4;cursor:default}
   .stats{top:52px;left:calc(var(--il) + 8px);right:calc(var(--ir) + 62px)}
   #app.chips .econ{top:96px}
   .advpop{top:96px}
-  .bar{bottom:6px;display:flex;flex-wrap:wrap;gap:6px}
-  #trayBtn{flex:1 1 38%}
+  .bar{bottom:6px;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+  .barTop,.barBtm{display:flex;gap:6px;align-items:center}
+  .barTop #trayBtn{flex:1 1 auto;min-width:0}
+  .barBtm button{flex:1 1 0;min-width:0;padding-left:4px;padding-right:4px}
   .bar .seg{flex:0 0 auto}
-  #btnPolicy,#btnSociety,#btnEcon,#btnCorp{flex:1 1 20%}
+  .bar #mm{position:static;flex:0 0 auto;width:64px;height:64px}
+  .legend{left:8px}
   .floaters{bottom:calc(var(--bar-h,82px) + 12px)}
   #mm{bottom:calc(var(--bar-h,82px) + 12px)}
   .legend{bottom:calc(var(--bar-h,82px) + 12px)}
@@ -298,7 +314,7 @@ button:disabled{opacity:.4;cursor:default}
   #app.tray:not(.side) .trayBox{left:calc(var(--il) + 8px);right:auto;bottom:calc(var(--bar-h,52px) + 12px);width:min(960px,calc(100% - 520px));min-width:min(440px,calc(100% - 90px))}
   #app:not(.side) #mm{left:auto;right:70px;bottom:8px;width:112px;height:112px}
   #app:not(.side) .floaters{right:70px;bottom:130px}
-  #app:not(.side) .legend{left:auto;right:190px;bottom:8px}
+  #app:not(.side) .legend{left:auto;right:190px;bottom:calc(var(--bar-h,52px) + 16px)}
   #app:not(.side) .toast{bottom:calc(var(--bar-h,52px) + 24px);max-width:44%}
 }
 @media (min-aspect-ratio:11/10) and (min-width:560px) and (min-height:640px){
@@ -381,6 +397,7 @@ html[data-motion="reduce"] *{transition:none !important;animation:none !importan
     <canvas id="cv"></canvas>
     <canvas id="mm" width="112" height="112"></canvas>
     <div id="legend" class="legend" style="display:none"></div>
+    <div id="layPop" class="laypop" style="display:none"></div>
     <div id="advpop" class="advpop" style="display:none"><i class="dot" id="tdot"></i><span id="ttext"></span><button id="popAct" class="sm" style="display:none">Respond</button><div class="pn" id="pnav" style="display:none"><button id="pprev" aria-label="Previous">&lsaquo;</button><span id="pcnt"></span><button id="pnext" aria-label="Next">&rsaquo;</button></div><button id="popx" aria-label="Dismiss">&times;</button></div>
     <div class="navbtns">
       <button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">&minus;</button>
@@ -398,17 +415,21 @@ html[data-motion="reduce"] *{transition:none !important;animation:none !importan
     <nav class="tools" id="tools" aria-label="Build tools"></nav>
   </div>
   <div class="bar">
-    <div class="seg" id="speed">
-      <button data-s="0" aria-label="Pause"><svg viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button>
-      <button data-s="1" aria-label="Normal speed">1&times;</button>
-      <button data-s="2" aria-label="Fast">2&times;</button>
-      <button data-s="3" aria-label="Fastest">3&times;</button>
+    <div class="barTop">
+      <div class="seg" id="speed">
+        <button data-s="0" aria-label="Pause"><svg viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button>
+        <button data-s="1" aria-label="Normal speed">1&times;</button>
+        <button data-s="2" aria-label="Fast">2&times;</button>
+        <button data-s="3" aria-label="Fastest">3&times;</button>
+      </div>
+      <button class="act" id="trayBtn">Build</button>
     </div>
-    <button class="act" id="trayBtn">Build</button>
-    <button class="act" id="btnPolicy">Policy</button>
-    <button class="act" id="btnSociety">Society</button>
-    <button class="act" id="btnEcon">Economy</button>
-    <button class="act" id="btnCorp">Corp</button>
+    <div class="barBtm">
+      <button class="act" id="btnPolicy">Policy</button>
+      <button class="act" id="btnSociety">Society</button>
+      <button class="act" id="btnEcon">Economy</button>
+      <button class="act" id="btnCorp">Corp</button>
+    </div>
   </div>
 </div>
 </div>
@@ -3271,7 +3292,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-22 15:37';
+var BUILD_ID='2026-11-22 15:54';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -4429,8 +4450,8 @@ var GUIDE=[
 {id:'g-screen',title:'The screen and controls',
  brief:'The map is in the middle. Numbers across the top show your money and the economy. Tools are at the bottom. Drag to move the map, tap to build, pinch to zoom.',
  more:'<p><b>Top:</b> your city name (tap it to collapse the stats), Goals for what to do next, advice and objectives, and Menu. The four boxes show Cash, People, Approval and Cash per month. The row of chips below shows the policy rate, inflation, mortgage rate, jobless rate, home prices, stocks, supply costs, power use and water use. Tap any chip to learn what it means and what to do.</p>'+
- '<p><b>Map buttons (right side):</b> zoom in and out, rotate the view, the hand button switches between pan mode (drag moves the map, tap builds) and paint mode (drag paints roads and zones), and Layers cycles through data views.</p>'+
- '<p><b>Bottom:</b> Build opens the toolbox, with five tabs: Build (zoning and districts), Utilities (power, water and waste), Services (police, fire, schools, parks), Transport (roads, buses, rail, metro, port, airport) and Growth (labs, university, data center, exchange, stadium, convention). Below sit the pause and speed buttons, then Policy (money: interest rates, taxes, spending, finance, books), Society (housing, justice, people, health, immigration), Economy and Corp. On the map, a floating Undo button reverses your last build and refunds it, and a Turn button appears when you pick a long building.</p>'+
+ '<p><b>Map buttons (right side):</b> zoom in and out, rotate the view, the hand button switches between pan mode (drag moves the map, tap builds) and paint mode (drag paints roads and zones), and Layers opens a list of data views to choose from.</p>'+
+ '<p><b>Bottom:</b> Build opens the toolbox, with five tabs: Build (zoning and districts), Utilities (power, water and waste), Services (police, fire, schools, parks), Transport (roads, buses, rail, metro, port, airport) and Growth (labs, university, data center, exchange, stadium, convention). The bottom dock has two rows. The top row holds the minimap, the pause and speed buttons and Build. The bottom row holds Policy (money: interest rates, taxes, spending, finance, books), Society (housing, justice, people, health, immigration), Economy and Corp. On the map, a floating Undo button reverses your last build and refunds it, and a Turn button appears when you pick a long building.</p>'+
  '<p><b>Building:</b> small things build on one tap. Big buildings show a green footprint first and ask for a second tap on the same spot. Tap a tile with the Move tool to see what it does and what it is missing.</p>'+
  '<p><b>Two fingers</b> always pan and zoom. Double-tap with the Move tool zooms in. A quick flick keeps the map gliding. The small map in the corner jumps you to any spot.</p>'},
 {id:'g-start',title:'Your first fifteen minutes',
@@ -4493,8 +4514,9 @@ var GUIDE=[
  '<p><b>More capacity:</b> a bus depot adds 60% within 6 tiles. A powered rail station adds 50% within 8 tiles. A metro adds 25% citywide. The transit subsidy ordinance adds 15%. A denser road grid spreads trips out.</p>'+
  '<p><b>Rail:</b> place two stations (Transport tab), join them with Rail track, and make sure both have power. Track alone does nothing, and a station alone does nothing. Once connected, a train runs between them, riders pay fares, and the roads nearby get relief. Stations and track cost upkeep and rarely pay for themselves, so treat them as a way to unlock growth.</p>'},
 {id:'g-layers',title:'Layers: pollution, crime and land value',
- brief:'The Layers button colors the map to show hidden numbers. Green is good and red is bad, except land value where it flips.',
+ brief:'Tap the Layers button and pick a view. It colors the map to show hidden numbers. Green is good and red is bad, except land value where it flips.',
  more:'<p><b>Power and Water</b> show what is covered. <b>Pollution</b> comes from factories, coal and gas, ports, airports and landfills, and is soaked up by parks. <b>Crime</b> grows with density and unemployment and is cut by police. <b>Land value</b> rises with waterfront, hills, parks, schools, rail and the metro, and falls with pollution and crime. <b>Traffic</b> shows road load.</p>'+
+ '<p>The box above the dock names the active layer and labels both ends of its color scale, such as Safe to High crime. Tap it to open the list again. The Layers button lights up while a layer is on, and tapping it again or pressing Esc closes the list.</p>'+
  '<p>Pollution is the only layer that directly changes mood. The clean air ordinance cuts it about 35% at a small cost to factory output.</p>'},
 {id:'g-fiscal',title:'Taxes, spending and debt',
  brief:'You set every tax and every budget line. Taxes fund the city, but each rate has a price in growth or mood. Borrowing gets you cash now and costs interest later.',
@@ -4777,7 +4799,7 @@ var GUIDE=[
 {id:'g-desktop',title:'Desktop and keyboard',
  brief:'Everything works with a mouse and keyboard too. On wide screens the panels float over the map just like on a phone, and you can switch to a side panel if you prefer.',
  more:'<p><b>Mouse:</b> wheel zooms, right-drag or middle-drag pans, hovering previews what you will build and its range.</p>'+
- '<p><b>Keys:</b> arrows or WASD pan, + and - zoom, Q and E rotate, Space pauses, 1 2 3 set speed, Z undoes, R turns a building, L cycles layers, H switches pan and paint, T tips, P policy, G economy, C corporate, M menu, Esc cancels.</p>'+
+ '<p><b>Keys:</b> arrows or WASD pan, + and - zoom, Q and E rotate, Space pauses, 1 2 3 set speed, Z undoes, R turns a building, L chooses a layer, H switches pan and paint, T tips, P policy, G economy, C corporate, M menu, Esc cancels.</p>'+
  '<p><b>Floating panels.</b> Phones and desktops both use a full-screen map with the controls floating on top. On a desktop the header sits top left with the four stat boxes beside it and the economy chips below, the toolbox and the speed and panel buttons sit bottom left, the map controls are on the right and the minimap is bottom right. Tap the city name to hide or show the stat boxes and chips. On a phone, tap Build to open the toolbox. On a desktop it starts open.</p>'+
  '<p><b>Side panel.</b> If you would rather have a column beside the map, choose Side panel under Menu, Display and accessibility, Screen layout.</p>'},
 {id:'g-display',title:'Difficulty, display and accessibility',
@@ -4866,6 +4888,15 @@ function zoomAt(f,sx,sy){
 
 /* ================= overlays ================= */
 var OV_NAMES=['Off','Power coverage','Water coverage','Pollution','Crime','Land value','Traffic'];
+var OV_INFO=[
+ {d:'Show the map with no layer.',off:true},
+ {d:'Which buildings have power. Red means none.',lo:'Powered',hi:'No power'},
+ {d:'Which buildings have water. Red means none.',lo:'Has water',hi:'No water'},
+ {d:'Air and ground pollution around industry and roads.',lo:'Clean',hi:'Heavy'},
+ {d:'Where crime is likely. Police stations push it down.',lo:'Safe',hi:'High crime'},
+ {d:'What land is worth. Parks, schools and transit raise it.',lo:'Low value',hi:'High value',inv:true},
+ {d:'How full the roads are.',lo:'Free flowing',hi:'Jammed'}
+];
 var overlay=0,ovArr=null;
 var ovCache={};
 function ovColor(v,inv){
@@ -4915,13 +4946,28 @@ function setOverlay(n){
     if(n===0){lg.style.display='none';}
     else{
       lg.style.display='block';
-      var inv=(n===5);
-      lg.innerHTML='<b>'+OV_NAMES[n]+'</b><span class="bar'+(inv?' inv':'')+'"></span><span class="lr"><i>'+(inv?'low':'good')+'</i><i>'+(inv?'high':'bad')+'</i></span>';
+      var inf=OV_INFO[n]||{};
+      lg.innerHTML='<div class="lt"><span>Map layer</span><b>'+OV_NAMES[n]+'</b></div><span class="grad'+(inf.inv?' inv':'')+'"></span><span class="lr"><i>'+(inf.lo||'')+'</i><i>'+(inf.hi||'')+'</i></span><div class="lh">Tap to change layer</div>';
     }
   }
+  var lb=$('lay');if(lb)lb.className='tx'+(n>0?' on':'');
   refreshOverlay();
 }
 function cycleOverlay(){setOverlay((overlay+1)%OV_NAMES.length);toast('Map layer: '+OV_NAMES[overlay]);}
+/* the layer picker: tap Layers, pick the layer you want */
+var layerOpen=false;
+function layerPickHTML(){
+  var h='<h4>Map layer</h4>',i;
+  for(i=0;i<OV_NAMES.length;i++){
+    var inf=OV_INFO[i]||{};
+    h+='<button class="lyrow'+(i===overlay?' on':'')+'" data-layer="'+i+'"><span class="sw '+(inf.off?'off':inf.inv?'g2':'g1')+'"></span><span class="tt"><b>'+OV_NAMES[i]+'</b><small>'+inf.d+'</small></span><span class="ck">'+(i===overlay?'\u2713':'')+'</span></button>';
+  }
+  return h;
+}
+function openLayerPicker(){var p=$('layPop');if(!p)return;p.innerHTML=layerPickHTML();p.style.display='block';layerOpen=true;}
+function closeLayerPicker(){var p=$('layPop');if(p)p.style.display='none';layerOpen=false;}
+function toggleLayerPicker(){if(layerOpen)closeLayerPicker();else openLayerPicker();}
+function pickLayer(i){i=parseInt(i,10);if(!(i>=0&&i<OV_NAMES.length))return;setOverlay(i);closeLayerPicker();}
 
 /* ================= colors ================= */
 var shadeCache={};
@@ -5658,8 +5704,19 @@ function outlineTile(i,v,col,w){
 function drawIdle(v){
   ctx.fillStyle=isDark()?'#10202c':'#dbe9f1';ctx.fillRect(0,0,VW,VH);
 }
+/* on a phone held upright, the minimap sits in the top row of the bottom dock, beside the speed and Build buttons */
+function dockPortrait(){return !!(window.matchMedia&&window.matchMedia('(max-aspect-ratio: 11/10)').matches);}
+function placeDock(){
+  try{
+    var mm=$('mm'),top=document.querySelector('.barTop'),board=$('board');
+    if(!mm||!top||!board||!mm.parentNode)return;
+    if(dockPortrait()){if(mm.parentNode!==top)top.insertBefore(mm,top.firstChild);}
+    else if(mm.parentNode!==board)board.insertBefore(mm,$('legend'));
+  }catch(e){}
+}
 function measureBar(){
-  var b=document.querySelector('.bar');if(!b||!b.offsetHeight)return;
+  placeDock();
+  var b=document.querySelector('.lower > .bar')||document.querySelector('.bar');if(!b||!b.offsetHeight)return;
   try{document.documentElement.style.setProperty('--bar-h',b.offsetHeight+'px');}catch(e){}
 }
 /* iPhone Safari can report a stale, too-small innerHeight while sheets open or toolbars move. Take the largest honest height, and keep checking. */
@@ -5669,7 +5726,7 @@ function viewH(){
   if(vv&&vv.height>h)h=vv.height;
   return Math.round(h||700);
 }
-function vpCheck(){var h=viewH();if(h!==lastVH){lastVH=h;resize();}}
+function vpCheck(){var h=viewH();if(h!==lastVH){lastVH=h;resize();}else measureBar();}
 function resize(){
   lastVH=viewH();
   measureBar();
@@ -5871,7 +5928,7 @@ function openSheet(kind){
     $('sheet').className='overlay open';renderMute();
   }else if(kind==='keys'){
     $('sheet').className='overlay open';
-    $('sheetBody').innerHTML=sheetHead('Keyboard shortcuts')+'<div class="keys"><div><b>Arrows or WASD</b> pan</div><div><b>+ and -</b> zoom</div><div><b>Q and E</b> rotate the view</div><div><b>Space</b> pause or resume</div><div><b>1 2 3</b> game speed</div><div><b>Z</b> or Ctrl+Z undo</div><div><b>R</b> turn a building</div><div><b>L</b> cycle map layers</div><div><b>H</b> pan or paint</div><div><b>T</b> tips</div><div><b>P</b> policy</div><div><b>O</b> society</div><div><b>G</b> economy</div><div><b>C</b> corporate</div><div><b>M</b> menu</div><div><b>Esc</b> cancel or close</div><div>Mouse wheel zooms, right-drag pans, hover previews what you will build.</div></div>';
+    $('sheetBody').innerHTML=sheetHead('Keyboard shortcuts')+'<div class="keys"><div><b>Arrows or WASD</b> pan</div><div><b>+ and -</b> zoom</div><div><b>Q and E</b> rotate the view</div><div><b>Space</b> pause or resume</div><div><b>1 2 3</b> game speed</div><div><b>Z</b> or Ctrl+Z undo</div><div><b>R</b> turn a building</div><div><b>L</b> choose a map layer</div><div><b>H</b> pan or paint</div><div><b>T</b> tips</div><div><b>P</b> policy</div><div><b>O</b> society</div><div><b>G</b> economy</div><div><b>C</b> corporate</div><div><b>M</b> menu</div><div><b>Esc</b> cancel or close</div><div>Mouse wheel zooms, right-drag pans, hover previews what you will build.</div></div>';
   }
 }
 function closeSheet(){sheetKind=null;$('sheet').className='overlay';ui();}
@@ -6686,7 +6743,10 @@ function wire(){
   $('pprev').addEventListener('click',function(){popStep(-1);});
   $('pnext').addEventListener('click',function(){popStep(1);});
   $('turn').addEventListener('click',turnBuilding);
-  $('lay').addEventListener('click',function(){cycleOverlay();});
+  $('lay').addEventListener('click',function(e){e.stopPropagation();toggleLayerPicker();});
+  $('legend').addEventListener('click',function(e){e.stopPropagation();openLayerPicker();});
+  $('layPop').addEventListener('click',function(e){e.stopPropagation();var r=e.target.closest?e.target.closest('[data-layer]'):null;if(r)pickLayer(r.getAttribute('data-layer'));});
+  document.addEventListener('click',function(e){if(layerOpen)closeLayerPicker();});
   $('adv').addEventListener('click',function(){if(S&&!S.over)openSheet('adv');});
   $('zIn').addEventListener('click',function(){zoomAt(1.25);});
   $('zOut').addEventListener('click',function(){zoomAt(0.8);});
@@ -6726,7 +6786,7 @@ function wire(){
     var k=e.key;
     if((e.ctrlKey||e.metaKey)&&(k==='z'||k==='Z')){if(S&&!S.over&&!sheetKind&&!splashOpen){e.preventDefault();undoLast();}return;}
     if(e.ctrlKey||e.metaKey||e.altKey)return;
-    if(k==='Escape'){if(sheetKind)closeSheet();else{pending=null;distState=null;hidePop();dirty=true;}return;}
+    if(k==='Escape'){if(layerOpen){closeLayerPicker();return;}if(sheetKind)closeSheet();else{pending=null;distState=null;hidePop();dirty=true;}return;}
     if(splashOpen||sheetKind||!S||S.over)return;
     var st=70,lk=k.length===1?k.toLowerCase():k;
     if(lk==='ArrowLeft'||lk==='a')panBy(st,0);
@@ -6741,7 +6801,7 @@ function wire(){
     else if(lk==='1'||lk==='2'||lk==='3'){speed=parseInt(lk,10);ui();}
     else if(lk==='z')undoLast();
     else if(lk==='r')turnBuilding();
-    else if(lk==='l')cycleOverlay();
+    else if(lk==='l')toggleLayerPicker();
     else if(lk==='h'){handMode=!handMode;ui();toast(handMode?'Drag pans the map. Click to build.':'Drag paints with the current tool.');}
     else if(lk==='t')openSheet('adv');
     else if(lk==='p')openSheet('policy');
@@ -6794,7 +6854,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={hoodMods:hoodMods,stepHoods:stepHoods,hoodsInit:hoodsInit,renderHoods:renderHoods,hoodAvg:hoodAvg,polGroupOf:polGroupOf,POL_GROUPS:POL_GROUPS,healthMods:healthMods,stepHealth:stepHealth,healthInit:healthInit,renderHealth:renderHealth,finMods:finMods,stepFin:stepFin,finInit:finInit,ratingName:ratingName,ratingScore:ratingScore,ratingFor:ratingFor,fundedRatio:fundedRatio,benefitChanged:benefitChanged,creditLimit:creditLimit,creditMul:creditMul,ratingSpread:ratingSpread,renderFinance:renderFinance,laborMods:laborMods,stepLabor:stepLabor,laborInit:laborInit,payChanged:payChanged,skillsGap:skillsGap,renderLabor:renderLabor,demMods:demMods,stepDemog:stepDemog,demogInit:demogInit,renderPeople:renderPeople,oldBase:oldBase,justiceMods:justiceMods,stepJustice:stepJustice,justiceInit:justiceInit,renderJustice:renderJustice,jailCap:jailCap,courtCap:courtCap,arrestRate:arrestRate,housingMods:housingMods,stepHousing:stepHousing,setHousing:setHousing,zoneChanged:zoneChanged,burdenOf:burdenOf,housingInit:housingInit,renderHousing:renderHousing,rentWord:rentWord,immMods:immMods,crimeTarget:crimeTarget,crimeWord:crimeWord,stepImm:stepImm,regularize:regularize,setImm:setImm,immInit:immInit,renderImm:renderImm,addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={OV_INFO:OV_INFO,OV_NAMES:OV_NAMES,setOverlay:setOverlay,layerPickHTML:layerPickHTML,openLayerPicker:openLayerPicker,closeLayerPicker:closeLayerPicker,pickLayer:pickLayer,toggleLayerPicker:toggleLayerPicker,placeDock:placeDock,measureBar:measureBar,dockPortrait:dockPortrait,getLayer:function(){return {overlay:overlay,open:layerOpen};},hoodMods:hoodMods,stepHoods:stepHoods,hoodsInit:hoodsInit,renderHoods:renderHoods,hoodAvg:hoodAvg,polGroupOf:polGroupOf,POL_GROUPS:POL_GROUPS,healthMods:healthMods,stepHealth:stepHealth,healthInit:healthInit,renderHealth:renderHealth,finMods:finMods,stepFin:stepFin,finInit:finInit,ratingName:ratingName,ratingScore:ratingScore,ratingFor:ratingFor,fundedRatio:fundedRatio,benefitChanged:benefitChanged,creditLimit:creditLimit,creditMul:creditMul,ratingSpread:ratingSpread,renderFinance:renderFinance,laborMods:laborMods,stepLabor:stepLabor,laborInit:laborInit,payChanged:payChanged,skillsGap:skillsGap,renderLabor:renderLabor,demMods:demMods,stepDemog:stepDemog,demogInit:demogInit,renderPeople:renderPeople,oldBase:oldBase,justiceMods:justiceMods,stepJustice:stepJustice,justiceInit:justiceInit,renderJustice:renderJustice,jailCap:jailCap,courtCap:courtCap,arrestRate:arrestRate,housingMods:housingMods,stepHousing:stepHousing,setHousing:setHousing,zoneChanged:zoneChanged,burdenOf:burdenOf,housingInit:housingInit,renderHousing:renderHousing,rentWord:rentWord,immMods:immMods,crimeTarget:crimeTarget,crimeWord:crimeWord,stepImm:stepImm,regularize:regularize,setImm:setImm,immInit:immInit,renderImm:renderImm,addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
