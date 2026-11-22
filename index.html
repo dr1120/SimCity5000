@@ -533,7 +533,7 @@ var TOOLS={
   solar:{name:'Solar',sw:'#2a4f9a',desc:'Only about 12 MW and weaker in winter and under cloud. Photovoltaics research boosts it 50%.'},
   wind:{name:'Wind',sw:'#7fa8c9',desc:'About 14 MW but gusty and unreliable. Better on hills and coasts.'},
   fusion:{name:'Fusion',sw:'#26b6c9',desc:'650 MW, reaches 16 tiles, 14 months to build. The holy grail: needs Fusion power, which takes a huge research effort.'},
-  pline:{name:'Power line',sw:'#c9a227',desc:'Carries power from a plant. Powered lines reach 4 tiles around them.'},
+  pline:{name:'Power line',sw:'#c9a227',desc:'Carries power from a plant. Powered lines reach 4 tiles around them. A line can cross a road: tap the road and a pylon spans it.'},
   pump:{name:'Pump',sw:'#3d8fd1',desc:'100 water, reaches 8 tiles. Must touch water and needs power.'},
   desal:{name:'Desalination',sw:'#2f9fb5',desc:'80 water anywhere, reaches 8 tiles. Needs Water recycling research.'},
   pipe:{name:'Water pipe',sw:'#5aa9e6',desc:'Underground water main. It runs beneath roads and buildings, so it never takes up a lot. Wet pipes reach 4 tiles around them.'},
@@ -766,6 +766,7 @@ function rec(i){if(undoFrame&&!undoFrame.t[i])undoFrame.t[i]=[T[i],L[i],B[i],PAR
 function clearAt(i){
   var a=rootOf(i);
   if(wreck&&!seeding)queueRepair(i);
+  if(PU[i]&4){rec(i);PU[i]&=~4;}               /* an overhead line strung across a road comes down with it */
   if(a===i&&T[i]!==SUB&&!(BYT[T[i]]&&BYT[T[i]].size)){rec(i);T[i]=EMPTY;L[i]=0;B[i]=0;PAR[i]=-1;F[i]=0;ORI[i]=0;return;}
   var tiles=(T[a]===SUB)?[i]:footOfAnchor(a);
   for(var k=0;k<tiles.length;k++){var t=tiles[k];rec(t);T[t]=EMPTY;L[t]=0;B[t]=0;PAR[t]=-1;F[t]=0;ORI[t]=0;}
@@ -905,12 +906,12 @@ function scan(){
   g.nukeShare=g.pCap>0?nukeMW/g.pCap:0;
   if(S&&S.tech.supercon)g.pCap*=1.08;
   if(S&&S.fail.power>0)g.pCap*=0.75;
-  cover(g.pc,pSrc,PLINE,(S&&S.tech.supercon)?6:4,2);
+  cover(g.pc,pSrc,PLINE,(S&&S.tech.supercon)?6:4,6);      /* power runs along overhead lines (8), buried cables (2) and overhead crossings of roads (4) */
   var wSrc=[];
   for(k=0;k<wAll.length;k++){if(g.pc[centerIdx(wAll[k])]){wSrc.push(wAll[k]);g.wCap+=BYT[T[wAll[k]]].wc*inf;}}
   if(S&&S.fail.water>0)g.wCap*=0.7;
   cover(g.wc,wSrc,PIPE,4,1);
-  g.ugW=0;g.ugP=0;for(i=0;i<N;i++){if(PU[i]){if(PU[i]&1)g.ugW++;if(PU[i]&2)g.ugP++;}}
+  g.ugW=0;g.ugP=0;g.xP=0;for(i=0;i<N;i++){if(PU[i]){if(PU[i]&1)g.ugW++;if(PU[i]&2)g.ugP++;if(PU[i]&4)g.xP++;}}
   for(i=0;i<N;i++){
     t=T[i];o=BYT[t];if(!o||!(o.pu||o.wu||o.mw||o.wc))continue;
     var cons=!!(o.build&&L[i]>0);
@@ -1163,22 +1164,24 @@ function computeEconomy(){
   var creep=(1+0.0012*Math.min(S.month,480))*dm('cost')*wealthF,wear=1+(1-S.cond)*1.2;
   var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1)*creep*(1+0.1*clamp(mc.health,0,1.5))*Math.max(0.55,1-0.3*ad)*((S.auto&&S.auto.psc>=12)?0.85:1)*lb.svcMul;
   var bridges=0;for(k=0;k<N;k++){if(T[k]===ROAD&&B[k])bridges++;}
-  var roadUp=(d[ROAD]*0.4+bridges*1.2+d[PLINE]*0.2+d[PIPE]*0.3+g.ugW*0.35+g.ugP*0.5)*sp.infra*infCost*wear;
-  var legacy=1+0.3*Math.max(0,(S.era|0)-2),powerUp=(d[PLANT]*35*fuelC*legacy+d[GAS]*45*fuelG*legacy+d[NUKE]*160*fuelN+d[HYDRO]*15+d[SOLAR]*10+d[WIND]*12+d[FUSION]*60+d[BATT]*40)*sp.infra*wear;
-  var waterUp=(d[PUMP]*25+d[DESAL]*70)*sp.infra*wear;
-  var civicUp=(d[POLICE]*60*sp.safety+d[FIRE]*50*sp.safety+d[SCHOOL]*70*sp.edu+d[LAB]*120+d[DC]*80+d[BIO]*90)*creep*wear;
+  /* a city that has lost more than half its people stops maintaining what nobody uses: upkeep falls with the shrinkage */
+  var shrinkF=(S.peak>=300&&S.pop<0.5*S.peak)?0.45+1.1*(S.pop/S.peak):1;
+  var roadUp=(d[ROAD]*0.4+bridges*1.2+(d[PLINE]+g.xP)*0.2+d[PIPE]*0.3+g.ugW*0.35+g.ugP*0.5)*sp.infra*infCost*wear*shrinkF;
+  var legacy=1+0.3*Math.max(0,(S.era|0)-2),powerUp=(d[PLANT]*35*fuelC*legacy+d[GAS]*45*fuelG*legacy+d[NUKE]*160*fuelN+d[HYDRO]*15+d[SOLAR]*10+d[WIND]*12+d[FUSION]*60+d[BATT]*40)*sp.infra*wear*shrinkF;
+  var waterUp=(d[PUMP]*25+d[DESAL]*70)*sp.infra*wear*shrinkF;
+  var civicUp=(d[POLICE]*60*sp.safety+d[FIRE]*50*sp.safety+d[SCHOOL]*70*sp.edu+d[LAB]*120+d[DC]*80+d[BIO]*90)*creep*wear*shrinkF;
   var projUp=(d[STADIUM]*400+d[AIRPORT]*900+d[UNIV]*600+d[CONV]*450+d[METRO]*700+d[EXCH]*500+d[SPACEPORT]*3000+d[YARD]*6000)*creep+(d[ELEV]*20000+d[ARRAY]*18000+d[NODE]*300000+d[RELAY]*2400000+d[TAP]*5000000+d[FORGE]*40000000)*dm('cost')*Math.min(1,spaceConf*humanF*(1-Math.min(0.8,Math.max(0,mc.orbit||0)*0.5)));
   var parkUp=d[PARK]*2+d[PORT]*40,importCost=imported*1.2*Math.max(0.6,1+0.9*mc.freight+0.5*S.shock+0.2*mc.materials),welfare=sp.welfare,udivCost=S.pop*8*(sp.udiv||0),retrainCost=S.pop*6*(sp.retrain||0),aiCost=S.pop*1.5*(0.5+aiCap())*(sp.aisafe||0)+(ord.breaker?S.pop*0.8:0),outage=((S.fail.power>0?1:0)+(S.fail.water>0?1:0))*ad*revenue*0.08;
-  var assets=d[ROAD]*45+d[PLINE]*20+d[PIPE]*25+d[RAIL]*30+g.ugW*30+g.ugP*45+d[SPACEPORT]*4e5+d[YARD]*2.5e6+d[ELEV]*2e6+d[ARRAY]*1.5e6+d[NODE]*1.4e7+d[RELAY]*8e7+d[TAP]*6e8+d[FORGE]*6e9,tk;
+  var assets=d[ROAD]*45+(d[PLINE]+g.xP)*20+d[PIPE]*25+d[RAIL]*30+g.ugW*30+g.ugP*45+d[SPACEPORT]*4e5+d[YARD]*2.5e6+d[ELEV]*2e6+d[ARRAY]*1.5e6+d[NODE]*1.4e7+d[RELAY]*8e7+d[TAP]*6e8+d[FORGE]*6e9,tk;
   for(tk in BYT){var ob=BYT[tk],tn=parseInt(tk,10);if(!ob.cat||ob.cat==='zone'||tn===ROAD||tn===PLINE||tn===PIPE||tn===RAIL)continue;assets+=d[tn]*ob.cost*0.8;}
-  var renewNeed=assets*(0.0012+0.00001*Math.min(S.month,420))*(S.tech.materials?0.75:1),renewSpend=renewNeed*S.renew;
+  var renewNeed=assets*(0.0012+0.00001*Math.min(S.month,420))*(S.tech.materials?0.75:1)*shrinkF,renewSpend=renewNeed*S.renew;
   var fin=finMods(),penGross=S.pop*0.8*Math.min(2.5,S.month/120)*infCost*dem.penMul*fin.benMul,penDraw=Math.min(penGross*0.6,(S.penFund||0)*0.006),pension=penGross-penDraw;
   var mandate=services*clamp(0.02+0.0003*S.month,0,0.15),aid=S.pop*0.6*(1+0.05*fin.grants)*fin.cycle*fin.wealth*(S.recession>0?0.6:1)*(S.imm&&S.imm.sanct?0.7:1)*infCost;
   revenue+=aid;
   var interest=S.fixedAmt*S.fixedRate/1200+S.varAmt*(S.rate+1+fin.spread)/1200;
   var rdSpend=S.rd.active?S.rd.budget:0;
   var insurance=S.dins?S.pop*0.5:0;
-  var wasteUp=(d[SEW]*50+d[LF]*25+d[RECY]*90+d[WTE]*160)*sp.infra+(ord.recycle?S.pop*0.06:0);
+  var wasteUp=(d[SEW]*50+d[LF]*25+d[RECY]*90+d[WTE]*160)*sp.infra*shrinkF+(ord.recycle?S.pop*0.06:0);
   var transitUp=d[BUS]*25*(ord.transit?0.7:1)+d[TIE]*80+d[RAIL]*0.8*sp.infra*(ord.transit?0.7:1)+d[STN]*120*(ord.transit?0.7:1)+(ord.transit?S.pop*0.08:0);
   var hcCreep=(1+0.0015*Math.min(S.month,420))*dm('cost')*wealthF,healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad)*dem.hMul*lb.svcMul+hl.healthExtra;
   var crimeIdx=clamp((1-g.polCov)*0.6+unemp*0.8,0,1),overtime=S.pop*0.05*crimeIdx*creep;
@@ -1220,7 +1223,7 @@ function computeEconomy(){
   e.rev=[['State and federal aid',aid],['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax*imm.bizMul*crimeDrag*rg.bizMul],['Exports',exports],['Dividends',dividends],['Tourism',tourism*crimeDrag*hm.tourMul*hd.tourMul*rg.tourMul],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
   e.exp=[['Public services',services],['Immigrant services',imm.welfare],['Immigration control',imm.cost],['Housing programs',hm.cost],['Justice system',jm.cost],['Family support',dem.cost],['Unfunded mandates',mandate],['Pension contributions',fin.contribCost],['Grant office',fin.grantCost],['Public health programs',hl.cost],['Neighborhood programs',hd.cost],['Regional competition',rg.cost],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.crimeT=crimeTarget({unemp:unemp,ineq:ineq,socCov:socCov,polCov:g.polCov,safety:sp.safety,mood:(S.hs===undefined?0.7:S.hs),ii:imm.ii,sanct:!!(S.imm&&S.imm.sanct),homeless:hm.rate,jmul:jm.mul,addict:hl.crimeAdd,hcm:hd.crimeMul});e.crime=crimeNow;e.imm=imm;e.hm=hm;e.jm=jm;e.dem=dem;e.lb=lb;e.fin=fin;e.hl=hl;e.hd=hd;e.rg=rg;e.aid=aid;e.mandate=mandate;e.penGross=penGross;e.penDraw=penDraw;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.crimeT=crimeTarget({unemp:unemp,ineq:ineq,socCov:socCov,polCov:g.polCov,safety:sp.safety,mood:(S.hs===undefined?0.7:S.hs),ii:imm.ii,sanct:!!(S.imm&&S.imm.sanct),homeless:hm.rate,jmul:jm.mul,addict:hl.crimeAdd,hcm:hd.crimeMul});e.crime=crimeNow;e.imm=imm;e.hm=hm;e.jm=jm;e.dem=dem;e.lb=lb;e.fin=fin;e.shrinkF=shrinkF;e.hl=hl;e.hd=hd;e.rg=rg;e.aid=aid;e.mandate=mandate;e.penGross=penGross;e.penDraw=penDraw;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop)*dm('infl');
@@ -1941,7 +1944,7 @@ function queueRepair(i){
   if(!id)return;
   if(!S.rq)S.rq=[];
   for(var k=0;k<S.rq.length;k++){if(S.rq[k].a===a)return;}
-  if(S.rq.length<800)S.rq.push({a:a,id:id,rot:ORI[a]|0,br:(t===ROAD&&B[a])?1:0,m:S.month});
+  if(S.rq.length<800)S.rq.push({a:a,id:id,rot:ORI[a]|0,br:(t===ROAD&&B[a])?1:0,px:(t===ROAD&&(PU[a]&4))?1:0,m:S.month});
 }
 function repairCritical(id){var o=OBJ[id];return !!(o&&(o.mw||o.wc));}
 function repairPrio(e){return repairCritical(e.id)?0:e.id==='road'?1:(e.id==='pline'||e.id==='pipe')?2:3;}
@@ -1971,6 +1974,7 @@ function stepRepair(e){
       else if(r.id==='road'){if(TER[r.a]===WATER){if(spend(price)){T[r.a]=ROAD;B[r.a]=1;ok=true;}}else ok=place(r.a,'road',ROAD);}
       else ok=place(r.a,r.id,o.t);
     }finally{bulk=false;}
+    if(ok&&r.px&&T[r.a]===ROAD)PU[r.a]|=4;
     if(ok){if(o.phased)L[r.a]=bMon(o);else if(o.build)L[r.a]=Math.min(L[r.a],1);var prem=Math.round((c0-S.cash)*0.25);S.cash-=prem;S.rqStat.n++;S.rqStat.cost+=(c0-S.cash);spentNow+=(c0-S.cash);done++;q.splice(k,1);k--;}
   }
   if(done)dirty=true;
@@ -2387,7 +2391,8 @@ function doAct(i,first){
   if(distState&&distState.tool!==tool)distState=null;
   if(tool==='inspect'){pending=null;inspectIdx=rootOf(i);showTile(i);dirty=true;return;}
   if(tool==='bull'){
-    if(T[i]!==EMPTY){
+    if(T[i]===ROAD&&(PU[i]&4)){if(spend(5)){rec(i);PU[i]&=~4;ok=true;}}      /* the line over a road comes down first, the road stays */
+    else if(T[i]!==EMPTY){
       var rt=rootOf(i),fsz=footSz(rt),ar=fsz[0]*fsz[1];
       var fee=(T[rt]===LF&&L[rt]>=LF_CAP)?Math.ceil(4000*mult()):0;
       if(spend(10*ar+fee)){if(fee)addNews('Capped landfill removed. Environmental cleanup cost '+money(fee)+'.','info');if(T[i]===WATER)T[i]=EMPTY;clearAt(i);ok=true;}
@@ -2419,6 +2424,14 @@ function doAct(i,first){
     if(TER[i]===WATER||TER[i]===ROCK){if(first)toast(TER[i]===WATER?'Pipes and cables cannot run under open water.':'Too rocky to dig.');return;}
     if(PU[i]&ubit)return;
     if(spend(costFor(tool,i))){rec(i);PU[i]|=ubit;ok=true;}
+    if(ok){dirty=true;mmDirty=true;ui();}
+    return;
+  }
+  if(tool==='pline'&&T[i]===ROAD){
+    /* an overhead power line can cross a road: a pylon spans it and the line carries on the other side */
+    if(TER[i]===WATER){if(first)toast('Power lines cannot be strung across a bridge.');return;}
+    if(PU[i]&4)return;
+    if(spend(costFor(tool,i))){rec(i);PU[i]|=4;ok=true;}
     if(ok){dirty=true;mmDirty=true;ui();}
     return;
   }
@@ -2475,7 +2488,8 @@ function showTile(i){
     if(o.pu&&!(f&2))s+=' Not powered.';
     if(o.wu&&!(f&4))s+=' No water.';
   }
-  if(PU[i])s+=' Buried here: '+((PU[i]&1)?'a water pipe':'')+((PU[i]&3)===3?' and ':'')+((PU[i]&2)?'a power cable':'')+'.';
+  if(PU[i]&3)s+=' Buried here: '+((PU[i]&1)?'a water pipe':'')+((PU[i]&3)===3?' and ':'')+((PU[i]&2)?'a power cable':'')+'.';
+  if(PU[i]&4)s+=' A power line crosses overhead.';
   $('info').textContent=s;if(typeof overlayMode==='function'&&overlayMode())toast(s,5200);
 }
 
@@ -3310,7 +3324,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-22 17:30';
+var BUILD_ID='2026-11-22 19:49';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -3922,7 +3936,7 @@ function refreshImm(){
 /* Rents follow home prices, how full the city is and how tight zoning is. The rent burden is the share of a typical
    household's income that rent takes. A heavy burden, unemployment and gaps in social services push people onto the street. */
 function housingInit(){
-  if(!S.housing)S.housing={afford:0,shelter:0,stab:false,zone:5};
+  if(!S.housing||typeof S.housing.zone!=='number'||!isFinite(S.housing.zone))S.housing={afford:0,shelter:0,stab:false,zone:5};
   if(S.rent===undefined)S.rent=100;
   if(S.homeless===undefined)S.homeless=0;
   if(S.burden===undefined)S.burden=0.3;
@@ -4111,7 +4125,7 @@ function refreshJustice(){
    climb and the school-age share shrinks, unless births or newcomers keep it young. */
 function demogInit(){
   if(!S.dem)S.dem={fam:0};
-  if(!S.age)S.age={k:0.22,w:0.70,o:0.08};
+  if(!S.age||!isFinite(S.age.k)||!isFinite(S.age.w)||!isFinite(S.age.o))S.age={k:0.22,w:0.70,o:0.08};
   if(S.popPrev===undefined)S.popPrev=S.pop;
   if(S.fert===undefined)S.fert=12.5;
 }
@@ -4120,10 +4134,10 @@ function demMods(){
   var a=(S&&S.age)?S.age:{k:0.22,w:0.70,o:0.08},fam=(S&&S.dem)?S.dem.fam:0,pop=S?S.pop:0;
   return {
     k:a.k,w:a.w,o:a.o,fam:fam,
-    wf:0.6+0.8*((a.w*0.90+a.o*0.10)-0.56),                                    /* share of residents in the workforce */
+    wf:0.6+0.5*((a.w*0.90+a.o*0.10)-0.56),                                    /* share of residents in the workforce */
     schD:clamp(0.22/a.k,0.5,1.6),                           /* more children per school seat means a thinner school coverage */
     hMul:0.85+0.15*(a.o/0.13),                              /* seniors need more health care */
-    penMul:clamp(a.o/oldBase(S?S.month:0),0.5,2.5),         /* pensions follow the retiree share against a normal aging path */
+    penMul:clamp(a.o/oldBase(S?S.month:0),0.7,1.6),         /* pensions follow the retiree share against a normal aging path */
     cost:Math.round(fam*pop*0.03),
     perSenior:a.o>0?a.w/a.o:99
   };
@@ -4136,7 +4150,8 @@ function stepDemog(e){
   var b=0.0125*(a.w/0.65)*fm,dk=0.0005,dw=0.003,dold=0.07*(1.05-0.05*(e.hc!==undefined?clamp(e.hc,0,1.2):0.5));
   S.fert=b*1000;
   var nat=b/12-(a.k*dk+a.w*dw+a.o*dold)/12,mig=clamp(g-nat,-0.05,0.05);
-  var nk=a.k+b/12-a.k/216-a.k*dk/12+mig*0.15,nw=a.w+a.k/216-a.w/564-a.w*dw/12+mig*0.80,no=a.o+a.w/564-a.o*dold/12+mig*0.05;
+  var mxk=mig>=0?0.15:0.20,mxw=mig>=0?0.80:0.62,mxo=mig>=0?0.05:0.18;      /* people who leave are a broader mix than people who arrive */
+  var nk=a.k+b/12-a.k/216-a.k*dk/12+mig*mxk,nw=a.w+a.k/216-a.w/564-a.w*dw/12+mig*mxw,no=a.o+a.w/564-a.o*dold/12+mig*mxo;
   nk=Math.max(0.05,nk);nw=Math.max(0.2,nw);no=Math.max(0.01,no);
   var s=nk+nw+no;a.k=nk/s;a.w=nw/s;a.o=no/s;
 }
@@ -4404,11 +4419,11 @@ function stepHoods(e){
   var ct=clamp(20+4*h.arts+18*((e.g&&e.g.parkCov)||0)+((Ac.stadium||0)>0?10:0)+((Ac.conv||0)>0?6:0)+((Ac.univ||0)>0?8:0)+25*li-0.5*Math.max(0,crime-15),0,100);
   S.culture+=(ct-S.culture)*0.03;
   /* gentrification pressure: rising rents and home prices, and fashion */
-  var rg=Math.max(0,S.rentGrowth||0),press=0.06*(0.12*rg+0.01*Math.max(0,S.culture/100-0.2)+0.02*clamp((S.hpi-100)/100,0,1.5));
+  var rg=Math.max(0,S.rentGrowth||0),press=0.045*(0.12*rg+0.01*Math.max(0,S.culture/100-0.2)+0.02*clamp((S.hpi-100)/100,0,1.5));
   var dgSum=0;
   for(i=0;i<S.dist.length;i++){
     var d=S.dist[i],dg=press*HOOD_SUSC[i]*(1-0.07*h.protect);
-    if(press<0.00015)dg-=0.004*d.gent;
+    dg-=0.002*d.gent;                          /* neighborhoods settle and recover on their own over a few decades */
     var old=d.gent;d.gent=clamp(d.gent+dg,0,1);dgSum+=Math.max(0,d.gent-old);
     var ctar=clamp(1-0.8*d.gent+0.03*h.preserve,0.1,1);
     d.char+=(ctar-d.char)*0.02;
@@ -4601,8 +4616,8 @@ var GUIDE=[
  '<tr><td>Solar</td><td>12 MW</td><td>Weaker in winter and under cloud. Photovoltaics adds 50%.</td></tr>'+
  '<tr><td>Wind</td><td>14 MW</td><td>Gusty. Better on hills and coasts.</td></tr>'+
  '<tr><td>Fusion</td><td>650 MW</td><td>Very hard research. 14 months to build.</td></tr></table>'+
- '<p><b>Connected buildings pass power along.</b> Power moves through any chain of touching buildings, homes, shops, factories and public buildings alike, so a block that touches a powered building is powered too. Roads break the chain, so cross them with a power line or keep the reach of a plant or line in mind.</p>'+
- '<p><b>Reach:</b> each plant covers a diamond around its center (8 tiles for coal and gas, 14 for nuclear, 16 for fusion). Power lines carry power from a plant and each powered line reaches 4 tiles around it. Overhead lines take up a tile, can burn and can be torn out by a tornado. Research Underground cables for a buried cable that runs beneath roads and buildings, costs more, and is safe from fire and tornadoes.</p>'+
+ '<p><b>Connected buildings pass power along.</b> Power moves through any chain of touching buildings, homes, shops, factories and public buildings alike, so a block that touches a powered building is powered too. Roads break the chain, so cross them with a power line: pick the Power line tool and tap the road, and a pylon spans it so the line carries on the other side. Bulldoze the pylon and the road stays. Bridges cannot carry a line.</p>'+
+ '<p><b>Reach:</b> each plant covers a diamond around its center (8 tiles for coal and gas, 14 for nuclear, 16 for fusion). Power lines carry power from a plant and each powered line reaches 4 tiles around it. Overhead lines take up a tile (or sit on a road when they cross one), cost the same to build and upkeep as any line tile, can burn and can be torn out by a tornado. A line over a road comes down if the road is destroyed, and the repair crews put both back. Research Underground cables for a buried cable that runs beneath roads and buildings, costs more, and is safe from fire and tornadoes.</p>'+
  '<p><b>Batteries</b> even out solar and wind swings by up to 8 MW a tile, lose 15% each way, cost a lot, and can catch fire. Fire stations barely help against them.</p>'+
  '<p><b>Grid link:</b> lets you sell surplus power and buy shortfalls at neighboring cities\u2019 prices. Buying is expensive.</p>'},
 {id:'g-water',title:'Water, sewage, garbage and recycling',
@@ -4757,6 +4772,7 @@ var GUIDE=[
  '<p><b>The campaign.</b> You have 4 minutes of running time to win the job back. This is the one real-time timer in the game. It only moves while the game clock is running, so it does not move while a panel is open or the game is paused, and you cannot skip it. Open the Campaign sheet from the button where Build usually is. You spend political capital, not city money. You earn it from achievements, pet projects and a little more every minute. You can hold a town hall (repeat after a short wait), challenge a debate (once), promise tax relief or better services (one promise, kept if you win) and ask the voter blocs that like you for their endorsements.</p>'+
  '<p><b>The election.</b> When the 4 minutes are up the city votes. Three things decide it: your record as mayor (average approval, how the city grew, scandals), how the city fared under the caretaker (a thriving city helps the caretaker, a struggling one helps you) and your campaign, plus a little luck. Win and you are mayor again. Approval is reset to a middling level, the group that likes you least stays hostile for two years, and a recall penalty on approval fades over five years. Lose and a new 4-minute campaign starts straight away. You can keep campaigning forever, or retire at any time and take your legacy score. There are no regular elections. Recalls are the only vote.</p>'+
  '<p><b>Receivership.</b> If the city runs out of money, a financial control board takes over in caretaker mode. It is an austerity government: it raises taxes, trims spending, keeps infrastructure renewal funded and sells surplus assets such as airports, universities and stadiums, starting with about eight months of spending in cash, and it sells more if a year goes by with the books still in the red. You get the same 4-minute campaign and election as after a recall, and you can win the city back, in which case your spending levels return to where they were. The board also hands the city back on its own once the city has three months of spending in the bank and a surplus for twelve months in a row. If ten years of austerity cannot balance the books and there is nothing left to sell, the state forgives the shortfall and hands the city back.</p>'+
+ '<p><b>Shrinking cities.</b> A city that has lost more than half its peak population stops maintaining what nobody uses. Upkeep on roads, power, water, sewage, civic buildings and infrastructure renewal falls as the city shrinks, to about half at the bottom. Buildings stay standing and can fill up again if people return.</p>'+
 
  '<p><b>Voters.</b> Approval is the weighted view of six groups. Homeowners care about property taxes, home prices and mortgage rates. Renters care about rents, services and sales tax. Business owners care about business tax and the stock market. Workers care about jobs, wages and income tax. Retirees care about health care, inflation and property taxes. Young residents care about schools, housing costs and jobs. The Economy panel shows each group. Their moods nudge overall approval.</p>'+
  '<p><b>Scandals.</b> Corruption scandals drain approval and can lead to a recall. They get likelier with every pet project and much less likely with Transparency rules (Policy, Spending, ordinances; they cost a small slice of the budget).</p>'+
@@ -5757,7 +5773,7 @@ function draw(){
         ctx.strokeStyle='rgba(30,30,30,.75)';ctx.lineWidth=Math.max(1,v.z*1.3);
         for(kk=0;kk<2;kk++){
           var nx=x+dirs[kk][0],ny=y+dirs[kk][1];if(nx>=MW||ny>=MH)continue;var n=ny*MW+nx;
-          if(T[n]!==PLINE)continue;
+          if(T[n]!==PLINE&&!(PU[n]&4))continue;
           var d=dirRot(dirs[kk][0],dirs[kk][1],r),dE=(EL[n]-EL[i])*v.es;
           ctx.beginPath();ctx.moveTo(PX(0.5,0.5),PY(0.5,0.5,1.5));ctx.lineTo(PX(0.5+d[0],0.5+d[1]),PY(0.5+d[0],0.5+d[1],1.5)-dE);ctx.stroke();
         }
@@ -5771,6 +5787,19 @@ function draw(){
         var root=(t===SUB&&PAR[i]>=0)?PAR[i]:i,rt=T[root],ro=BYT[rt];
         if(ro&&ro.size&&ro.size[0]*ro.size[1]>1)drawBig(root,rx,ry,v,g,detail);
         else drawObject(i,t,L[i],detail,x,y,g);
+      }
+      if((PU[i]&4)&&t===ROAD){
+        /* an overhead power line crossing the road: a pylon on the verge with wires to the next one */
+        boxL(0.46,0.46,0.54,0.54,0,1.7,CL.metal);boxL(0.28,0.46,0.72,0.54,1.4,1.55,CL.metal);
+        var dirsX=[[1,0],[0,1]],kx;
+        ctx.strokeStyle='rgba(30,30,30,.75)';ctx.lineWidth=Math.max(1,v.z*1.3);
+        for(kx=0;kx<2;kx++){
+          var mx=x+dirsX[kx][0],my=y+dirsX[kx][1];if(mx>=MW||my>=MH)continue;var m2=my*MW+mx;
+          if(T[m2]!==PLINE&&!(PU[m2]&4))continue;
+          var dd=dirRot(dirsX[kx][0],dirsX[kx][1],r),dEx=(EL[m2]-EL[i])*v.es;
+          ctx.beginPath();ctx.moveTo(PX(0.5,0.5),PY(0.5,0.5,1.5));ctx.lineTo(PX(0.5+dd[0],0.5+dd[1]),PY(0.5+dd[0],0.5+dd[1],1.5)-dEx);ctx.stroke();
+        }
+        if(g.pc[i]){ctx.fillStyle='#ffd23f';ctx.beginPath();ctx.arc(PX(0.5,0.5),PY(0.5,0.5,1.75),Math.max(1.5,v.z*2.6),0,6.283);ctx.fill();}
       }
       if(PU[i]&&showUnder)drawUnder(i,x,y,X0,Y0,v);
       if(FLD[i]>0&&tt!==WATER){ctx.globalAlpha=0.55;quad(X0,Y0,X0+v.tw/2,Y0+v.th/2,X0,Y0+v.th,X0-v.tw/2,Y0+v.th/2,'#3b86c9');ctx.globalAlpha=1;}
