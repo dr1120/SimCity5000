@@ -1058,7 +1058,7 @@ function firmJobsTotal(){
 function rdRate(g){
   if(typeof window!=='undefined'&&window.__NOGATE)return 7000;
   var labs=g.act.lab,labF=labs===0?0.25:(1+0.4*(labs-1));
-  var raw=S.rd.budget/30*labF*(1+0.06*g.act.school)*(S.tech.ai?1.25:1)*(g.act.univ?1.6:1)*(1+0.2*Math.min(4,g.act.dc))*(0.9+0.1*S.sp.edu)*(S.tech.quantum?1.3:1)*(S.tech.antimatter?1.2:1)*(S.tech.matrioshka?1.5:1)*(S.alien==='friend'?1.2:1)/(1+0.3*Math.max(0,S.mc.chips)*(S.tech.quantum?0.7:1)*(S.tech.orbital?0.5:1));
+  var raw=S.rd.budget/30*labF*(1+0.06*g.act.school)*(S.tech.ai?1.25:1)*(g.act.univ?1.6:1)*(1+0.2*Math.min(4,g.act.dc))*(0.9+0.1*S.sp.edu)*(S.tech.quantum?1.3:1)*(S.tech.antimatter?1.2:1)*(S.tech.matrioshka?1.5:1)*(S.alien==='friend'?1.2:1)*(1+Math.min(0.3,0.6*(S.imm?S.imm.li:0)))/(1+0.3*Math.max(0,S.mc.chips)*(S.tech.quantum?0.7:1)*(S.tech.orbital?0.5:1));
   return raw/(1+raw/8000);
 }
 /* Inflation accelerates while the real rate (policy rate minus inflation) sits below about 2% and slows while it sits above. */
@@ -1094,21 +1094,22 @@ function computeEconomy(){
   var wasteF=Math.min(1,S.pop/150);
   var firmJobs=firmJobsTotal(),dividends=0;
   for(k=0;k<S.firms.length;k++){var fm=S.firms[k];if(fm.stage==='public')dividends+=fm.stake*fm.val*0.0022*(A.exch?1.1:1);}
-  var jobsT=g.jobsT+firmJobs,workforce=S.pop*0.6;
+  var dem=demMods(),lb=laborMods(),jobsT=g.jobsT+firmJobs,workforce=S.pop*dem.wf*(1-0.5*immMods().ii);
   var jobsRaw=(g.jobsC*(0.4+0.6*S.shopFill)+g.jobsI)*(1-0.5*ad*(1-0.7*sk))+g.jobsB+jobsT,jobsEff=jobsRaw*ef;
-  var fill=jobsEff>0?Math.min(1,workforce/jobsEff):0,employed=Math.min(workforce,jobsEff);
+  var fill=jobsEff>0?Math.min(1,workforce/jobsEff):0,employed=Math.min(workforce,jobsEff*lb.jobMul);
   var unemp=workforce>0?1-employed/workforce:0;
   var empT=jobsEff>0?employed*jobsT*ef/jobsEff:0;
   var produced=g.jobsI*ef*fill*9/(1+(supply-1)*0.8)*(S.tech.auto?1.3:1)*(ord.clean?0.95:1)*(1-0.012*(tx.bot||0)*ashare);
   var need=g.jobsC*ef*fill*6,imported=Math.min(g.portsOK*80*clamp(1-0.6*mc.trade,0.3,1.3),Math.max(0,need-produced));
   var sold=Math.min(need,produced+imported),shopFill=need>0?sold/need:1;
   var exports=Math.max(0,produced-need)*3.5*(S.recession>0?0.5:1)*(A.airport?1.35:1)*clamp(1-mc.trade,0.3,1.5)*(S.tech.orbital?1.2:1)*(S.alien==='friend'?1.3:1)*(1+Math.min(0.2,ppm.trade||0));
-  var wage=90*(S.recession>0?0.85:1);
-  var incTax=tx.inc/100*((employed-empT)*wage+empT*wage*1.8)*(1+0.05*g.schCov*sp.edu)*(A.univ?1.04:1)*((S.tech.agi&&!(S.aiBust>0))?(ord.breaker?1.08:1.15):1)*(1+0.2*ad*sk-0.08*ad*(1-sk));
+  var wage=90*lb.wageMul*(S.recession>0?0.85:1);
+  var schC=g.schCov*dem.schD,jm=justiceMods(),hm=housingMods(),imm=immMods(),crimeNow=(S.crimeRate===undefined?8:S.crimeRate),crimeDrag=1-clamp((crimeNow-10)*0.004,0,0.25);
+  var incTax=tx.inc/100*((employed-empT)*wage+empT*wage*1.8)*(1+0.05*schC*sp.edu)*(A.univ?1.04:1)*((S.tech.agi&&!(S.aiBust>0))?(ord.breaker?1.08:1.15):1)*(1+0.2*ad*sk-0.08*ad*(1-sk))*imm.taxMul;
   var sx1=tx.sales+(tx.splost?1:0),salesVol=sold*clamp(1-0.025*(sx1-6),0.6,1.15)*(S.stim>0?1.12:1);
   var saleTax=tx.sales/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);
-  var propVal=g.propVal+g.jobsC*50+g.jobsI*40+jobsT*80,propTax=propVal*0.006*tx.prop;
-  var bizTax=tx.corp/100*(sold*8*0.3+produced*2.5+empT*wage*0.7);
+  var propVal=g.propVal+g.jobsC*50+g.jobsI*40+jobsT*80,propTax=propVal*0.006*tx.prop*hm.propMul;
+  var bizTax=tx.corp/100*(sold*8*0.3+produced*2.5+empT*wage*0.7)*lb.bizMul;
   var tourism=(A.stadium*350+A.conv*300+A.airport*600)*(1+Math.min(0.6,ppm.tour||0));
   var cloud=A.dc*600*(S.tech.ai?1.5:1)*(S.tech.quantum?1.5:1)*(S.aiBust>0?0.5:1);
   var spaceConf=clamp(0.75+0.25*S.mkt/100-0.06*Math.max(0,S.rate-S.infl-2),0.5,1.3)*(S.recession>0?0.85:1),humanF=clamp(Math.sqrt(S.pop/1200),0.15,1);
@@ -1117,11 +1118,11 @@ function computeEconomy(){
   var orb=Math.max(0,mc.orbit||0),launch=A.spaceport*2500*(S.tech.orbital?2:1)*(S.tech.antimatter?1.25:1)*(d[ELEV]>0?3:1)*(1-Math.min(0.9,orb*0.8))*spaceConf*humanF,mining=S.tech.asteroid?A.spaceport*1500*clamp(1+(mc.ore||0),0.2,2)*spaceConf*humanF:0,fundPay=S.fund.bal*S.fund.payout/1200;
   var fares=Math.min(S.pop*0.12,A.stn*220)*1.5;
   var tradeIn=expMW*6*npx+expW*2.5*npx,tradeOut=impMW*40*npx+impW*8*npx;
-  var revenue=incTax+saleTax+propTax+bizTax+exports+dividends+tourism+cloud+tradeIn+fares+recySales+launch+mining+fundPay+spaceEcon+botTax;
+  var revenue=incTax+saleTax+propTax+bizTax*imm.bizMul*crimeDrag+exports+dividends+tourism*crimeDrag*hm.tourMul+cloud+tradeIn+fares+recySales+launch+mining+fundPay+spaceEcon+botTax;
   var fuelC=Math.max(0.5,1+0.9*mc.energy+0.5*S.shock),fuelG=Math.max(0.5,1+1.4*mc.energy+0.8*S.shock),fuelN=Math.max(0.7,1+0.1*mc.energy+0.1*S.shock),infCost=1+Math.max(0,S.infl-3)*0.012;
   var wealthF=Math.min(2,1+0.22*Math.max(0,Math.log10(Math.max(1,revenue/Math.max(1,S.pop))/12)));
   var creep=(1+0.0012*Math.min(S.month,480))*dm('cost')*wealthF,wear=1+(1-S.cond)*1.2;
-  var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1)*creep*(1+0.1*clamp(mc.health,0,1.5))*Math.max(0.55,1-0.3*ad)*((S.auto&&S.auto.psc>=12)?0.85:1);
+  var services=S.pop*(0.7+S.pop/1500)*sp.svc*(S.tech.ai?0.85:1)*infCost*(A.metro?0.95:1)*creep*(1+0.1*clamp(mc.health,0,1.5))*Math.max(0.55,1-0.3*ad)*((S.auto&&S.auto.psc>=12)?0.85:1)*lb.svcMul;
   var bridges=0;for(k=0;k<N;k++){if(T[k]===ROAD&&B[k])bridges++;}
   var roadUp=(d[ROAD]*0.4+bridges*1.2+d[PLINE]*0.2+d[PIPE]*0.3+g.ugW*0.35+g.ugP*0.5)*sp.infra*infCost*wear;
   var legacy=1+0.3*Math.max(0,(S.era|0)-2),powerUp=(d[PLANT]*35*fuelC*legacy+d[GAS]*45*fuelG*legacy+d[NUKE]*160*fuelN+d[HYDRO]*15+d[SOLAR]*10+d[WIND]*12+d[FUSION]*60+d[BATT]*40)*sp.infra*wear;
@@ -1132,20 +1133,23 @@ function computeEconomy(){
   var assets=d[ROAD]*45+d[PLINE]*20+d[PIPE]*25+d[RAIL]*30+g.ugW*30+g.ugP*45+d[SPACEPORT]*4e5+d[YARD]*2.5e6+d[ELEV]*2e6+d[ARRAY]*1.5e6+d[NODE]*1.4e7+d[RELAY]*8e7+d[TAP]*6e8+d[FORGE]*6e9,tk;
   for(tk in BYT){var ob=BYT[tk],tn=parseInt(tk,10);if(!ob.cat||ob.cat==='zone'||tn===ROAD||tn===PLINE||tn===PIPE||tn===RAIL)continue;assets+=d[tn]*ob.cost*0.8;}
   var renewNeed=assets*(0.0012+0.00001*Math.min(S.month,420))*(S.tech.materials?0.75:1),renewSpend=renewNeed*S.renew;
-  var pension=S.pop*0.8*Math.min(2.5,S.month/120)*infCost;
-  var interest=S.fixedAmt*S.fixedRate/1200+S.varAmt*(S.rate+1)/1200;
+  var fin=finMods(),penGross=S.pop*0.8*Math.min(2.5,S.month/120)*infCost*dem.penMul*fin.benMul,penDraw=Math.min(penGross*0.6,(S.penFund||0)*0.006),pension=penGross-penDraw;
+  var mandate=services*clamp(0.02+0.0003*S.month,0,0.15),aid=S.pop*0.6*(1+0.05*fin.grants)*fin.cycle*fin.wealth*(S.recession>0?0.6:1)*(S.imm&&S.imm.sanct?0.7:1)*infCost;
+  revenue+=aid;
+  var interest=S.fixedAmt*S.fixedRate/1200+S.varAmt*(S.rate+1+fin.spread)/1200;
   var rdSpend=S.rd.active?S.rd.budget:0;
   var insurance=S.dins?S.pop*0.5:0;
   var wasteUp=(d[SEW]*50+d[LF]*25+d[RECY]*90+d[WTE]*160)*sp.infra+(ord.recycle?S.pop*0.06:0);
   var transitUp=d[BUS]*25*(ord.transit?0.7:1)+d[TIE]*80+d[RAIL]*0.8*sp.infra*(ord.transit?0.7:1)+d[STN]*120*(ord.transit?0.7:1)+(ord.transit?S.pop*0.08:0);
-  var hcCreep=(1+0.0015*Math.min(S.month,420))*dm('cost')*wealthF,healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad);
+  var hcCreep=(1+0.0015*Math.min(S.month,420))*dm('cost')*wealthF,healthUp=(d[HOSP]*220*sp.health+S.pop*0.1*sp.health)*hcCreep*(S.tech.genome?0.85:1)*Math.max(0.6,1-0.25*ad)*dem.hMul*lb.svcMul;
   var crimeIdx=clamp((1-g.polCov)*0.6+unemp*0.8,0,1),overtime=S.pop*0.05*crimeIdx*creep;
   var resilUp=(d[LEVEE]*3+d[RESV]*30)*sp.infra+(ord.retrofit?S.pop*0.12:0);
-  var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+retrainCost+aiCost+outage+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend;
+  var costs=healthUp+overtime+resilUp+renewSpend+pension+tradeOut+wasteUp+transitUp+insurance+services+welfare+udivCost+retrainCost+aiCost+outage+roadUp+powerUp+waterUp+civicUp+projUp+parkUp+importCost+interest+rdSpend+imm.welfare+imm.cost+hm.cost+jm.cost+dem.cost+mandate+fin.contribCost+fin.grantCost;
   var wfFrac=Math.min(1,welfare/(S.pop*3+200));
-  var afQ=clamp(1.55-0.55*S.hpi/100*mort/5.5,0.15,1.15),socNeed=S.pop*(0.04+0.9*unemp+0.5*Math.max(0,1-afQ))*creep*(1+0.8*Math.max(0,ineq-0.3))*(1-0.15*Math.min(1,sp.udiv||0)),socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
+  var afQ=clamp(1.55-0.55*S.hpi/100*mort/5.5,0.15,1.15),socNeed=S.pop*(0.04+0.9*unemp+0.5*Math.max(0,1-afQ))*creep*(1+0.8*Math.max(0,ineq-0.3))*(1-0.15*Math.min(1,sp.udiv||0))*(1-0.01*dem.fam)*lb.socMul,socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
+  socNeed+=(imm.socExtra+hm.socExtra)*creep;socCov=Math.min(1,0.3+0.7*(socNeed>0?welfare/socNeed:1));
   var prosp=Math.min(0.2,0.05*Math.max(0,Math.log10(Math.max(1,revenue/Math.max(1,S.pop))/20)));
-  var h=0.72+prosp+0.25*g.parkCov+(sp.svc-1)*0.4+0.10*g.polCov*Math.min(1.3,sp.safety)+0.06*g.schCov*sp.edu+(S.tech.bio?0.03:0)
+  var h=0.72-clamp((crimeNow-10)*0.005,0,0.3)-hm.moodPen-lb.moodAdj+prosp+0.25*g.parkCov+(sp.svc-1)*0.4+0.10*g.polCov*Math.min(1.3,sp.safety)+0.06*schC*sp.edu+(S.tech.bio?0.03:0)
         -(1-socCov)*0.08*wasteF-(1-hc)*0.12*wasteF-(1-er)*0.06*wasteF+(A.stadium?0.06:0)+(A.metro?0.04:0)+0.03*Math.min(1,A.stn/2)-(A.airport?0.03:0)-0.2*Math.min(1,g.pollAvg)-0.12*Math.max(0,cong-1)
         -(1-sw)*0.3*wasteF-(1-gb)*0.25*wasteF+(ord.recycle?0.02:0)
         -Math.max(0,tx.inc-9)*0.04+Math.max(0,9-tx.inc)*0.01-Math.max(0,tx.sales-8)*0.02-Math.max(0,tx.prop-1.3)*0.1
@@ -1154,10 +1158,10 @@ function computeEconomy(){
   h+=Math.min(0.12,ppm.mood||0)+0.008*Math.min(8,sp.udiv||0)+0.04*g.nukeShare+((S.auto&&S.auto.psc>=12)?0.05:0)-0.15*Math.max(0,ineq-0.4)-(S.xp||0);h=clamp(h,0.15,1.25);
   var payIdx=S.hpi/100*mort/5.5,af=clamp(1.55-0.55*payIdx+0.06*(sp.udiv||0),0.15,1.15);
   var jf=workforce>0?clamp(jobsEff/workforce,0.3,1):1;
-  var hPop=(S.hs===undefined)?h:S.hs,target=g.resCap*Math.min(1,af*Math.min(hPop,1)*(0.5+0.5*jf)*1.15);
-  var occ=g.resCap>0?S.pop/g.resCap:1;
+  var hPop=(S.hs===undefined)?h:S.hs,target=g.resCap*hm.capMul*Math.min(1,af*Math.min(hPop,1)*(0.5+0.5*jf)*1.15)*(1-clamp((crimeNow-25)*0.004,0,0.2))*hm.popMul;
+  var occ=g.resCap>0?S.pop/(g.resCap*hm.capMul):1;
   var appetite=clamp(1.25-(mort-4)*0.15,0.05,1.25)*(1+0.35*Math.max(0,1-S.month/36))/Math.pow(supply,0.7)*(1-Math.max(0,tx.inc-10)*0.04)*(1-Math.max(0,tx.corp-10)*0.015)
-        *(S.recession>0?0.85:1)*(A.metro?1.05:1)*(S.infl<0?0.8:1);
+        *(S.recession>0?0.85:1)*(A.metro?1.05:1)*(S.infl<0?0.8:1)*hm.appMul;
   var jobsGap=clamp((jobsEff-workforce)/(workforce+20),-1,1),wfGap=clamp((workforce-jobsEff)/(workforce+20),-1,1);
   var occEff=S.pop<30?1:occ;
   var Rdem=clamp(3.5*(occEff-0.72)+0.5*jobsGap+(S.remote>0?0.25:0)+clamp((S.hpi-100)/250,-0.1,0.2)+clamp((S.mkt-100)/600,-0.1,0.15)
@@ -1168,16 +1172,16 @@ function computeEconomy(){
   var Idem=clamp(0.6*wfGap+0.6*goodsGap+0.2-(S.recession>0?0.3:0)-0.02*(tx.corp-8)+(A.airport?0.05:0),-1,1);
   var apprRaw=clamp(h*65+(1-unemp*Math.min(1,workforce/30))*25-Math.max(0,tx.inc-11)*2-Math.max(0,sx1-9)-Math.max(0,S.infl-5)*2+Math.min(6,ppm.appr||0)+(A.stadium?3:0)-(S.cash<0?10:0)-((S.fund.bal>24*Math.max(1000,revenue)&&tx.inc>9)?3:0)-10*Math.max(0,ineq-0.45)+((S.auto&&S.auto.psc>=12)?4:0),0,100);
   var apprTarget=apprRaw>85?85+(apprRaw-85)*0.4:apprRaw;  /* nobody is ever 100% happy */
-  var bl=blocCalc({tx:tx,hpi:S.hpi,mort:mort,infl:S.infl,socCov:socCov,hc:hc,schCov:g.schCov,unemp:unemp,tight:jobsGap,mkt:S.mkt,appr:apprTarget});
-  apprTarget=clamp(apprTarget+bl.mw*0.5-(S.recallPen||0)-(S.scand||0),0,100);
+  var bl=blocCalc({tx:tx,hpi:S.hpi,mort:mort,infl:S.infl,socCov:socCov,hc:hc,schCov:schC,unemp:unemp,tight:jobsGap,mkt:S.mkt,appr:apprTarget});
+  apprTarget=clamp(apprTarget+bl.mw*0.5-(S.recallPen||0)-(S.scand||0)-(S.regPen||0),0,100);
   e.supply=supply;e.mort=mort;e.pw=pw;e.ww=ww;e.workforce=workforce;e.employed=employed;e.unemp=unemp;e.tight=jobsGap;e.mortReal=mort-(S.infl-2);
   e.produced=produced;e.need=need;e.imported=imported;e.sold=sold;e.shopFill=shopFill;e.exports=exports;
   e.pwUse=(g.pCap+impMW)>0?pwD/(g.pCap+impMW):(pwD>0?9.99:0);e.wUse=(wCap+impW)>0?wD/(wCap+impW):(wD>0?9.99:0);
   e.sw=sw;e.gb=gb;e.cong=cong;e.pollAvg=g.pollAvg;e.expMW=expMW;e.impMW=impMW;e.expW=expW;e.impW=impW;
-  e.rev=[['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax],['Exports',exports],['Dividends',dividends],['Tourism',tourism],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
-  e.exp=[['Public services',services],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
+  e.rev=[['State and federal aid',aid],['Income tax',incTax],['Sales tax',saleTax],['Property tax',propTax],['Business tax',bizTax*imm.bizMul*crimeDrag],['Exports',exports],['Dividends',dividends],['Tourism',tourism*crimeDrag*hm.tourMul],['Cloud services',cloud],['Power and water sales',tradeIn],['Rail fares',fares],['Recycling sales',recySales],['Launch services',launch],['Space economy',spaceEcon],['Automation levy',botTax],['Asteroid mining',mining],['Sovereign fund payout',fundPay]];
+  e.exp=[['Public services',services],['Immigrant services',imm.welfare],['Immigration control',imm.cost],['Housing programs',hm.cost],['Justice system',jm.cost],['Family support',dem.cost],['Unfunded mandates',mandate],['Pension contributions',fin.contribCost],['Grant office',fin.grantCost],['Social services',welfare],['Universal dividend',udivCost],['Retraining programs',retrainCost],['AI oversight',aiCost],['Automation outage losses',outage],['Healthcare',healthUp],['Public safety overtime',overtime],['Resilience',resilUp],['Roads and lines',roadUp],['Power plants',powerUp],['Water',waterUp],['Civic and labs',civicUp],
          ['Capital projects',projUp],['Parks and ports',parkUp],['Imported goods',importCost],['Infrastructure renewal',renewSpend],['Pensions and retiree costs',pension],['Bond interest',interest],['R&D spending',rdSpend],['Deposit insurance',insurance],['Waste and sewage',wasteUp],['Transit and grid links',transitUp],['Imported power and water',tradeOut]];
-  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
+  e.splostRev=(tx.splost?1:0)/100*salesVol*8*(S.tech.fiber?1.1:1)*clamp(0.9+0.002*(S.mkt-100),0.8,1.15)*(A.conv?1.12:1);e.ad=ad;e.sk=sk;e.ineq=ineq;e.aiCap=aiCap();e.aiRisk=aiRisk();e.abund=clamp(ad*0.45+((S.tech.fusion||S.tech.orbsolar)?0.15:0)+clamp(1-ineq,0,1)*0.2+socCov*0.1+clamp(1-unemp*4,0,1)*0.1,0,1);e.kard=kardashev(g);e.spaceConf=spaceConf;e.humanF=humanF;e.wealthF=wealthF;e.prosp=prosp;e.blocs=bl.list;e.crimeT=crimeTarget({unemp:unemp,ineq:ineq,socCov:socCov,polCov:g.polCov,safety:sp.safety,mood:(S.hs===undefined?0.7:S.hs),ii:imm.ii,sanct:!!(S.imm&&S.imm.sanct),homeless:hm.rate,jmul:jm.mul});e.crime=crimeNow;e.imm=imm;e.hm=hm;e.jm=jm;e.dem=dem;e.lb=lb;e.fin=fin;e.aid=aid;e.mandate=mandate;e.penGross=penGross;e.penDraw=penDraw;e.xp=S.xp||0;e.botTax=botTax;e.ashare=ashare;e.fundPay=fundPay;e.hc=hc;e.er=er;e.socNeed=socNeed;e.socCov=socCov;e.garbDem=garbDem;e.recyCap=recyCap;e.wteCap=wteCap;e.assets=assets;e.renewNeed=renewNeed;e.renewSpend=renewSpend;e.pension=pension;e.revenue=revenue;e.costs=costs;e.net=revenue-costs;e.propVal=propVal;e.dividends=dividends;
   e.h=h;e.af=af;e.targetPop=target;e.occ=occ;e.appetite=appetite;e.Rdem=Rdem;e.Cdem=Cdem;e.Idem=Idem;e.apprTarget=apprTarget;
   var fiscalR=clamp((costs-revenue)/(revenue+500),-0.3,0.6);
   e.infExtra=inflExtra(jobsGap,shk()*(1-0.4*g.nukeShare),fiscalR,S.stim>0,S.recession>0,S.qe,S.pop)*dm('infl');
@@ -2228,7 +2232,7 @@ function tick(){
   if(e.g.resCap===0&&S.pop<3)S.pop=0;
   S.approval+=(e.apprTarget-S.approval)*0.2;
   if(S.approval>92)S.approval=92;  /* one-off boosts cannot lift anyone past 92% */
-  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);stepOffice(e);
+  stepResearch(e);E=e;stepInfra(e);stepWaste(e);stepFund(e);stepReserves(e);stepConstruction();stepRepair(e);stepPlanners(e);stepPP(e);stepKard(e);stepEra(e);stepAuto(e);stepMeta(e);stepBatteries(e.g);stepFirms();stepSwan(e);stepOffice(e);stepImm(e);stepHousing(e);stepJustice(e);stepDemog(e);stepLabor(e);stepFin(e);
   stepDisasters(e.g);
   develop(e);
   S.month++;
@@ -2249,7 +2253,7 @@ function tick(){
   if(S.cash<cashFloor&&!S.sandbox)S.lowCash++;else S.lowCash=0;
   if(!S.sandbox&&S.cash<0&&S.cash>=cashFloor&&S.month%3===0)toast('Overdrawn. Borrow, raise taxes or cut costs.');
   if(S.lowApproval>=8&&(S.office||{mode:'mayor'}).mode==='mayor')startRecall();
-  if(S.lowCash>=2&&(S.office||{mode:'mayor'}).mode!=='receiver')startReceivership();
+  if(S.lowCash>=2&&!(S.office&&S.office.board))startReceivership();
   if(S.month%6===0)save();
   dirty=true;mmDirty=true;ui();
 }
@@ -2442,7 +2446,7 @@ function newGame(name,scnId){
   for(attempt=0;attempt<tries;attempt++){
     T=new Array(N).fill(EMPTY);L=new Array(N).fill(0);B=new Array(N).fill(0);F=new Uint8Array(N);FLD=new Uint8Array(N);PAR=new Int32Array(N).fill(-1);ORI=new Uint8Array(N);PU=new Uint8Array(N);pending=null;undoStack=[];undoFrame=null;
     st=genTerrain();
-    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);officeInit();
+    S=freshState(st);applyLen();S.city=(name||'New Haven').slice(0,24);officeInit();immInit();housingInit();justiceInit();demogInit();laborInit();finInit();
     S.scn=sc.id;S.diff=scnDiff;if(sc.setup)sc.setup(S);
     S.noDeadline=!!scnNoDl;
     tool='inspect';group='util';speed=0;S.started=false;inspectIdx=-1;handMode=true;buildRot=0;setOverlay(0);
@@ -2530,7 +2534,7 @@ function seedOnce(spec){
     for(m=0;m<(spec.months||90);m++){S.cash=Math.max(S.cash,1e7);S.approval=Math.max(S.approval,75);S.rate=2.5;S.crises=[];S.sched=[];S.briefs=[];S.shock=0;S.recession=0;tick();}
   }finally{seeding=false;bulk=false;}
   if(!hadWater&&!(spec.keepWater))S.tech.water=true;
-  S.mayors=[];S.office={mode:'mayor'};S.scand=0;S.scandalsTotal=0;S.recallPen=0;officeInit();
+  S.mayors=[];S.office={mode:'mayor'};S.scand=0;S.scandalsTotal=0;S.recallPen=0;officeInit();S.imm=null;S.crimeRate=undefined;S.regPen=0;S.crimeBump=0;immInit();S.housing=null;S.rent=undefined;S.homeless=undefined;S.burden=undefined;S.nimby=0;S.yimby=0;S.dispBump=0;housingInit();S.dem=null;S.age=null;S.popPrev=undefined;S.fert=undefined;demogInit();S.lab=null;S.wageIdx=undefined;S.union=undefined;S.unionAnger=0;S.strike=0;laborInit();S.fin=null;S.penFund=undefined;S.ratingIdx=undefined;S.revHead=undefined;finInit();S.justice=null;S.inmates=undefined;S.trust=undefined;S.recid=undefined;S.backlog=0;S.jailOver=0;justiceInit();
   S.hs=undefined;S.news=[];S.chron=[];S.ach={};S.yrs=[];S.st=undefined;S.crashes=0;S.crises=[];S.sched=[];S.briefs=[];S.shock=0;S.recession=0;S.mktBubble=0;
   S.rate=4;S.prevRate=4;S.infl=2;S.mort=5.2;S.anch=1;S.rn=0;S.hpi=100;S.hpiMom=0;S.mkt=100;S.approval=70;S.hist={rate:[],mort:[],hpi:[],supply:[],pop:[],mkt:[],infl:[]};
   S.cash=cash0;undoStack=[];undoFrame=null;pending=null;tool='inspect';
@@ -2544,7 +2548,7 @@ function restore(d){
   if(!d||d.v!==3||!d.T||d.T.length!==N||!d.EL||d.EL.length!==N||!d.S)return false;
   T=d.T;L=d.L;B=d.B;TER=d.TER;EL=d.EL;F=Uint8Array.from(d.F);FLD=Uint8Array.from(d.FLD);
   PAR=Int32Array.from(d.PAR||new Array(N).fill(-1));ORI=Uint8Array.from(d.ORI||new Array(N).fill(0));PU=Uint8Array.from(d.PU||new Array(N).fill(0));S=d.S;
-  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();officeInit();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
+  S.panic=S.panic|0;S.crash=S.crash|0;S.crunch=S.crunch|0;S.dins=!!S.dins;S.started=S.started!==false;S.mc=S.mc||{};['energy','freight','materials','chips','food','trade','health'].forEach(function(k){S.mc[k]=S.mc[k]||0;});S.anch=(S.anch===undefined)?1:S.anch;S.rn=S.rn||0;S.diff=(S.diff&&DIFF[S.diff])?S.diff:'normal';S.tax=S.tax||{};S.sp=S.sp||{};S.auto=S.auto||{adopt:0,skill:0.35,ineq:0.3,abund:0,psc:0};S.ai=S.ai||{safety:0.2};S.aiBust=S.aiBust|0;S.sp.retrain=S.sp.retrain||0;S.sp.aisafe=S.sp.aisafe||0;S.ord.breaker=!!S.ord.breaker;S.tax.bot=S.tax.bot||0;S.sp.udiv=S.sp.udiv||0;S.era=S.era|0;S.calpts=S.calpts||[[0,0,1]];S.alien=S.alien||null;S.mc.orbit=S.mc.orbit||0;S.mc.ore=S.mc.ore||0;applyLen();officeInit();immInit();housingInit();justiceInit();demogInit();laborInit();finInit();S.xp=S.xp||0;S.rq=S.rq||[];S.plan=S.plan||{p:0,w:0,m:-99};if(S.ord.planners===undefined)S.ord.planners=true;S.rqStat=S.rqStat||{n:0,cost:0,told:false};if(S.ord.repair===undefined)S.ord.repair=true;S.pp=S.pp||{bal:0,props:[],last:0,mod:{},built:[],since:0};S.pp.mod=S.pp.mod||{};S.pp.built=S.pp.built||[];S.pp.props=S.pp.props||[];S.tax.splost=S.tax.splost||0;S.phasePay=S.phasePay||{};S.kmax=S.kmax||0;S.fund=S.fund||{bal:0,eq:0.5,bd:0.4,payout:0,auto:false,last:0,hist:[]};S.sp=S.sp||{};if(S.sp.safety===undefined)S.sp.safety=1;if(S.sp.health===undefined)S.sp.health=1;if(S.ord.retrofit===undefined)S.ord.retrofit=false;S.crises=S.crises||[];S.briefs=S.briefs||[];S.sched=S.sched||[];if(S.cond===undefined)S.cond=1;if(S.renew===undefined)S.renew=1;S.fail=S.fail||{water:0,power:0,road:0};S.npx=S.npx||1;S.tut=S.tut|0;S.advSeen=S.advSeen||{};
   S.ord=S.ord||{recycle:false,clean:false,transit:false};S.city=S.city||'My City';S.scn=S.scn||'free';S.sandbox=!!S.sandbox;
   for(var i=0;i<N;i++){SHORE[i]=0;if(TER[i]===WATER)continue;var nn=nb4(i);for(var k=0;k<nn.length;k++){if(TER[nn[k]]===WATER)SHORE[i]=1;}}
   tool='inspect';group='build';speed=1;inspectIdx=-1;pending=null;undoStack=[];undoFrame=null;handMode=true;buildRot=0;setOverlay(0);
@@ -2810,6 +2814,21 @@ function adviceList(e){
   if(S.pop>=300&&S.mkt>220&&S.crash===0)add('froth','Finance','warn',2,'Mayor, stocks are at '+Math.round(S.mkt)+'. That looks frothy and crash risk is rising. Keep cash in reserve.');
   if(g.cnt[BATT]>0)add('batt','Safety','warn',2,'Mayor, battery storage can go into thermal runaway. Keep fire stations near it.');
   if(hasBuilt&&e.occ>0.97&&e.Rdem>0.3&&S.pop>60)add('homes','Growth','info',1,'Mayor, homes are full and people want in. Zone more housing, and add parks so towers can rise.');
+  if(S.pop>=150&&S.burden>0.45)add('rent','Housing','warn',S.burden>0.55?4:3,'Mayor, rent takes '+Math.round(S.burden*100)+'% of a typical household\u2019s income. People are being priced out. Loosen zoning, fund affordable housing in Policy, Housing, or build more homes.');
+  if(S.pop>=150&&S.homeless/Math.max(1,S.pop)>0.015)add('homeless','Housing','warn',S.homeless/S.pop>0.03?4:3,'Mayor, about '+Math.round(S.homeless)+' people are sleeping rough. It hurts mood, tourism and safety. Shelters, affordable housing and social services help.');
+  if(S.pop>=300&&S.jailOver>1.05)add('jails','Safety','warn',S.jailOver>1.3?4:3,'Mayor, the jail holds '+Math.round(S.inmates)+' people in '+Math.round(jailCap(S.pop,S.justice))+' cells. Overcrowding releases people early, breeds repeat offenders and risks riots. Raise jail capacity or ease sentencing.');
+  if(S.pop>=300&&e.jm&&e.jm.backlogMonths>6)add('courts','Safety','warn',3,'Mayor, the courts are '+e.jm.backlogMonths.toFixed(0)+' months behind. Delays weaken deterrence and trust. Fund more judges in Policy, Justice.');
+  if(S.pop>=300&&S.trust<0.45)add('trust','Safety','warn',3,'Mayor, only '+Math.round(S.trust*100)+'% of residents trust the police. Crime climbs when trust falls. Community policing and shorter court delays rebuild it.');
+  if(S.pop>=300&&S.age.o>0.2)add('aging','People','warn',S.age.o>0.26?4:3,'Mayor, one resident in '+Math.round(1/S.age.o)+' is over 65 and there are only '+(S.age.w/S.age.o).toFixed(1)+' workers for each senior. Pension and health costs are climbing. Family support and newcomers keep the city younger.');
+  if(S.pop>=300&&S.age.k>0.25&&S.dem&&e.dem&&e.dem.schD<0.9)add('schools','People','warn',3,'Mayor, '+Math.round(S.age.k*100)+'% of residents are children and the schools are stretched. Classes are crowded. Build more schools or raise education spending.');
+  if(S.strike>0)add('strike','Labor','bad',4,'Mayor, city workers are on strike for '+S.strike+' more month'+(S.strike===1?'':'s')+'. Raising public worker pay in Policy, People ends the risk for the future.');
+  else if(S.pop>=300&&S.unionAnger>2)add('unions','Labor','warn',3,'Mayor, the unions are angry about pay and a strike is likely. Restoring public worker pay calms them.');
+  if(S.pop>=300&&S.ratingIdx>=3)add('rating','Finance','warn',S.ratingIdx>=5?4:3,'Mayor, rating agencies rate the city '+ratingName()+'. Borrowing costs more and your credit limit is smaller. Pay down debt, build reserves and fund pensions in Policy, Finance.');
+  if(S.pop>=300&&S.month>240&&S.age.o>0.15&&fundedRatio()<0.25)add('pension','Finance','warn',3,'Mayor, the pension fund covers only '+Math.round(fundedRatio()*100)+'% of ten years of benefits and the city is aging. Contributions in Policy, Finance build a cushion.');
+  if(S.pop>=200&&S.crimeRate>18)add('crime','Safety','warn',S.crimeRate>30?4:3,'Mayor, crime is '+S.crimeRate.toFixed(0)+' per 1,000 residents ('+crimeWord(S.crimeRate)+'). It drags on mood, business and population. Police coverage, jobs and fewer illegal residents bring it down.');
+  if(S.pop>=300&&S.imm&&S.imm.ii>0.04)add('illegal','Growth','warn',3,'Mayor, about '+Math.round(S.imm.ii*100)+'% of residents are here illegally. They add to crime and social costs and pay little tax. Raise border enforcement or require employer verification.');
+  if(S.pop>=300&&S.imm&&S.imm.sanct)add('sanct','Economy','warn',2,'Mayor, your sanctuary status is drawing illegal arrivals and costing you grants and business confidence.');
+  if(S.pop>=300&&S.imm&&S.imm.quota===0&&e.tight>0.4)add('labor','Economy','info',1,'Mayor, employers cannot find enough workers. A legal admissions quota in Policy, Immigration would help.');
   if(g.act.lab>0&&S.rd.budget===0)add('rd','Growth','info',1,'Mayor, your labs are idle. Set an R&D budget in Corp to research new tech.');
   return a;
 }
@@ -3063,7 +3082,7 @@ var WINDFALLS=[
  {r:'common',w:24,run:function(e){var a=Math.round(1500+S.pop*6);S.cash+=a;return 'An anonymous donor gives the city '+money(a)+' for the public good.';}},
  {r:'common',w:18,run:function(e){S.approval=Math.min(100,S.approval+3);return 'A feel-good headline goes viral. Residents are proud of '+S.city+'.';}},
  {r:'common',w:16,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(Math.min(TECHS[S.rd.active].cost*(0.05+Math.random()*0.07),Math.max(1,rdRate(e.g))*(2+Math.random()*4)));S.rd.pts+=a;return 'Eureka: a lab finds a shortcut and adds '+a+' research points.';}},
- {r:'rare',w:12,run:function(e){var a=Math.round(Math.max(3000,e.revenue*1.6));S.cash+=a;return 'A federal grant is approved: '+money(a)+' lands in the city account.';}},
+ {r:'rare',w:12,run:function(e){var a=Math.round(Math.max(3000,e.revenue*1.6)*(S.imm&&S.imm.sanct?0.3:1));S.cash+=a;return 'A federal grant is approved: '+money(a)+' lands in the city account.'+(S.imm&&S.imm.sanct?' It is a fraction of what it might have been, because of your sanctuary status.':'');}},
  {r:'rare',w:10,run:function(e){S.approval=Math.min(100,S.approval+6);S.hpi=Math.min(260,S.hpi*1.03);return 'A magazine names '+S.city+' one of the most livable cities. Approval and home prices rise.';}},
  {r:'rare',w:10,need:function(){return S.rd.active&&TECHS[S.rd.active];},run:function(e){var a=Math.round(Math.min(TECHS[S.rd.active].cost*(0.2+Math.random()*0.15),Math.max(1,rdRate(e.g))*(8+Math.random()*10)));S.rd.pts+=a;return 'Research breakthrough: a lucky result adds '+a+' research points.';}},
  {r:'epic',w:3,run:function(e){var a=Math.round(Math.max(12000,e.revenue*6));S.cash+=a;S.approval=Math.min(100,S.approval+8);return 'Archaeologists unearth a famous ancient site beneath the city. Tourism and pride surge, and '+money(a)+' pours in.';}},
@@ -3247,7 +3266,7 @@ function renderShare(msg){
 }
 
 /* ================= playtest report: a compact snapshot friends can paste back ================= */
-var BUILD_ID='2026-11-22 03:15';
+var BUILD_ID='2026-11-22 14:18';
 function fmtN(n,d){return (Math.round(n*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US');}
 function series(arr,n,step,dec){
   var out=[],i;if(!arr||!arr.length)return '(none)';
@@ -3409,7 +3428,7 @@ function renderPP(){
 }
 
 /* ================= office: recall, caretaker mayor, campaign, receivership, voting blocs, scandals, legacy ================= */
-var CAMP_MS=1800000;  /* a campaign lasts 30 real minutes of running time. It is the only real-time timer in the game. */
+var CAMP_MS=240000;  /* a campaign lasts 4 real minutes of running time. It is the only real-time timer in the game. */
 var BLOCS=[['homeowners','Homeowners',0.25],['renters','Renters',0.20],['business','Business owners',0.15],['workers','Workers',0.20],['retirees','Retirees',0.10],['young','Young residents',0.10]];
 var CARE_NAMES=['Margaret Ellis','Raymond Cho','Dolores Vance','Walter Okafor','Priya Raman','Gordon Pike','Lucinda Marsh','Tomas Ibarra'];
 var PERSONA_TXT={smallgov:'a small-government conservative who cuts taxes and trims spending',biggov:'an activist who raises taxes and spends more on services',austerity:'an austerity board'};
@@ -3422,22 +3441,26 @@ var SCANDALS=[
   'The press reveals a no-bid deal for a donor.'
 ];
 function locked(){return !!(S&&S.office&&S.office.mode&&S.office.mode!=='mayor'&&!S.sandbox);}
-function lockMsg(){toast(S.office.mode==='receiver'?'A financial control board is running the city until it is solvent again.':'A caretaker mayor is running the city. Win the election to return.');sfx('bad');}
+function lockMsg(){toast(S.office.board?'The financial control board is running the city. Win the election to take it back, or wait for solvency.':'A caretaker mayor is running the city. Win the election to return.');sfx('bad');}
 
 /* ---- voting blocs: approval is the weighted view of six groups with different worries ---- */
 function blocCalc(v){
-  var tx=v.tx,hp=clamp((v.hpi-100)/100,-1.3,1.3),i,adj={},list=[],mw=0,h=S&&S.office&&S.office.hostile;
-  adj.homeowners=-(tx.prop-1)*8+hp*6-(v.mort-5)*1.2;
-  adj.renters=-hp*6+6*(v.socCov-0.5)-(tx.sales-6)*0.8;
-  adj.business=-(tx.corp-6)*1.5+clamp((v.mkt-100)/100*6,-6,6);
-  adj.workers=-v.unemp*60-(tx.inc-9)*1.2+4*clamp(v.tight,0,1);
-  adj.retirees=8*(v.hc-0.5)-(v.infl-2)*2.5-(tx.prop-1)*5;
-  adj.young=8*(v.schCov-0.5)-hp*5-v.unemp*30;
+  var hsg=(S&&S.housing)?S.housing:{zone:5,stab:false},bd=(S&&S.burden!==undefined)?S.burden:0.3,ny=S?(S.nimby||0):0,yy=S?(S.yimby||0):0;
+  var jd=S&&S.justice?(S.justice.style-5)/5:0,jt=(S&&S.trust!==undefined)?clamp((S.trust-0.7)*20,-6,3):0;
+  var tx=v.tx,hp=clamp((v.hpi-100)/100,-1.3,1.3),i,adj={},list=[],mw=0,h=S&&S.office&&S.office.hostile,im=(S&&S.imm)?S.imm:{ii:0,quota:0,verify:false,sanct:false},cr=S&&S.crimeRate!==undefined?S.crimeRate:8;
+  adj.homeowners=-(tx.prop-1)*8+hp*6-(v.mort-5)*1.2-clamp((cr-10)/20,0,1)*6-(hsg.zone-5)*0.8-ny*1.5-(hsg.stab?3:0)+3*jd;
+  adj.renters=-hp*6+6*(v.socCov-0.5)-(tx.sales-6)*0.8-clamp((bd-0.3)*40,-4,12)+(hsg.zone-5)*0.8-yy*1.5+(hsg.stab?4:0)-4*jd+jt;
+  adj.business=-(tx.corp-6)*1.5+clamp((v.mkt-100)/100*6,-6,6)+4*clamp(v.tight,0,1)*Math.min(1,im.quota/6)-4*(im.verify?1:0)-3*(im.sanct?1:0)+(hsg.zone-5)*0.4-(hsg.stab?2:0)+2*jd-1.0*(((S&&S.lab)?S.lab.minw:3)-3)-0.3*(((S&&S.lab)?S.lab.pay:5)-5);
+  adj.workers=-v.unemp*60-(tx.inc-9)*1.2+4*clamp(v.tight,0,1)-im.ii*30-jd+1.5*(((S&&S.lab)?S.lab.minw:3)-3)+0.4*(((S&&S.lab)?S.lab.pay:5)-5)+0.3*(((S&&S.fin)?S.fin.benefit:5)-5);
+  adj.retirees=8*(v.hc-0.5)-(v.infl-2)*2.5-(tx.prop-1)*5-im.ii*25+3*jd+0.6*(((S&&S.fin)?S.fin.benefit:5)-5);
+  adj.young=0.4*((S&&S.dem)?S.dem.fam:0)+8*(v.schCov-0.5)-hp*5-v.unemp*30-clamp((bd-0.3)*30,-3,10)+(hsg.zone-5)*0.6-yy*1.5-4*jd+jt;
+  var ws=[],wsum=0,oldS=(S&&S.age)?S.age.o:0.13;
+  for(i=0;i<BLOCS.length;i++){ws[i]=BLOCS[i][2]*(BLOCS[i][0]==='retirees'?clamp(oldS/0.13,0.4,2.2):1);wsum+=ws[i];}   /* an older city has more retiree voters */
   for(i=0;i<BLOCS.length;i++){
-    var id=BLOCS[i][0],a=clamp(adj[id],-14,14);
+    var id=BLOCS[i][0],a=clamp(adj[id],-14,14),wi=ws[i]/wsum;
     if(h&&h.id===id&&S.month<h.until)a-=10;
-    mw+=BLOCS[i][2]*a;
-    list.push({id:id,name:BLOCS[i][1],w:BLOCS[i][2],adj:a,appr:clamp(v.appr+a,0,100)});
+    mw+=wi*a;
+    list.push({id:id,name:BLOCS[i][1],w:wi,adj:a,appr:clamp(v.appr+a,0,100)});
   }
   return {list:list,mw:mw};
 }
@@ -3498,7 +3521,7 @@ function startRecall(){
   S.ord.repair=true;S.ord.planners=true;S.lowApproval=0;
   openTenure('caretaker',nm,P);
   S.approval=Math.max(S.approval,32);
-  addNews('You have been recalled. '+nm+', '+PERSONA_TXT[P]+', is now running the city, and will govern the opposite way to you. You have 30 minutes of running time to campaign for the job back.','bad','Politics');
+  addNews('You have been recalled. '+nm+', '+PERSONA_TXT[P]+', is now running the city, and will govern the opposite way to you. You have 4 minutes of running time to campaign for the job back.','bad','Politics');
   chron('crisis','Recalled by voters. '+nm+' takes over as caretaker mayor.');
   toast('Recalled. A caretaker is in charge. Open the Campaign sheet.',5200);sfx('bad');
   if(typeof setTimeout==='function')setTimeout(function(){if(S&&locked()&&!sheetKind&&!splashOpen)openSheet('camp');},400);
@@ -3518,11 +3541,12 @@ function boardSell(n){
   return sold;
 }
 function startReceivership(){
-  if(!S.office||S.office.mode==='receiver'||S.sandbox)return;
+  if(!S.office||S.office.board||S.sandbox)return;
   officeInit();closeTenure('receivership');
   var costs=Math.max(6000,(E&&E.costs)||6000),tx=S.tax,sp=S.sp;
   S.receiverships++;
-  S.office={mode:'receiver',persona:'austerity',name:'The Financial Control Board',since:S.month,why:'bankruptcy',popAt:Math.round(S.pop),apprAt:Math.round(S.approval),ok:0,log:[],fix:[],camp:null,hostile:null};
+  S.office={mode:'caretaker',board:true,persona:'austerity',name:'The Financial Control Board',since:S.month,why:'bankruptcy',popAt:Math.round(S.pop),apprAt:Math.round(S.approval),ok:0,months:0,log:[],fix:[],camp:newCamp(),hostile:null,bias:0};
+  S.pcap=clamp(25+achCount()*2+Math.min(15,(S.pp&&S.pp.built?S.pp.built.length:0)*5),0,80);
   S.office.old={svc:sp.svc,safety:sp.safety,health:sp.health,edu:sp.edu,infra:sp.infra};
   tx.inc=Math.max(tx.inc,11);tx.sales=Math.max(tx.sales,7);
   sp.svc=Math.min(sp.svc,0.85);sp.safety=Math.min(sp.safety,0.9);sp.health=Math.min(sp.health,0.9);sp.edu=Math.min(sp.edu,0.9);
@@ -3543,9 +3567,9 @@ function caretakerGovern(e){
   if(Math.abs(tg-S.rate)>=0.25)S.rate=clamp(Math.round((S.rate+(tg>S.rate?1:-1)*Math.min(0.5,Math.abs(tg-S.rate)))*4)/4,0,RATE_MAX);
   S.ord.repair=true;S.ord.planners=true;
   if(S.month%6===0){
-    var deficit=e.net<0&&S.cash<costs*24,surplus=e.net>costs*(o.mode==='receiver'?0.12:0.3)&&S.cash>costs*(o.mode==='receiver'?4:12);
+    var deficit=e.net<0&&S.cash<costs*24,surplus=e.net>costs*(o.board?0.12:0.3)&&S.cash>costs*(o.board?4:12);
     var cutSvc=function(){var done=false;[['svc',0.8],['safety',0.85],['health',0.8],['edu',0.8]].forEach(function(p){if(sp[p[0]]>p[1]){sp[p[0]]=Math.max(p[1],Math.round((sp[p[0]]-0.05)*100)/100);done=true;}});return done;};
-    if(o.mode==='receiver'){
+    if(o.board){
       if(deficit&&tx.inc<12)tx.inc=Math.min(12,tx.inc+1);
       else if(surplus&&tx.inc>9)tx.inc=Math.max(9,tx.inc-0.5);
     }else if(o.persona==='smallgov'){
@@ -3560,7 +3584,7 @@ function caretakerGovern(e){
     if(e.net<0&&S.cash<costs*6&&tx.sales<8)tx.sales=Math.min(8,tx.sales+0.5);
   }
   /* mistakes: a competent caretaker, but not a perfect one */
-  if(o.mode==='caretaker'&&S.month%3===0&&!o.fix.length&&Math.random()<0.04*dm('ev')){
+  if(o.mode==='caretaker'&&!o.board&&S.month%3===0&&!o.fix.length&&Math.random()<0.04*dm('ev')){
     var k=pick(['cut','tax','neglect','scandal']);
     if(k==='cut'){o.fix.push({kind:'cut',until:S.month+24,old:[sp.svc,sp.safety,sp.health,sp.edu]});sp.svc=Math.max(0.6,sp.svc-0.2);sp.safety=Math.max(0.6,sp.safety-0.2);sp.health=Math.max(0.6,sp.health-0.2);sp.edu=Math.max(0.6,sp.edu-0.2);o.log.push('Cut services across the board to save money.');}
     else if(k==='tax'){o.fix.push({kind:'tax',until:S.month+18,old:[tx.inc]});tx.inc=Math.min(14,tx.inc+2);o.log.push('Raised income tax two points on a hunch.');}
@@ -3594,8 +3618,8 @@ function stepOffice(e){
     var p=0.0012*(1+0.25*(S.pp&&S.pp.built?S.pp.built.length:0))*(S.ord.transparency?0.4:1)*dm('ev');
     if(Math.random()<p)scandalHit();
   }
-  if(o.mode==='caretaker'||o.mode==='receiver')caretakerGovern(e);
-  if(o.mode==='receiver'){
+  if(o.mode==='caretaker')caretakerGovern(e);
+  if(o.mode==='caretaker'&&o.board){
     var costs=Math.max(1,e.costs||1);
     if(S.cash>=costs*3&&e.net>0)o.ok=(o.ok|0)+1;else o.ok=0;
     o.months=(o.months|0)+1;
@@ -3620,7 +3644,7 @@ function campaignClock(ms,force){
   if(!S||!S.office||S.office.mode!=='caretaker'||S.over)return;
   var c=S.office.camp;if(!c)return;
   var d=force?ms:Math.min(ms,500);
-  c.rt+=d;S.pcap=Math.min(100,(S.pcap||0)+d/60000);
+  c.rt+=d;S.pcap=Math.min(100,(S.pcap||0)+d/8000);
   if(c.rt>=CAMP_MS)resolveElection();
 }
 function supportCalc(){
@@ -3636,7 +3660,7 @@ function supportCalc(){
 }
 function pollNow(){var r=supportCalc(),c=S.office.camp;var you=clamp(r.sup+(c?c.noise:0),0,100);return {you:you,them:100-you,parts:r};}
 var CAMP_ACTIONS={
-  town:{label:'Hold a town hall',cost:10,pts:8,cool:150000,desc:'Meet voters in a packed hall. Worth a few points. Repeat after a short wait.'},
+  town:{label:'Hold a town hall',cost:10,pts:8,cool:20000,desc:'Meet voters in a packed hall. Worth a few points. Repeat after a short wait.'},
   debate:{label:'Challenge a debate',cost:25,pts:20,once:true,desc:'One big night. A strong swing, once per campaign.'},
   fixtax:{label:'Promise tax relief',cost:20,pts:15,once:'fix',desc:'Own the tax grievance. If you win, income tax falls a point.'},
   fixsvc:{label:'Promise better services',cost:20,pts:15,once:'fix',desc:'Own the services grievance. If you win, service spending rises 10%.'}
@@ -3672,10 +3696,12 @@ function resolveElection(){
   if(share>=50)winElection(share,r);else loseElection(share);
 }
 function winElection(share,r){
-  var o=S.office,fix=o.camp?o.camp.fix:'',bl=(E&&E.blocs)||[],worst=null,i;
+  var o=S.office,fix=o.camp?o.camp.fix:'',bl=(E&&E.blocs)||[],worst=null,i,old=o.board?o.old:null;
   closeTenure('lost the election');
+  if(o.board){S.backBlack=true;}
   for(i=0;i<bl.length;i++){if(!worst||bl[i].appr<worst.appr)worst=bl[i];}
   S.office={mode:'mayor',hostile:worst?{id:worst.id,until:S.month+24}:null};
+  if(old){S.sp.svc=Math.max(S.sp.svc,old.svc);S.sp.safety=Math.max(S.sp.safety,old.safety);S.sp.health=Math.max(S.sp.health,old.health);S.sp.edu=Math.max(S.sp.edu,old.edu);S.sp.infra=Math.max(S.sp.infra,old.infra);S.renew=Math.max(S.renew,1);S.tax.inc=Math.min(S.tax.inc,11);S.tax.sales=Math.min(S.tax.sales,7);}
   S.comebacks++;if(share>=65)S.landslide=true;
   S.approval=Math.min(70,Math.max(S.approval,45+(share-50)*0.5));S.recallPen=6;S.lowApproval=0;
   if(fix==='fixtax')S.tax.inc=Math.max(3,S.tax.inc-1);
@@ -3703,11 +3729,9 @@ function fmtClock(ms){var s=Math.ceil(ms/1000),m=Math.floor(s/60);s=s%60;return 
 function renderCampaign(){
   var b=$('sheetBody'),o=S.office,h=sheetHead('Campaign'),i;
   if(!o||o.mode==='mayor'){b.innerHTML=h+'<p class="hint">You are the mayor. There is no campaign. If voters recall you, a caretaker takes over and you will campaign here to win the job back.</p>';return;}
-  if(o.mode==='receiver'){
-    b.innerHTML=h+'<p><b>'+o.name+'</b> is running the city.</p><p class="hint">There is no election. The board stays until the city has at least three months of spending in the bank and a surplus for twelve months in a row. Progress: '+(o.ok|0)+' of 12 months.</p>'+(o.log.length?'<ul class="news">'+o.log.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>':'')+'<div class="btns"><button class="sm" data-camp="retire">Retire and take your legacy score</button></div>';return;
-  }
   var c=o.camp,pl=pollNow(),r=pl.parts,popD=Math.round(S.pop-o.popAt),apD=Math.round(S.approval-o.apprAt);
   h+='<p><b>'+o.name+'</b>, '+PERSONA_TXT[o.persona]+', has run '+S.city+' for '+(S.month-o.since)+' months.</p>';
+  if(o.board)h+='<p class="hint">The board will also hand the city back by itself once the city has three months of spending in the bank and a surplus for twelve months in a row. Progress: '+(o.ok|0)+' of 12 months.</p>';
   h+='<div class="kr ok"><b>Time left: '+fmtClock(campLeftMs())+'</b> of running time. The clock only moves while the game is running, not while a panel is open or the game is paused.</div>';
   h+='<h3>The polls</h3><p>You '+Math.round(pl.you)+'%, '+o.name.split(' ')[0]+' '+Math.round(pl.them)+'%. The polls wobble. The real vote has a bit of luck in it.</p>';
   h+='<p class="hint">Your record '+(r.legacy>=0?'+':'')+r.legacy.toFixed(0)+', the city under the caretaker '+(-r.trend>=0?'+':'')+(-r.trend).toFixed(0)+' (it is '+(popD>=0?'+':'')+popD+' people and '+(apD>=0?'+':'')+apD+' approval points since the recall; a better city helps the caretaker), campaign '+(c.pts>=0?'+':'')+c.pts+'.</p>';
@@ -3740,6 +3764,510 @@ function campAct(el){
   var k=el.getAttribute('data-camp');
   if(k==='retire'){if(typeof confirm==='function'&&!confirm('Retire and end your game with your legacy score?'))return;retire();return;}
   campAction(k);ui();
+}
+
+/* ================= crime and immigration ================= */
+/* Crime is a real rate, per 1,000 residents, and never zero. Immigration comes in two kinds:
+   legal admissions, which you set, screen and tax, and illegal arrivals, which add crime and social costs and pay little tax.
+   A sanctuary or refugee city draws more illegal arrivals and pays for it economically. */
+function immInit(){
+  if(!S.imm)S.imm={li:0,ii:0,quota:0,enforce:3,verify:false,sanct:false};
+  if(S.crimeRate===undefined)S.crimeRate=8;
+  S.regPen=S.regPen||0;S.crimeBump=S.crimeBump||0;
+}
+function immOn(){return !!S&&S.pop>=300;}
+function immMods(){
+  var im=S&&S.imm?S.imm:{li:0,ii:0,quota:0,enforce:3,verify:false,sanct:false},pop=S?S.pop:0,ii=im.ii,li=im.li,sc=im.sanct?1.25:1;
+  var screen=Math.round(im.quota*pop*0.02),enf=Math.round(im.enforce*pop*0.04),ver=im.verify?Math.round(pop*0.03):0,sanctCost=im.sanct?Math.round(pop*0.15):0;
+  return {
+    li:li,ii:ii,
+    taxMul:(1+0.25*li)*(1-0.9*ii),           /* legal immigrants lift income tax, illegal residents mostly pay little */
+    bizMul:im.sanct?0.88:1,                   /* a sanctuary city is a worse place to do business */
+    welfare:Math.round(ii*pop*8*sc),          /* extra health, school and welfare spending per month */
+    socExtra:ii*pop*0.5*sc+li*pop*0.05,       /* extra social need, in people */
+    cost:screen+enf+ver+sanctCost,
+    screen:screen,enf:enf,ver:ver,sanctCost:sanctCost
+  };
+}
+/* the crime rate the city is heading toward, per 1,000 residents */
+function crimeTarget(v){
+  var c=8+v.unemp*28+Math.max(0,v.ineq-0.3)*18+(1-v.socCov)*8+Math.max(0,0.7-v.mood)*14+v.ii*70*(v.sanct?1.2:1);
+  var police=v.polCov*Math.min(1.3,v.safety);
+  c+=(v.homeless||0)*60;
+  c*=1-0.38*Math.min(1,police)-0.05*Math.max(0,police-1);
+  c*=(v.jmul||1);
+  return clamp(c,2,90);
+}
+function crimeWord(c){return c>=45?'severe':c>=28?'high':c>=16?'elevated':c>=9?'moderate':'low';}
+
+/* ---- monthly ---- */
+function stepImm(e){
+  immInit();
+  var im=S.imm;
+  S.regPen=Math.max(0,S.regPen-0.05);
+  var tgt=(e.crimeT!==undefined?e.crimeT:8)+(S.crimeBump||0);
+  S.crimeRate+=(tgt-S.crimeRate)*0.1;S.crimeBump=Math.max(0,(S.crimeBump||0)-0.3);
+  if(!immOn()||S.sandbox)return;
+  var pop=S.pop,room=Math.max(0,((e.g&&e.g.resCap)||0)-pop);
+  var ef=1-Math.exp(-0.3*im.enforce);
+  /* legal admissions: the quota you set, if there is room */
+  var L=Math.min(room,im.quota*pop/1000/12);
+  /* illegal arrivals: drawn by jobs and a good life, held back by enforcement and employer checks, doubled by sanctuary status */
+  var pull=clamp(0.4+0.8*clamp(e.tight||0,-0.5,1)+0.5*((e.h||0.6)-0.6)+(im.sanct?0.3:0),0.1,2);
+  var rate=0.006*pull*(1-0.85*ef*(im.sanct?0.5:1))*(im.sanct?2:1)*(im.verify?0.6:1)*dm('ev');
+  var I=Math.min(Math.max(0,room-L),pop*rate/12);
+  var np=pop+L+I;
+  im.li=(im.li*pop+L)/np;im.ii=(im.ii*pop+I)/np;S.pop=np;
+  /* removals and people moving on: enforcement does nothing in a sanctuary city */
+  var removal=im.sanct?0:ef*0.35,leave=0.04*(1+clamp(-(e.tight||0),0,1));
+  var out=im.ii*S.pop*(removal+leave)/12;
+  if(out>0){var before=S.pop;S.pop=Math.max(0,S.pop-out);im.ii=Math.max(0,(im.ii*before-out)/Math.max(1,S.pop));}
+  im.li*=1-0.04/12;im.ii=Math.min(im.ii,0.35);
+  /* events */
+  if(S.pop>=300&&Math.random()<0.0015*(im.sanct?3:1)*(im.enforce>=6?0.5:1)*dm('ev')){
+    var surge=Math.min(Math.max(0,((e.g&&e.g.resCap)||0)-S.pop),S.pop*(0.01+Math.random()*0.02));
+    if(surge>0){var n2=S.pop+surge;im.ii=Math.min(0.35,(im.ii*S.pop+surge)/n2);S.pop=n2;
+      addNews('A surge of people crosses illegally into the region and many head for your city.'+(im.sanct?' Your sanctuary status makes you the destination.':''),'warn','Growth');}
+  }
+  if(S.pop>=150&&S.crimeRate>22&&Math.random()<0.01*dm('ev')){
+    S.crimeBump=4+Math.random()*4;S.approval=Math.max(0,S.approval-3);
+    addNews('A crime wave rattles the city. Crime is '+S.crimeRate.toFixed(0)+' per 1,000 residents.','bad','Safety');
+  }
+}
+function regularize(){
+  var im=S.imm,n=im.ii*S.pop;
+  if(im.ii<0.002){toast('There is nobody to regularize right now.');return;}
+  var cost=Math.round(n*15);
+  if(S.cash<cost){toast('Not enough cash. Regularizing costs '+money(cost)+'.');return;}
+  S.cash-=cost;im.li=Math.min(0.9,im.li+im.ii);im.ii=0;S.regPen=4;
+  addNews('You regularized about '+Math.round(n)+' illegal residents for '+money(cost)+'. They now work and pay taxes openly, but many voters are angry.','warn','Politics');
+  toast('Regularized '+Math.round(n)+' residents');
+}
+function setImm(k,v){
+  var im=S.imm;
+  if(k==='verify'){im.verify=!im.verify;addNews(im.verify?'Employer verification is now required. Illegal arrivals fall and business grumbles.':'Employer verification was dropped.','info');}
+  else if(k==='sanct'){im.sanct=!im.sanct;addNews(im.sanct?'The city declared itself a sanctuary and refugee city. Expect more arrivals, higher costs, fewer grants and a cooler welcome from business.':'The city ended its sanctuary status.',im.sanct?'warn':'info');}
+}
+
+/* ---- the Immigration tab in Policy ---- */
+function renderImm(body){
+  body.innerHTML='<div class="diag"><div>Legal residents<b id="iLi"></b></div><div>Illegal residents<b id="iIi"></b></div><div>Crime<b id="iCr"></b></div><div>Monthly cost<b id="iCost"></b></div></div>'
+   +'<p class="hint" id="iNote"></p>'
+   +'<h3>Legal admissions</h3>'+sliderRow('iQuota','Admissions each year',0,10,1)
+   +'<p class="hint">Legal arrivals are screened, pay taxes, fill jobs and add skills and research. Each point admits about one person per thousand residents a year, if there are homes for them. Screening costs money, and with a quota of zero, businesses that cannot find workers get unhappy.</p>'
+   +'<h3>Illegal immigration</h3>'+sliderRow('iEnf','Border enforcement',0,10,1)
+   +'<p class="hint">Enforcement costs money, cuts illegal arrivals and removes people already here, with diminishing returns. It does nothing in a sanctuary city.</p>'
+   +'<div class="btns col"><button class="sm" data-pol="imm" data-k="verify" id="iVerify"></button><button class="sm" data-pol="imm" data-k="sanct" id="iSanct"></button><button class="sm" data-pol="imm" data-k="reg" id="iReg"></button></div>'
+   +'<p class="hint">Illegal residents raise crime and social costs and pay little tax. Employer verification shrinks the shadow economy at some cost to business. A sanctuary or refugee city draws roughly twice as many illegal arrivals, with enforcement useless, and pays for it in higher costs, fewer grants and weaker business. Regularizing turns every illegal resident into a legal taxpayer for a one-time fee and a voter backlash.</p>';
+  bindSlider('iQuota',function(){return S.imm.quota;},function(v){S.imm.quota=Math.round(v);},function(v){return v===0?'None':String(v);});
+  bindSlider('iEnf',function(){return S.imm.enforce;},function(v){S.imm.enforce=Math.round(v);},function(v){return v===0?'None':String(v);});
+  refreshImm();
+}
+function refreshImm(){
+  if(!$('iLi'))return;
+  var im=S.imm,m=immMods(),set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('iLi',(im.li*100).toFixed(1)+'%');set('iIi',(im.ii*100).toFixed(1)+'%');
+  set('iCr',S.crimeRate.toFixed(0)+' per 1,000 ('+crimeWord(S.crimeRate)+')');set('iCost',money(m.cost+m.welfare));
+  set('iNote',S.pop<300?'Immigration starts to matter once the city has 300 people.':'Crime is '+crimeWord(S.crimeRate)+'. Illegal residents add about '+money(m.welfare)+' a month in extra services and weigh on tax revenue.');
+  set('iVerify','Employer verification: '+(im.verify?'on':'off'));
+  set('iSanct','Sanctuary and refugee city: '+(im.sanct?'on':'off'));
+  set('iReg','Regularize illegal residents ('+money(Math.round(im.ii*S.pop*15))+')');
+}
+
+/* ================= housing: rents, affordability, homelessness, zoning ================= */
+/* Rents follow home prices, how full the city is and how tight zoning is. The rent burden is the share of a typical
+   household's income that rent takes. A heavy burden, unemployment and gaps in social services push people onto the street. */
+function housingInit(){
+  if(!S.housing)S.housing={afford:0,shelter:0,stab:false,zone:5};
+  if(S.rent===undefined)S.rent=100;
+  if(S.homeless===undefined)S.homeless=0;
+  if(S.burden===undefined)S.burden=0.3;
+  S.nimby=S.nimby||0;S.yimby=S.yimby||0;S.dispBump=S.dispBump||0;S.rentPrev=S.rentPrev||S.rent;
+}
+function housingMods(){
+  var h=(S&&S.housing)?S.housing:{afford:0,shelter:0,stab:false,zone:5},pop=S?S.pop:0,hr=(S&&pop>0)?clamp((S.homeless||0)/pop,0,0.2):0;
+  return {
+    capMul:(0.92+0.016*h.zone)*(h.stab?0.97:1),      /* zoning decides how much housing the same land can hold */
+    appMul:(0.85+0.03*h.zone)*(h.stab?0.85:1),       /* and how eagerly builders build */
+    propMul:h.stab?0.97:1,
+    tourMul:1-clamp(hr*1.5,0,0.2),                    /* visible street homelessness hurts tourism */
+    moodPen:clamp(hr*2.5,0,0.2),
+    popMul:1-clamp(((S&&S.burden!==undefined?S.burden:0.3)-0.45)*0.5,0,0.25),   /* a crushing rent burden pushes people out */
+    socExtra:(S&&S.homeless?S.homeless:0)*0.8,
+    cost:Math.round(h.afford*pop*0.04+h.shelter*pop*0.05),
+    rate:hr,zone:h.zone
+  };
+}
+function burdenOf(e){
+  var wageIdx=Math.max(0.5,(1-1.2*(e.unemp||0))*(S.recession>0?0.85:1)*laborMods().wageMul);
+  var b=0.30*(S.rent/100)/wageIdx;
+  return clamp(b*(1-0.02*S.housing.afford),0.1,1.2);
+}
+function rentWord(b){return b>=0.5?'crushing':b>=0.4?'heavy':b>=0.33?'high':b>=0.25?'fair':'light';}
+
+/* ---- monthly ---- */
+function stepHousing(e){
+  housingInit();
+  var h=S.housing,pop=S.pop;
+  S.nimby=Math.max(0,S.nimby-0.05);S.yimby=Math.max(0,S.yimby-0.05);S.dispBump=Math.max(0,S.dispBump-0.00015);
+  /* rent */
+  var occ=e.occ||0.9,Rd=clamp(e.Rdem||0,-0.3,0.6);
+  var target=100*Math.pow(S.hpi/100,0.55)*(1+1.6*(occ-0.9))*(1+0.25*Rd)*(1+0.05*(5-h.zone));
+  var d=(target-S.rent)*0.06;
+  if(h.stab)d=Math.min(d,S.rent*0.0025);     /* rent stabilization: at most about 3% a year */
+  S.rent=clamp(S.rent+d,40,400);
+  S.burden=burdenOf(e);
+  if(S.month%12===0){S.rentGrowth=S.rent/Math.max(1,S.rentPrev)-1;S.rentPrev=S.rent;}
+  /* homelessness: heavy rent burden, joblessness and thin social services put people on the street */
+  var rate=0.002+0.045*Math.max(0,S.burden-0.33)+0.03*(e.unemp||0)+0.008*(1-(e.socCov===undefined?1:e.socCov))+S.dispBump;
+  rate*=(1-0.05*h.afford);
+  rate=clamp(rate,0,0.12)*(1-0.07*h.shelter);
+  var tgt=pop*rate;
+  S.homeless=Math.max(0,S.homeless+(tgt-S.homeless)*0.08);
+  if(pop<200)return;
+  /* gentrification: when rents surge and the burden is already heavy, long-time residents get pushed out */
+  if(S.rentGrowth>0.10&&S.burden>0.4&&Math.random()<0.012*(h.stab?0.3:1)*dm('ev')){
+    S.dispBump=Math.min(0.01,S.dispBump+(h.stab?0.002:0.004));S.approval=Math.max(0,S.approval-2);
+    addNews('Rents surge and long-time residents are pushed out of their neighborhoods. Homelessness is rising.','bad','Housing');
+  }
+  /* encampments */
+  if(pop>0&&S.homeless/pop>0.02&&Math.random()<0.008*dm('ev')){
+    S.crimeBump=(S.crimeBump||0)+3;S.approval=Math.max(0,S.approval-2);
+    addNews('Tent encampments spread through the city. Residents want something done.','warn','Housing');
+  }
+}
+function setHousing(k,v){
+  if(locked()){lockMsg();return;}
+  var h=S.housing;
+  if(k==='stab'){h.stab=!h.stab;addNews(h.stab?'Rent stabilization is now in force. Rent increases are capped at about 3% a year, builders pull back and landlords grumble.':'Rent stabilization was repealed.','info');}
+}
+/* a change of zoning stirs a fight: upzoning angers homeowners, downzoning angers renters and the young */
+function zoneChanged(oldZ,newZ){
+  var d=newZ-oldZ;if(d===0)return;
+  if(d>0){S.nimby+=1.5*d;}else{S.yimby+=1.5*(-d);}
+  if(S.zoneNewsM!==S.month){S.zoneNewsM=S.month;addNews(d>0?'The council loosened zoning to let more housing go up. Homeowners are organizing against it.':'The council tightened zoning. Renters and young families say it will make housing even less affordable.','warn','Housing');}
+}
+
+/* ---- the Housing tab in Policy ---- */
+function renderHousing(body){
+  body.innerHTML='<div class="diag"><div>Median rent<b id="hRent"></b></div><div>Rent burden<b id="hBurd"></b></div><div>Homeless<b id="hHome"></b></div><div>Monthly cost<b id="hCost"></b></div></div>'
+   +'<p class="hint" id="hNote"></p>'
+   +'<h3>Zoning</h3>'+sliderRow('hZone','Zoning permissiveness',0,10,1)
+   +'<p class="hint">Loose zoning lets more housing go up on the same land and builders build more, which holds rents down. It angers homeowners, who fight upzoning for a while. Tight zoning keeps neighborhoods as they are and pushes rents up, which angers renters and the young. Changing it stirs a political fight either way.</p>'
+   +'<h3>Housing programs</h3>'+sliderRow('hAff','Affordable housing program',0,10,1)+sliderRow('hShel','Shelters and outreach',0,10,1)
+   +'<p class="hint">The affordable housing program subsidizes rents for low-income households, cutting the rent burden and homelessness. Shelters and outreach get people off the street directly. Both cost money every month.</p>'
+   +'<div class="btns col"><button class="sm" data-pol="hous" data-k="stab" id="hStab"></button></div>'
+   +'<p class="hint">Rent stabilization caps rent increases at about 3% a year and makes gentrification evictions far less likely. It also slows new building, trims the housing stock and property tax, and costs you with business owners and homeowners.</p>';
+  bindSlider('hZone',function(){return S.housing.zone;},function(v){var o=S.housing.zone;S.housing.zone=Math.round(v);if(S.housing.zone!==o)zoneChanged(o,S.housing.zone);},function(v){return v===5?'5 (balanced)':String(v);});
+  bindSlider('hAff',function(){return S.housing.afford;},function(v){S.housing.afford=Math.round(v);},function(v){return v===0?'None':String(v);});
+  bindSlider('hShel',function(){return S.housing.shelter;},function(v){S.housing.shelter=Math.round(v);},function(v){return v===0?'None':String(v);});
+  refreshHousing();
+}
+function refreshHousing(){
+  if(!$('hRent'))return;
+  var m=housingMods(),set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('hRent','index '+Math.round(S.rent));set('hBurd',Math.round(S.burden*100)+'% ('+rentWord(S.burden)+')');
+  set('hHome',Math.round(S.homeless).toLocaleString('en-US')+' ('+(m.rate*100).toFixed(1)+'%)');set('hCost',money(m.cost));
+  set('hNote',S.pop<150?'Housing pressure starts to matter once the city has about 150 people.':'Rent takes '+Math.round(S.burden*100)+'% of a typical household\u2019s income. '+(S.homeless>0?Math.round(S.homeless)+' people are living on the street.':'Nobody is sleeping rough.'));
+  set('hStab','Rent stabilization: '+(S.housing.stab?'on':'off'));
+}
+
+/* ================= the justice system: police, courts, jails, rehabilitation ================= */
+/* Crimes lead to arrests, arrests become court cases, convictions become inmates, and inmates come home. Courts that
+   cannot keep up build a backlog, jails that are too full release people early and breed repeat offenders, and a police
+   force that loses the public's trust sees more crime. Everything feeds back into the crime rate. */
+function justiceInit(){
+  if(!S.justice)S.justice={style:5,sent:5,courts:0,jail:0,rehab:0};
+  if(S.inmates===undefined)S.inmates=0;
+  if(S.trust===undefined)S.trust=0.7;
+  if(S.recid===undefined)S.recid=0.5;
+  S.backlog=S.backlog||0;S.jailOver=S.jailOver||0;
+}
+function jailCap(pop,j){return Math.max(1,pop*0.008*(0.8+0.1*j.jail));}
+function courtCap(pop,j){return Math.max(0.05,pop*0.0006*(0.8+0.12*j.courts));}
+function justiceMods(){
+  var j=(S&&S.justice)?S.justice:{style:5,sent:5,courts:0,jail:0,rehab:0},pop=S?S.pop:0;
+  var inm=S&&S.inmates?S.inmates:0,tr=(S&&S.trust!==undefined)?S.trust:0.7,rc=(S&&S.recid!==undefined)?S.recid:0.5;
+  var cc=courtCap(pop,j),bm=(S&&S.backlog?S.backlog:0)/cc;
+  var det=clamp(0.025*(j.style-5)+0.015*(j.sent-5),-0.15,0.18);          /* tough policing and sentencing deter some crime */
+  var incap=clamp(inm/Math.max(1,pop)*30,0,0.18);                        /* locked-up offenders cannot offend */
+  var mul=(1+0.5*(rc-0.5))*(1+0.25*clamp(bm/12,0,1))*(1+0.25*(0.7-tr))*(1-det)*(1-incap);
+  return {
+    mul:clamp(mul,0.5,1.6),
+    cost:Math.round(inm*17+j.jail*pop*0.03+j.courts*pop*0.02+j.rehab*pop*0.04),
+    inmates:inm,cap:jailCap(pop,j),backlogMonths:bm,trust:tr,recid:rc,style:j.style
+  };
+}
+function arrestRate(e){
+  var j=S.justice,police=((e.g&&e.g.polCov)||0)*Math.min(1.3,S.sp.safety);
+  return clamp((0.25+0.35*police)*(0.8+0.04*j.style),0.1,0.9);
+}
+
+/* ---- monthly ---- */
+function stepJustice(e){
+  justiceInit();
+  var j=S.justice,pop=S.pop;
+  if(pop<150)return;
+  var crimes=S.crimeRate*pop/1000/12,cases=crimes*arrestRate(e)*0.8,cc=courtCap(pop,j);
+  var proc=Math.min(S.backlog+cases,cc);S.backlog=S.backlog+cases-proc;
+  S.backlog-=Math.max(0,S.backlog-6*cc)*0.15;    /* a court that is hopelessly behind dismisses cases and pleads others out */
+  var bm=S.backlog/cc;
+  var convict=proc*(0.5+0.03*(j.sent-5)),release=S.inmates/(12+4*j.sent);
+  S.inmates=Math.max(0,S.inmates+convict-release);
+  var cap=jailCap(pop,j);
+  if(S.inmates>cap)S.inmates-=(S.inmates-cap)*0.25;       /* a jail that is too full lets people out early */
+  S.jailOver=S.inmates/cap;
+  var oc=clamp(S.jailOver-1,0,1);
+  /* repeat offending and public trust */
+  var rt=clamp(0.55-0.035*j.rehab+0.012*(j.style-5)+0.015*(j.sent-5)+0.12*oc-0.1*(S.trust-0.7),0.15,0.8);
+  S.recid+=(rt-S.recid)*0.03;
+  var tt=clamp(0.7-0.05*(j.style-5)-0.1*oc-0.2*clamp(bm/12,0,1)+(S.imm&&S.imm.sanct?0.04:0),0.1,0.95);
+  S.trust+=(tt-S.trust)*0.04;
+  if(pop<300)return;
+  /* a riot in an overcrowded jail */
+  if(S.jailOver>1.3&&Math.random()<0.01*dm('ev')){
+    S.crimeBump=(S.crimeBump||0)+3;S.approval=Math.max(0,S.approval-3);
+    addNews('A riot breaks out in the overcrowded jail. Order is restored, but residents are asking why it was allowed to get this bad.','bad','Safety');
+  }
+  /* a police misconduct scandal and protests, likelier with aggressive policing and low trust */
+  if(j.style>=6&&S.trust<0.6&&Math.random()<0.004*(j.style-4)*dm('ev')){
+    S.trust=Math.max(0.1,S.trust-0.08);S.approval=Math.max(0,S.approval-4);S.crimeBump=(S.crimeBump||0)+2;
+    addNews('A video of police misconduct sparks protests. Trust in the force drops.','bad','Safety');
+  }
+}
+
+/* ---- the Justice tab in Policy ---- */
+function renderJustice(body){
+  body.innerHTML='<div class="diag"><div>Inmates<b id="jInm"></b></div><div>Court backlog<b id="jBack"></b></div><div>Police trust<b id="jTrust"></b></div><div>Repeat offenders<b id="jRec"></b></div></div>'
+   +'<p class="hint" id="jNote"></p>'
+   +'<h3>Policing</h3>'+sliderRow('jStyle','Policing style',0,10,1)
+   +'<p class="hint">Community policing (low) builds trust and costs fewer arrests. Aggressive policing (high) arrests more and deters some crime, but erodes trust, fills jails, raises repeat offending and risks misconduct scandals. Homeowners, retirees and business like it tough. Renters and the young do not.</p>'
+   +'<h3>Courts and sentencing</h3>'+sliderRow('jSent','Sentencing toughness',0,10,1)+sliderRow('jCourts','Courts and judges',0,10,1)
+   +'<p class="hint">Tougher sentences keep people locked up longer. Courts that cannot keep up build a backlog, which weakens deterrence and trust. More judges clear cases faster.</p>'
+   +'<h3>Jails and rehabilitation</h3>'+sliderRow('jJail','Jail capacity',0,10,1)+sliderRow('jRehab','Rehabilitation programs',0,10,1)
+   +'<p class="hint">A jail that is too full releases people early and breeds repeat offenders, and can riot. Rehabilitation lowers repeat offending, which lowers crime over time. All of this costs money every month, and every inmate costs money too.</p>';
+  bindSlider('jStyle',function(){return S.justice.style;},function(v){S.justice.style=Math.round(v);},function(v){return v<=2?v+' (community)':v>=8?v+' (aggressive)':String(v);});
+  bindSlider('jSent',function(){return S.justice.sent;},function(v){S.justice.sent=Math.round(v);},function(v){return String(v);});
+  bindSlider('jCourts',function(){return S.justice.courts;},function(v){S.justice.courts=Math.round(v);},function(v){return v===0?'Basic':String(v);});
+  bindSlider('jJail',function(){return S.justice.jail;},function(v){S.justice.jail=Math.round(v);},function(v){return v===0?'Basic':String(v);});
+  bindSlider('jRehab',function(){return S.justice.rehab;},function(v){S.justice.rehab=Math.round(v);},function(v){return v===0?'None':String(v);});
+  refreshJustice();
+}
+function refreshJustice(){
+  if(!$('jInm'))return;
+  var m=justiceMods(),set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('jInm',Math.round(m.inmates)+' of '+Math.round(m.cap)+' cells');
+  set('jBack',m.backlogMonths<1?'none':m.backlogMonths.toFixed(1)+' months');
+  set('jTrust',Math.round(m.trust*100)+'%');set('jRec',Math.round(m.recid*100)+'%');
+  set('jNote',S.pop<150?'The justice system starts to matter once the city has about 150 people.':(S.jailOver>1?'The jail is over capacity and releasing people early. ':'')+(m.backlogMonths>6?'Courts are badly behind. ':'')+'Justice costs '+money(m.cost)+' a month.');
+}
+
+/* ================= demographics: age structure, births, aging, school demand, pension pressure ================= */
+/* A young town has few retirees and plenty of workers. Over the decades it ages: workers per retiree falls, pension and health costs
+   climb and the school-age share shrinks, unless births or newcomers keep it young. */
+function demogInit(){
+  if(!S.dem)S.dem={fam:0};
+  if(!S.age)S.age={k:0.22,w:0.70,o:0.08};
+  if(S.popPrev===undefined)S.popPrev=S.pop;
+  if(S.fert===undefined)S.fert=12.5;
+}
+function oldBase(month){return 0.08+0.11*Math.min(1,month/240);}
+function demMods(){
+  var a=(S&&S.age)?S.age:{k:0.22,w:0.70,o:0.08},fam=(S&&S.dem)?S.dem.fam:0,pop=S?S.pop:0;
+  return {
+    k:a.k,w:a.w,o:a.o,fam:fam,
+    wf:0.6+0.8*((a.w*0.90+a.o*0.10)-0.56),                                    /* share of residents in the workforce */
+    schD:clamp(0.22/a.k,0.5,1.6),                           /* more children per school seat means a thinner school coverage */
+    hMul:0.85+0.15*(a.o/0.13),                              /* seniors need more health care */
+    penMul:clamp(a.o/oldBase(S?S.month:0),0.5,2.5),         /* pensions follow the retiree share against a normal aging path */
+    cost:Math.round(fam*pop*0.03),
+    perSenior:a.o>0?a.w/a.o:99
+  };
+}
+function stepDemog(e){
+  demogInit();
+  var a=S.age,pop=S.pop,prev=S.popPrev>0?S.popPrev:pop,g=(pop-prev)/prev;S.popPrev=pop;
+  if(pop<30)return;
+  var fm=clamp(1-0.8*((S.burden===undefined?0.3:S.burden)-0.3)+0.3*((e.h===undefined?0.7:e.h)-0.7)+0.04*S.dem.fam,0.6,1.7);
+  var b=0.0125*(a.w/0.65)*fm,dk=0.0005,dw=0.003,dold=0.07*(1.05-0.05*(e.hc!==undefined?clamp(e.hc,0,1.2):0.5));
+  S.fert=b*1000;
+  var nat=b/12-(a.k*dk+a.w*dw+a.o*dold)/12,mig=clamp(g-nat,-0.05,0.05);
+  var nk=a.k+b/12-a.k/216-a.k*dk/12+mig*0.15,nw=a.w+a.k/216-a.w/564-a.w*dw/12+mig*0.80,no=a.o+a.w/564-a.o*dold/12+mig*0.05;
+  nk=Math.max(0.05,nk);nw=Math.max(0.2,nw);no=Math.max(0.01,no);
+  var s=nk+nw+no;a.k=nk/s;a.w=nw/s;a.o=no/s;
+}
+
+/* ---- the People tab in Policy: families now, wages and public work join it ---- */
+function renderPeople(body){
+  var a=S.age;
+  body.innerHTML='<div class="diag"><div>Children<b id="pKids"></b></div><div>Working age<b id="pWork"></b></div><div>Seniors<b id="pOld"></b></div><div>Workers per senior<b id="pRatio"></b></div></div>'
+   +'<p class="hint" id="pNote"></p>'
+   +'<h3>Families</h3>'+sliderRow('pFam','Family support',0,10,1)
+   +'<p class="hint">Child care help and family credits. More families stay and have children, which keeps the city younger and the workforce larger for decades. It costs money every month and the payoff is slow.</p>'
+   +'<div id="labBox"></div><div id="finBox"></div>';
+  bindSlider('pFam',function(){return S.dem.fam;},function(v){S.dem.fam=Math.round(v);},function(v){return v===0?'None':String(v);});
+  if(typeof renderLabor==='function')renderLabor($('labBox'));
+  refreshPeople();
+}
+function refreshPeople(){
+  if(!$('pKids'))return;
+  var a=S.age,m=demMods(),set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('pKids',Math.round(a.k*100)+'%');set('pWork',Math.round(a.w*100)+'%');set('pOld',Math.round(a.o*100)+'%');set('pRatio',m.perSenior.toFixed(1));
+  set('pNote',S.pop<100?'A young town has few seniors. The age mix shifts slowly over decades.':'About '+Math.round(a.k*S.pop).toLocaleString('en-US')+' children and '+Math.round(a.o*S.pop).toLocaleString('en-US')+' seniors. Births run about '+S.fert.toFixed(0)+' per 1,000 residents a year.');
+  if(typeof refreshLabor==='function')refreshLabor();
+}
+
+/* ================= labor: wages, minimum wage, public pay, unions and strikes ================= */
+/* A tight job market lifts wages and a slack one holds them down. The minimum wage lifts pay at the bottom and costs some jobs.
+   What you pay city workers decides your payroll bill and your risk of a strike. */
+function laborInit(){
+  if(!S.lab)S.lab={minw:3,pay:5};
+  if(S.wageIdx===undefined)S.wageIdx=1;
+  if(S.union===undefined)S.union=0.1;
+  S.unionAnger=S.unionAnger||0;S.strike=S.strike||0;
+}
+function laborMods(){
+  var l=(S&&S.lab)?S.lab:{minw:3,pay:5},wi=(S&&S.wageIdx!==undefined)?S.wageIdx:1,mwx=l.minw-3;
+  var wageMul=wi*(1+0.012*mwx);
+  return {
+    wageMul:wageMul,
+    jobMul:1-0.012*Math.max(0,mwx),                      /* a higher minimum wage costs some entry-level jobs */
+    bizMul:clamp(1-0.3*(wageMul-1),0.8,1.05),            /* and squeezes business profits */
+    socMul:clamp(1-0.03*mwx,0.75,1.1),                   /* but lifts people at the bottom out of need */
+    svcMul:1+0.02*(l.pay-5),                             /* city payroll */
+    moodAdj:(S&&S.strike>0?0.12:0)-0.006*(l.pay-5),
+    minw:l.minw,pay:l.pay,wi:wi
+  };
+}
+function stepLabor(e){
+  laborInit();
+  var l=S.lab;
+  S.union=clamp(0.08+S.pop/12000,0.08,0.9);
+  var tgt=1+clamp(0.35*(e.tight||0),-0.15,0.2);
+  S.wageIdx=clamp(S.wageIdx+(tgt-S.wageIdx)*0.03,0.85,1.3);
+  S.unionAnger=Math.max(0,S.unionAnger-0.04);
+  if(S.strike>0){S.strike--;if(S.strike===0)addNews('The strike is over. City workers are back on the job.','good','Labor');return;}
+  if(S.pop<300)return;
+  var board=(S.office&&S.office.board)?2.5:1;
+  var p=0.004*(1+2*S.union)*(1+S.unionAnger)*Math.max(0,(5.5-l.pay)/5.5)*board*dm('ev');
+  if(p>0&&Math.random()<p){
+    S.strike=2+Math.floor(Math.random()*3);S.approval=Math.max(0,S.approval-4);S.crimeBump=(S.crimeBump||0)+2;
+    addNews('City workers walk off the job over low pay. Trash piles up and services slow down.','bad','Labor');
+  }
+}
+/* cutting what city workers earn stirs the unions up */
+function payChanged(oldP,newP){
+  var d=newP-oldP;if(d===0)return;
+  if(d<0)S.unionAnger=Math.min(5,S.unionAnger+0.8*(-d));else S.unionAnger=Math.max(0,S.unionAnger-0.4*d);
+  if(d<0&&S.payNewsM!==S.month){S.payNewsM=S.month;addNews('The city cut public worker pay. The unions are furious and are threatening to strike.','warn','Labor');}
+}
+function skillsGap(){var ad=S.auto?S.auto.adopt:0,sk=S.auto?S.auto.skill:0.35;return clamp(ad*(1-sk),0,1);}
+
+function renderLabor(box){
+  if(!box)return;
+  box.innerHTML='<h3>Wages and work</h3><div class="diag"><div>Wage level<b id="lWage"></b></div><div>Unions<b id="lUnion"></b></div><div>Skills gap<b id="lSkill"></b></div><div>City payroll<b id="lPay"></b></div></div>'
+   +sliderRow('lMin','Minimum wage',0,10,1)+sliderRow('lPayS','Public worker pay',0,10,1)
+   +'<p class="hint" id="lNote"></p>'
+   +'<p class="hint">A tight job market lifts wages and a slack one holds them down. A higher minimum wage lifts pay and cuts social need at the bottom, but costs some entry-level jobs and squeezes business profits. Workers like it and business owners do not. Public worker pay sets your payroll bill and decides whether city workers strike. Cutting it stirs up the unions. The skills gap comes from automation outrunning retraining, so fund retraining in Spending.</p>';
+  bindSlider('lMin',function(){return S.lab.minw;},function(v){S.lab.minw=Math.round(v);},function(v){return v===3?'3 (moderate)':String(v);});
+  bindSlider('lPayS',function(){return S.lab.pay;},function(v){var o=S.lab.pay;S.lab.pay=Math.round(v);if(S.lab.pay!==o)payChanged(o,S.lab.pay);},function(v){return v===5?'5 (market)':String(v);});
+  refreshLabor();
+}
+function refreshLabor(){
+  if(!$('lWage'))return;
+  var m=laborMods(),set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('lWage',Math.round(m.wageMul*100)+'% of normal');set('lUnion',Math.round(S.union*100)+'% organized');
+  var sg=skillsGap();set('lSkill',sg<0.1?'small':sg<0.3?'growing':'wide');set('lPay',Math.round(m.svcMul*100)+'% of market');
+  set('lNote',S.strike>0?'City workers are on strike for '+S.strike+' more month'+(S.strike===1?'':'s')+'.':(S.unionAnger>2?'The unions are angry. A strike is likely unless you pay more.':'Labor relations are quiet.'));
+}
+
+/* ================= municipal finance: pension fund, bond rating, state and federal aid with mandates ================= */
+/* Pensions are paid out of the budget unless you build a fund. Lenders grade the city from AAA to default and charge more for a lower
+   grade. State and federal aid helps most when a city is small and poor, comes in cycles and dries up in a recession, and the
+   mandates that come with it grow every year. */
+var RATINGS=['AAA','AA','A','BBB','BB','B','CCC','D'];
+var R_SPREAD=[-0.6,-0.3,0,0.6,1.6,3,5,8];
+var R_CRED=[1.3,1.15,1,0.8,0.6,0.4,0.25,0.1];
+function finInit(){
+  if(!S.fin)S.fin={contrib:0,benefit:5,grants:0};
+  if(S.penFund===undefined)S.penFund=0;
+  if(S.ratingIdx===undefined)S.ratingIdx=1;
+  if(S.revHead===undefined)S.revHead=15;
+}
+function ratingName(){return RATINGS[S.ratingIdx===undefined?1:S.ratingIdx];}
+function creditMul(){return R_CRED[S.ratingIdx===undefined?1:S.ratingIdx];}
+function ratingSpread(){return R_SPREAD[S.ratingIdx===undefined?1:S.ratingIdx];}
+function finMods(){
+  var f=(S&&S.fin)?S.fin:{contrib:0,benefit:5,grants:0},pop=S?S.pop:0,mo=S?S.month:0;
+  return {
+    benMul:0.6+0.08*f.benefit,
+    contribCost:Math.round(f.contrib*pop*0.12),
+    grantCost:Math.round(f.grants*pop*0.02),
+    grants:f.grants,
+    cycle:1+0.25*Math.sin(2*Math.PI*mo/48),              /* a four-year state budget cycle */
+    wealth:clamp(1.3-((S&&S.revHead)||15)/50,0.3,1.3),   /* rich cities get less aid */
+    spread:ratingSpread()
+  };
+}
+function fundedRatio(){
+  var pay=S.penPay>0?S.penPay:0;
+  if(pay<=0)return S.penFund>0?1:0;
+  return clamp(S.penFund/(pay*120),0,2);               /* the fund against ten years of benefits */
+}
+function ratingScore(e){
+  var debt=(S.fixedAmt||0)+(S.varAmt||0),rev=Math.max(1,e.revenue),costs=Math.max(1,e.costs);
+  var debtRatio=debt/(rev*12),rm=S.cash/costs;
+  var pen=10*(1-Math.min(1,fundedRatio()))*Math.min(1,S.month/240);
+  var hist=Math.min(15,3*(S.receiverships||0))+((S.office&&S.office.board)?20:0);
+  return 84+clamp(rm,-3,12)*1.5-45*Math.min(1.5,debtRatio)-pen-(e.net<0?8:0)-hist;
+}
+function ratingFor(score){return score>=92?0:score>=82?1:score>=72?2:score>=62?3:score>=50?4:score>=38?5:score>=25?6:7;}
+
+function stepFin(e){
+  finInit();
+  var f=S.fin,m=finMods();
+  /* pension fund: contributions go in, benefits come out, the market moves it */
+  var ret=0.0033+0.0004*clamp(((S.mkt||100)-100)/50,-2,2);
+  S.penFund=Math.max(0,S.penFund*(1+ret)+m.contribCost-(e.penDraw||0));
+  S.penPay=e.penGross||0;
+  S.revHead+=((e.revenue/Math.max(1,S.pop))-S.revHead)*0.05;
+  if(S.pop<200||S.month%6!==0)return;
+  /* the rating agencies move one notch at a time */
+  var target=ratingFor(ratingScore(e));
+  if(target!==S.ratingIdx){
+    var old=S.ratingIdx;S.ratingIdx+=target>old?1:-1;
+    addNews(S.ratingIdx>old?'Rating agencies downgrade the city to '+ratingName()+'. Borrowing will cost more.':'Rating agencies upgrade the city to '+ratingName()+'. Borrowing gets cheaper.',S.ratingIdx>old?'bad':'good','Finance');
+  }
+}
+/* cutting pension benefits angers the unions and retirees */
+function benefitChanged(oldB,newB){
+  var d=newB-oldB;if(d>=0)return;
+  S.unionAnger=Math.min(5,(S.unionAnger||0)+0.5*(-d));
+  if(S.benNewsM!==S.month){S.benNewsM=S.month;addNews('The city cut pension benefits. Retirees and city workers are furious.','warn','Finance');}
+}
+
+/* ---- the Finance tab in Policy ---- */
+function renderFinance(body){
+  body.innerHTML='<div class="diag"><div>Bond rating<b id="fRate"></b></div><div>Pension fund<b id="fFund"></b></div><div>State and federal aid<b id="fAid"></b></div><div>Unfunded mandates<b id="fMand"></b></div></div>'
+   +'<p class="hint" id="fNote"></p>'
+   +'<h3>Pensions</h3>'+sliderRow('fCon','Pension fund contributions',0,10,1)+sliderRow('fBen','Pension benefits',0,10,1)
+   +'<p class="hint">Without a fund, pensions come straight out of the budget and grow as the city ages. Contributions build a fund that pays up to 60% of benefits and shields the budget later. The fund earns market returns. Generous benefits please retirees and workers but cost more, and cutting them makes the unions furious.</p>'
+   +'<h3>State and federal aid</h3>'+sliderRow('fGra','Grant office',0,10,1)
+   +'<p class="hint">Aid comes in four-year cycles, is larger for a small poor city, dries up in a recession and is smaller in a sanctuary city. Mandates that come with it cost more every year. A grant office chases more aid, but costs money every month.</p>'
+   +'<p class="hint">Your bond rating rises with reserves and falls with debt, deficits, unfunded pensions and a history of receivership. A lower rating raises what lenders charge and shrinks your credit limit.</p>';
+  bindSlider('fCon',function(){return S.fin.contrib;},function(v){S.fin.contrib=Math.round(v);},function(v){return v===0?'None':String(v);});
+  bindSlider('fBen',function(){return S.fin.benefit;},function(v){var o=S.fin.benefit;S.fin.benefit=Math.round(v);if(S.fin.benefit!==o)benefitChanged(o,S.fin.benefit);},function(v){return v===5?'5 (standard)':String(v);});
+  bindSlider('fGra',function(){return S.fin.grants;},function(v){S.fin.grants=Math.round(v);},function(v){return v===0?'None':String(v);});
+  refreshFinance();
+}
+function refreshFinance(){
+  if(!$('fRate'))return;
+  var e=(typeof E!=='undefined')?E:null,set=function(id,t){var el=$(id);if(el)el.textContent=t;};
+  set('fRate',ratingName()+' ('+(ratingSpread()>=0?'+':'')+ratingSpread().toFixed(1)+' pts on loans)');
+  set('fFund',money(Math.round(S.penFund))+' ('+Math.round(fundedRatio()*100)+'% funded)');
+  set('fAid',e&&e.aid!==undefined?money(Math.round(e.aid))+' a month':'none yet');
+  set('fMand',e&&e.mandate!==undefined?money(Math.round(e.mandate))+' a month':'none yet');
+  set('fNote',S.pop<200?'Lenders start grading the city once it has about 200 people.':'Rated '+ratingName()+'. Credit limit '+money(creditLimit())+'.');
 }
 
 /* ================= the manual ================= */
@@ -3872,13 +4400,56 @@ var GUIDE=[
  more:'<p>Crash risk is low in normal times and climbs when the index is far above its start, when bubbles build, when you expand the balance sheet for long, and after sharp rate hikes. It only applies once the city passes about 300 people.</p>'+
  '<p><b>A crash</b> wipes out about a third of the market over three panic months, followed by a bear market. Startups lose funding and IPOs freeze. Banks tighten credit, adding 1.5 points to mortgage rates for a year. A recession follows about 60% of the time.</p>'+
  '<p><b>Deposit insurance</b> (Policy, Monetary tab) softens crashes by about a quarter but costs money every month and encourages risk. A <b>bailout</b> ends the panic and reopens credit, but traders then expect rescues. A <b>stock exchange</b> adds circuit breakers that shorten and soften crashes.</p>'},
+{id:'g-finance',title:'Pensions, bond rating and aid',
+ brief:'Pensions come out of the budget unless you build a fund. Lenders grade the city from AAA to default. State and federal aid helps most when a city is small and poor, but its mandates grow every year.',
+ more:'<p><b>Pensions.</b> Retiree benefits are paid out of the budget and grow as the city ages. A fund built from contributions pays up to 60% of benefits and shields the budget later. It earns market returns, so a crash dents it. The funded ratio compares the fund to ten years of benefits. Generous benefits please retirees and workers but cost more. Cutting them makes the unions and retirees furious.</p>'+
+ '<p><b>Bond rating.</b> Lenders grade the city from AAA down to D. Reserves lift the grade. Debt, deficits, unfunded pensions and a history of receivership drag it down. The rating moves one notch at a time, twice a year. A lower rating adds points to what you pay on fixed and variable debt and shrinks your credit limit. A control board is a heavy mark.</p>'+
+ '<p><b>State and federal aid.</b> Aid arrives every month on a four-year budget cycle. It is larger for a small, poor city, smaller for a rich one, cut by about 40% in a recession and smaller in a sanctuary city. Unfunded mandates come with it and grow every year, up to about 15% of public services. A grant office chases more aid at a monthly cost. The occasional one-off federal grant and disaster relief still arrive on top.</p>'+
+ '<p>It all lives in Policy, Finance. A caretaker mayor or control board freezes it.</p>'},
+{id:'g-labor',title:'Wages, unions and strikes',
+ brief:'A tight job market lifts wages and a slack one holds them down. The minimum wage and what you pay city workers change jobs, budgets and the risk of a strike.',
+ more:'<p><b>Wages.</b> The wage level drifts up when there are more jobs than workers and down when jobs are scarce. Higher wages lift income tax and make rent easier to afford, but squeeze business profits. The wage level and union strength are in Policy, People.</p>'+
+ '<p><b>Minimum wage.</b> The slider defaults to 3, a moderate level. Higher lifts pay and cuts social need at the bottom, but costs some entry-level jobs and squeezes business profits. Workers like it and business owners do not. Lower does the reverse.</p>'+
+ '<p><b>Public worker pay.</b> The slider defaults to 5, the market rate. It sets your payroll bill for services and health care. Underpaying saves money, but city workers can strike: trash piles up, services slow, mood drops and approval falls. The risk grows with union strength, which rises as the city grows, and is much worse under a control board. Cutting pay stirs the unions up for a while, and raising it calms them.</p>'+
+ '<p><b>Skills gap.</b> Automation outruns retraining, and workers without the skills lose jobs first. Fund retraining in Spending to close the gap.</p>'+
+ '<p>A caretaker mayor or control board freezes these policies.</p>'},
+{id:'g-demog',title:'Aging, families and schools',
+ brief:'A young town has few seniors and plenty of workers. Over the decades it ages: workers per senior falls, pension and health costs climb and the share of children shrinks, unless births or newcomers keep it young.',
+ more:'<p><b>The age mix.</b> Residents are split into children, working-age adults and seniors. The Economy panel and Policy, People show the shares and the number of workers for each senior. Births follow how many working-age adults you have and are lower when rents are crushing and mood is poor. Newcomers are mostly working-age adults, so a growing city stays young, and a shrinking city ages fast because young adults leave first.</p>'+
+ '<p><b>What aging does.</b> The workforce is the working-age share plus a few seniors, so an older city has fewer workers and less income tax. Seniors need more health care. Pension costs rise with the senior share. Retirees become a bigger voting bloc. Children need schools: when the child share is high and school seats are few, school coverage thins and mood and the young bloc suffer.</p>'+
+ '<p><b>Family support.</b> A slider for child care help and family credits. More families stay and have children, which keeps the city younger for decades. It costs money every month, helps the young and workers blocs a little and trims social need. The payoff is slow.</p>'+
+ '<p>A caretaker mayor or control board freezes this policy along with the rest.</p>'},
+{id:'g-justice',title:'Police, courts and jails',
+ brief:'Crime leads to arrests, arrests to court cases, convictions to inmates and inmates come home. Courts, jails, sentencing, policing style, rehabilitation and public trust all feed back into the crime rate.',
+ more:'<p><b>The pipeline.</b> The more crime and the more police, the more arrests. Arrests become court cases, courts process them at a limited speed and the cases that are not cleared pile up as a backlog. Convictions put people in jail until their sentence ends. Inmates cost money every month. The Economy panel and Policy, Justice show inmates and cells, the court backlog, police trust and the share of released inmates who reoffend.</p>'+
+ '<p><b>Policing style.</b> Community policing builds trust, makes fewer arrests and keeps jails emptier. Aggressive policing makes more arrests and deters more crime, but erodes trust, fills jails, raises repeat offending and risks misconduct scandals and protests. Homeowners, retirees and business like it tough. Renters and the young do not, and a distrusted police force makes them angrier.</p>'+
+ '<p><b>Sentencing.</b> Tougher sentences keep people locked up longer, which keeps them from offending and deters some crime, but fills the jail and costs more. Lenient sentences are cheaper and let people out sooner.</p>'+
+ '<p><b>Courts and jails.</b> A backlog of more than a few months weakens deterrence and trust. A court that is hopelessly behind starts dismissing cases and pleading them out. More judges clear cases faster. If the jail is over capacity it releases people early, breeds repeat offenders and can riot. Jail capacity costs money every month.</p>'+
+ '<p><b>Rehabilitation.</b> Programs cut repeat offending, which lowers crime over time, but they are not cheap. A tough-on-crime strategy only works if you fund the courts and jails to match it. A caretaker mayor or control board freezes all of this.</p>'},
+{id:'g-housing',title:'Housing and homelessness',
+ brief:'Rents follow home prices, how full the city is and how tight zoning is. A heavy rent burden, joblessness and thin social services put people on the street.',
+ more:'<p><b>Rent and the rent burden.</b> Median rent rises with home prices and with how full your housing is, and it falls when more homes go up. The rent burden is the share of a typical household\u2019s income that rent takes: about 30% is fair, over 40% is heavy and over 50% is crushing. A heavy burden drives people out of the city, lowers renter and young-voter approval and, together with joblessness and gaps in social services, pushes people into homelessness. You can see rent, the burden and the homeless count in the Economy panel and in Policy, Housing.</p>'+
+ '<p><b>Homelessness.</b> People sleeping rough hurt mood, cut tourism, raise crime and add to social service needs. Tent encampments can spread when the rate gets high. Social services coverage, jobs, shelters and affordable housing all bring it down.</p>'+
+ '<p><b>Zoning.</b> The permissiveness slider (default 5) decides how much housing the same land can hold and how eagerly builders build. Loose zoning holds rents down and lets the city grow, but homeowners organize against upzoning for a while. Tight zoning keeps neighborhoods as they are, pushes rents up and shrinks the city, and renters and young residents resent it. Every change stirs a fight with the group it upsets.</p>'+
+ '<p><b>Programs.</b> The affordable housing program subsidizes rents, cutting the burden and homelessness. Shelters and outreach get people off the street directly. Both cost money every month.</p>'+
+ '<p><b>Rent stabilization.</b> A toggle that caps rent increases at about 3% a year and makes gentrification evictions much less likely. It slows new building, trims the housing stock and property tax, and costs you the goodwill of business owners and homeowners while renters like it.</p>'+
+ '<p><b>Gentrification.</b> When rents surge and the burden is already heavy, long-time residents can be pushed out. It raises homelessness for years.</p>'+
+ '<p>Housing pressure starts to matter once the city has about 150 people. A caretaker mayor or control board freezes your housing policy, but not immigration.</p>'},
+{id:'g-immig',title:'Crime and immigration',
+ brief:'Crime is a real rate that never reaches zero. Legal immigration helps the city, illegal immigration adds crime and costs, and a sanctuary city pays for it.',
+ more:'<p><b>Crime.</b> The city has a crime rate per 1,000 residents, and it is never zero. Unemployment, inequality, gaps in social services, low mood and illegal residents push it up. Police coverage and police spending pull it down. High crime drags down mood, business and tourism income and population, and can bring crime waves and falling approval. The Economy panel shows the rate, the Crime map layer shows where it is worst, and the Safety advisor warns you.</p>'+
+ '<p><b>Legal immigration.</b> In Policy, Immigration, set how many legal admissions you want each year. Each point is about one person per thousand residents a year, if there are homes for them, and legal newcomers gradually blend into the general population. Legal immigrants are screened, which costs money, and they pay taxes, fill jobs and add skills, which raises income tax and research. If you set the quota to zero while employers cannot find workers, business owners get unhappy.</p>'+
+ '<p><b>Illegal immigration.</b> Illegal arrivals are drawn by jobs and a good life. They add to crime, add to health, school and welfare costs and pay little tax, which lowers income tax and unsettles workers and retirees. Border enforcement costs money, cuts arrivals and removes people already here, with diminishing returns. Employer verification cuts arrivals further but costs business something. Regularizing turns every illegal resident into a legal taxpayer for a one-time fee, with a lasting voter backlash. A surge at the border can bring a wave of new arrivals at once.</p>'+
+ '<p><b>Sanctuary and refugee city.</b> Declaring your city a sanctuary draws about twice as many illegal arrivals, makes enforcement useless, raises costs for legal aid and shelter, trims business tax revenue, cuts outside grants to a third and upsets business owners. It is meant to hurt economically.</p>'+
+ '<p>Immigration only matters once the city has 300 people. Voting blocs react: business wants labor, workers and retirees dislike illegal immigration, homeowners dislike crime. You can keep changing immigration policy even while a caretaker mayor or control board is in charge.</p>'},
 {id:'g-office',title:'Recalls and receivership',
  brief:'A recall or a bankruptcy does not end the game. A caretaker mayor or a financial control board runs the city while you try to get the job back.',
  more:'<p><b>Recall.</b> If approval stays under 25% for eight months, voters recall you. A caretaker mayor, a computer-run successor, takes over, and it governs the opposite way to you. If you ran high taxes and generous spending, it is a small-government conservative who cuts taxes to 7% and trims services. If you ran low taxes and lean services, it is an activist who raises taxes and spends more on schools, health and safety. It also reverses your recycling, clean air, transit and seismic ordinances and sets interest rates tighter or looser than you did. It is still trying to make the city succeed: it balances the budget in its own style (the conservative cuts spending before raising taxes and hands surpluses back as tax cuts, the activist raises taxes before cutting services and spends surpluses on services), sets interest rates, keeps repair crews and utility planners running and handles disasters. It is competent, but it makes mistakes: services cut, taxes raised on a hunch, infrastructure left to slide. You can watch and look around, but you cannot build or change policy.</p>'+
 
- '<p><b>The campaign.</b> You have 30 minutes of running time to win the job back. This is the one real-time timer in the game. It only moves while the game clock is running, so it does not move while a panel is open or the game is paused, and you cannot skip it. Open the Campaign sheet from the button where Build usually is. You spend political capital, not city money. You earn it from achievements, pet projects and a little more every minute. You can hold a town hall (repeat after a short wait), challenge a debate (once), promise tax relief or better services (one promise, kept if you win) and ask the voter blocs that like you for their endorsements.</p>'+
- '<p><b>The election.</b> When the 30 minutes are up the city votes. Three things decide it: your record as mayor (average approval, how the city grew, scandals), how the city fared under the caretaker (a thriving city helps the caretaker, a struggling one helps you) and your campaign, plus a little luck. Win and you are mayor again. Approval is reset to a middling level, the group that likes you least stays hostile for two years, and a recall penalty on approval fades over five years. Lose and a new 30-minute campaign starts straight away. You can keep campaigning forever, or retire at any time and take your legacy score. There are no regular elections. Recalls are the only vote.</p>'+
- '<p><b>Receivership.</b> If the city runs out of money, a financial control board takes over instead of the game ending. It raises taxes, trims spending, keeps infrastructure renewal funded and sells surplus assets such as airports, universities and stadiums, starting with about eight months of spending in cash. If a year goes by with the books still in the red it sells more. When it leaves, your spending levels go back to where they were. There is no election. The board leaves once the city has three months of spending in the bank and a surplus for twelve months in a row, and you return as mayor. If ten years of austerity cannot balance the books and there is nothing left to sell, the state forgives the shortfall and hands the city back.</p>'+
+ '<p><b>The campaign.</b> You have 4 minutes of running time to win the job back. This is the one real-time timer in the game. It only moves while the game clock is running, so it does not move while a panel is open or the game is paused, and you cannot skip it. Open the Campaign sheet from the button where Build usually is. You spend political capital, not city money. You earn it from achievements, pet projects and a little more every minute. You can hold a town hall (repeat after a short wait), challenge a debate (once), promise tax relief or better services (one promise, kept if you win) and ask the voter blocs that like you for their endorsements.</p>'+
+ '<p><b>The election.</b> When the 4 minutes are up the city votes. Three things decide it: your record as mayor (average approval, how the city grew, scandals), how the city fared under the caretaker (a thriving city helps the caretaker, a struggling one helps you) and your campaign, plus a little luck. Win and you are mayor again. Approval is reset to a middling level, the group that likes you least stays hostile for two years, and a recall penalty on approval fades over five years. Lose and a new 4-minute campaign starts straight away. You can keep campaigning forever, or retire at any time and take your legacy score. There are no regular elections. Recalls are the only vote.</p>'+
+ '<p><b>Receivership.</b> If the city runs out of money, a financial control board takes over in caretaker mode. It is an austerity government: it raises taxes, trims spending, keeps infrastructure renewal funded and sells surplus assets such as airports, universities and stadiums, starting with about eight months of spending in cash, and it sells more if a year goes by with the books still in the red. You get the same 4-minute campaign and election as after a recall, and you can win the city back, in which case your spending levels return to where they were. The board also hands the city back on its own once the city has three months of spending in the bank and a surplus for twelve months in a row. If ten years of austerity cannot balance the books and there is nothing left to sell, the state forgives the shortfall and hands the city back.</p>'+
+
  '<p><b>Voters.</b> Approval is the weighted view of six groups. Homeowners care about property taxes, home prices and mortgage rates. Renters care about rents, services and sales tax. Business owners care about business tax and the stock market. Workers care about jobs, wages and income tax. Retirees care about health care, inflation and property taxes. Young residents care about schools, housing costs and jobs. The Economy panel shows each group. Their moods nudge overall approval.</p>'+
  '<p><b>Scandals.</b> Corruption scandals drain approval and can lead to a recall. They get likelier with every pet project and much less likely with Transparency rules (Policy, Spending, ordinances; they cost a small slice of the budget).</p>'+
  '<p><b>The mayors of your city.</b> Menu, Mayors of your city, lists every mayor: you, the caretakers and the control board, with years, population, approval and how each tenure ended. The score counts comebacks and subtracts scandals.</p>'},
@@ -4156,7 +4727,7 @@ function overlayData(mode,g){
       for(var dy=-2;dy<=2;dy++){var yy=y+dy;if(yy<0||yy>=MH)continue;var wd=2-Math.abs(dy);for(var dx=-wd;dx<=wd;dx++){var xx=x+dx;if(xx>=0&&xx<MW)dens[yy*MW+xx]+=w;}}
     }
     var crime=new Float32Array(N);
-    for(i=0;i<N;i++){crime[i]=dens[i]>0?clamp(dens[i]/6*(0.6+1.5*un)*(g.polC[i]?0.4:1),0,1):0;}
+    for(i=0;i<N;i++){crime[i]=dens[i]>0?clamp(dens[i]/6*(0.6+1.5*un)*(g.polC[i]?0.4:1)*clamp((S.crimeRate||8)/10,0.5,2.2),0,1):0;}
     if(mode===4){for(i=0;i<N;i++){if(TER[i]!==WATER)a[i]=crime[i];}}
     else{
       var lv=new Float32Array(N);
@@ -5147,12 +5718,12 @@ function welMax(){
   return clamp(Math.ceil(Math.max(need*2,cur,500)/500)*500,1000,40000);
 }
 function udMax(){return 2+2*Math.max(0,(S.era|0)-1);}
-function creditLimit(){return Math.round(Math.max((12000+S.pop*25)*(1+0.75*(S.era|0)),(E&&E.revenue>0)?E.revenue*12:0));}
+function creditLimit(){return Math.round(creditMul()*Math.max((12000+S.pop*25)*(1+0.75*(S.era|0)),(E&&E.revenue>0)?E.revenue*12:0));}
 function borrow(kind){
   if(locked()){lockMsg();return;}
   var amt=5000;
   if(S.fixedAmt+S.varAmt+amt>creditLimit()){toast('Credit limit reached. Lenders want a bigger city.');return;}
-  if(kind==='fix'){var r=Math.round((S.rate+2)*10)/10;S.fixedRate=(S.fixedAmt*S.fixedRate+amt*r)/(S.fixedAmt+amt);S.fixedAmt+=amt;}
+  if(kind==='fix'){var r=Math.round((S.rate+2+ratingSpread())*10)/10;S.fixedRate=(S.fixedAmt*S.fixedRate+amt*r)/(S.fixedAmt+amt);S.fixedAmt+=amt;}
   else S.varAmt+=amt;
   S.cash+=amt;ui();
 }
@@ -5186,10 +5757,10 @@ function sliderRow(id,label,min,max,step){
 function bindSlider(id,get,set,fmt){
   var el=$(id);if(!el)return;
   el.value=get();$(id+'L').textContent=fmt(get());
-  el.oninput=function(){if(locked()){lockMsg();el.value=get();return;}set(parseFloat(el.value));$(id+'L').textContent=fmt(get());ui();};
+  el.oninput=function(){if(locked()&&id!=='iQuota'&&id!=='iEnf'){lockMsg();el.value=get();return;}set(parseFloat(el.value));$(id+'L').textContent=fmt(get());ui();};
 }
 function renderPolicy(){
-  var b=$('sheetBody'),tabs=[['monetary','Monetary'],['taxes','Taxes'],['spending','Spending'],['books','Books']],i,h=sheetHead('Policy');
+  var b=$('sheetBody'),tabs=[['monetary','Monetary'],['taxes','Taxes'],['spending','Spending'],['finance','Finance'],['housing','Housing'],['justice','Justice'],['people','People'],['immigration','Immigration'],['books','Books']],i,h=sheetHead('Policy');
   h+='<div class="seg tabs">';
   for(i=0;i<tabs.length;i++)h+='<button data-pol="tab" data-tab="'+tabs[i][0]+'" class="'+(polTab===tabs[i][0]?'on':'')+'">'+tabs[i][1]+'</button>';
   h+='</div><div id="polBody"></div>';b.innerHTML=h;
@@ -5251,6 +5822,16 @@ function renderPolicy(){
     if($('sAi'))bindSlider('sAi',function(){return S.sp.aisafe;},function(v){S.sp.aisafe=v;},function(v){return v===0?'Off':'Level '+v;});
     if($('sUd'))bindSlider('sUd',function(){return S.sp.udiv;},function(v){S.sp.udiv=v;},function(v){return v===0?'Off':'$'+(v*8)+' each';});
     bindSlider('sWel',function(){return S.sp.welfare;},function(v){S.sp.welfare=v;},function(v){return money(v);});
+  }else if(polTab==='finance'){
+    renderFinance(body);
+  }else if(polTab==='people'){
+    renderPeople(body);
+  }else if(polTab==='justice'){
+    renderJustice(body);
+  }else if(polTab==='housing'){
+    renderHousing(body);
+  }else if(polTab==='immigration'){
+    renderImm(body);
   }else{
     body.innerHTML='<h3>Borrowing</h3>'
       +'<div class="debt"><div class="meta"><b>Fixed bonds</b><span id="dFix"></span></div><div class="btns"><button id="fixIssue"></button><button id="fixPay">Repay $5,000</button></div></div>'
@@ -5293,6 +5874,11 @@ function drawPolicyChart(){
 }
 function refreshPolicyLive(){
   var pb=$('polBody');if(!pb)return;
+  if(polTab==='immigration'){refreshImm();return;}
+  if(polTab==='housing'){refreshHousing();return;}
+  if(polTab==='justice'){refreshJustice();return;}
+  if(polTab==='people'){refreshPeople();return;}
+  if(polTab==='finance'){refreshFinance();return;}
   var set=function(id,t){var el=$(id);if(el)el.textContent=t;};
   set('mRate',S.rate.toFixed(2)+'%');set('mInfl',S.infl.toFixed(1)+'%');set('mMort',S.mort.toFixed(1)+'%');set('mJob',Math.round(E.unemp*100)+'%');
   set('mGoal','Your mandate: inflation near 2% and people at work. The Taylor-rule guide suggests '+E.taylor.toFixed(2)+'%. Inflation is '+(S.infl>3?'too hot':S.infl<1?'too cold':'on target')+'.'+(E.rstar<1.9?' The neutral real rate has drifted down to '+E.rstar.toFixed(1)+'% as abundance and automation pull prices down.':'')+(S.anch<0.8?' Credibility of your target is '+pct(S.anch)+', so rate moves bite harder.':'')+' The guide is an estimate. The true neutral rate drifts, so watch inflation and jobs too.');
@@ -5322,7 +5908,7 @@ function refreshPolicyLive(){
   var s25=$('stim25');if(s25)s25.textContent='$25 each ('+money(S.pop*25)+')';
   var s100=$('stim100');if(s100)s100.textContent='$100 each ('+money(S.pop*100)+')';
   if($('dFix')){
-    var fr=Math.round((S.rate+2)*10)/10;
+    var fr=Math.round((S.rate+2+ratingSpread())*10)/10;
     $('dFix').textContent=S.fixedAmt>0?money(S.fixedAmt)+' at '+S.fixedRate.toFixed(1)+'%, locked':'None. New bonds lock in '+fr.toFixed(1)+'%.';
     $('dVar').textContent=S.varAmt>0?money(S.varAmt)+' at '+(S.rate+1).toFixed(1)+'%, floats with your policy rate':'None. Floats at policy rate + 1.0 (now '+(S.rate+1).toFixed(1)+'%).';
     $('fixIssue').textContent='Issue $5,000 at '+fr.toFixed(1)+'%';$('varIssue').textContent='Borrow $5,000';
@@ -5335,6 +5921,9 @@ function refreshPolicyLive(){
 function polAct(el){
   var a=el.getAttribute('data-pol');
   if(a==='tab'){polTab=el.getAttribute('data-tab');renderPolicy();return;}
+  if(a==='imm'){var ik=el.getAttribute('data-k');if(ik==='reg')regularize();else setImm(ik);ui();return;}
+  if(locked()){lockMsg();return;}
+  if(a==='hous'){setHousing(el.getAttribute('data-k'));ui();return;}
   if(a==='ord'){var k=el.getAttribute('data-k');setOrd(k,!S.ord[k]);ui();return;}
   if(a==='splost'){S.tax.splost=S.tax.splost?0:1;ui();return;}
   if(a==='dins'){setDeposit(!S.dins);ui();return;}
@@ -5423,7 +6012,7 @@ function refreshEcon(){
   if($('blocBox')){var bh='',bl=e.blocs||[];for(var bi=0;bi<bl.length;bi++){var bb=bl[bi];bh+='<div style="margin:5px 0"><div style="display:flex;justify-content:space-between"><span>'+bb.name+'</span><b>'+Math.round(bb.appr)+'%</b></div><div style="background:#243;height:5px;border-radius:3px"><div style="width:'+Math.round(bb.appr)+'%;height:5px;border-radius:3px;background:#5ac"></div></div><div class="hint">They care about '+BLOC_WHY[bb.id]+'.</div></div>';}$('blocBox').innerHTML=bh;}
   $('eDiag').innerHTML=
     '<div>Buyer affordability<b>'+pct(clamp(e.af,0,1))+'</b></div><div>Builder appetite<b>'+pct(e.appetite)+'</b></div>'+
-    '<div>Homes filled<b>'+pct(e.occ)+'</b></div><div>Shelves stocked<b>'+pct(e.shopFill)+'</b></div>'+
+    '<div>Homes filled<b>'+pct(e.occ)+'</b></div><div>Shelves stocked<b>'+pct(e.shopFill)+'</b></div>'+'<div>Crime<b>'+S.crimeRate.toFixed(0)+' per 1,000</b></div><div>Illegal residents<b>'+pct(e.imm?e.imm.ii:0)+'</b></div>'+'<div>Rent burden<b>'+Math.round(S.burden*100)+'%</b></div><div>Homeless<b>'+Math.round(S.homeless)+'</b></div>'+'<div>Inmates<b>'+Math.round(S.inmates)+'</b></div><div>Court backlog<b>'+(e.jm?e.jm.backlogMonths.toFixed(1):'0')+' mo</b></div><div>Police trust<b>'+Math.round(S.trust*100)+'%</b></div>'+'<div>Bond rating<b>'+ratingName()+'</b></div><div>Pension funded<b>'+Math.round(fundedRatio()*100)+'%</b></div><div>Seniors<b>'+Math.round(S.age.o*100)+'%</b></div><div>Workers per senior<b>'+(e.dem?e.dem.perSenior.toFixed(1):'')+'</b></div>'+
     '<div>Mood<b>'+pct(e.h)+'</b></div><div>Power supply<b>'+pct(e.pw)+'</b></div>'+
     '<div>Water supply<b>'+pct(e.ww)+'</b></div><div>Real mortgage rate<b>'+e.mortReal.toFixed(1)+'%</b></div>'+
     '<div>Infrastructure condition<b>'+pct(S.cond)+'</b></div><div>Renewal needed a month<b>'+money(e.renewNeed)+'</b></div>'+
@@ -6027,7 +6616,7 @@ function frame(t){
   $('info').textContent='Pick a tool below, then tap or drag on the map.';
   showSplash('start');
   requestAnimationFrame(function(t){lastT=t;frame(t);});
-  if(window.__SKYTEST){window.__sky={addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
+  if(window.__SKYTEST){window.__sky={finMods:finMods,stepFin:stepFin,finInit:finInit,ratingName:ratingName,ratingScore:ratingScore,ratingFor:ratingFor,fundedRatio:fundedRatio,benefitChanged:benefitChanged,creditLimit:creditLimit,creditMul:creditMul,ratingSpread:ratingSpread,renderFinance:renderFinance,laborMods:laborMods,stepLabor:stepLabor,laborInit:laborInit,payChanged:payChanged,skillsGap:skillsGap,renderLabor:renderLabor,demMods:demMods,stepDemog:stepDemog,demogInit:demogInit,renderPeople:renderPeople,oldBase:oldBase,justiceMods:justiceMods,stepJustice:stepJustice,justiceInit:justiceInit,renderJustice:renderJustice,jailCap:jailCap,courtCap:courtCap,arrestRate:arrestRate,housingMods:housingMods,stepHousing:stepHousing,setHousing:setHousing,zoneChanged:zoneChanged,burdenOf:burdenOf,housingInit:housingInit,renderHousing:renderHousing,rentWord:rentWord,immMods:immMods,crimeTarget:crimeTarget,crimeWord:crimeWord,stepImm:stepImm,regularize:regularize,setImm:setImm,immInit:immInit,renderImm:renderImm,addNews:addNews,popState:function(){return {q:popQ.length,p:popPend.length,texts:popQ.map(function(x){return x.text;})};},popDrain:popDrain,showPop:showPop,popReset:function(){popQ=[];popPend=[];popLast=0;},locked:locked,startRecall:startRecall,startReceivership:startReceivership,campaignClock:campaignClock,campAction:campAction,campAvail:campAvail,resolveElection:resolveElection,supportCalc:supportCalc,pollNow:pollNow,retire:retire,scandalHit:scandalHit,stepOffice:stepOffice,renderCampaign:renderCampaign,renderMayors:renderMayors,blocCalc:blocCalc,officeInit:officeInit,CAMP_MS:CAMP_MS,getE:function(){return E;},nextUps:nextUps,scoreOf:scoreOf,scoreParts:scoreParts,WINDFALLS_:function(){return WINDFALLS;},hardened:hardened,OBJ_:function(){return OBJ;},stepReserves:stepReserves,reserveCap:reserveCap,reserves:reserves,lenF:lenF,bMon:bMon,applyLen:applyLen,viewH:viewH,vpCheck:vpCheck,getLastVH:function(){return lastVH;},valCap:valCap,swanWord:swanWord,invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,spawnFirm:spawnFirm,stepSwan:stepSwan,complacency:complacency,hairCash:hairCash,stepFirms:stepFirms,stepFund:stepFund,paceMul:paceMul,eraMul:eraMul,sat:sat,kLabel:kLabel,stepPlanners:stepPlanners,getPU:function(){return PU;},udMax:udMax,triggerDisaster:triggerDisaster,stepRepair:stepRepair,stepPP:stepPP,ppFund:ppFund,ppSkip:ppSkip,ppEligible:ppEligible,ppCost:ppCost,ppById:ppById,renderPP:renderPP,PP_LIST_:function(){return PP_LIST;},queueRepair:queueRepair,getWreck:function(){return wreck;},uiRefresh:function(){E=computeEconomy();},welMax:welMax,rdRate:rdRate,setRate:setRate,RATE_MAX:RATE_MAX,applyDisplay:applyDisplay,renderDisplay:renderDisplay,loadDisplay:loadDisplay,motionOk:motionOk,reduceMotion:reduceMotion,setDSP:function(k,v){DSP[k]=v;},getDSP:function(){return DSP;},isLow:function(){return lowGfx;},eraPalette:eraPalette,setEraLook:setEraLook,getEraV:function(){return ERA_V;},menuAct:menuAct,showMenu:showMenu,maybeMacroPublic:maybeMacro,DIFF_:function(){return DIFF;},dm:dm,setDiff:function(v){scnDiff=v;},SCENARIOS_:function(){return SCENARIOS;},SC_GROUPS_:function(){return SC_GROUPS;},scenarioById:scenarioById,checkScenario:checkScenario,setNoDl:function(v){scnNoDl=v;},TUT_:function(){return TUT;},showSplash:showSplash,buildReport:buildReport,renderPlaytest:renderPlaytest,exportCode:exportCode,stepMeta:stepMeta,stepAch:stepAch,stepWindfall:stepWindfall,stepYear:stepYear,nextUps:nextUps,goalShort:goalShort,scoreOf:scoreOf,encodeScore:encodeScore,decodeScore:decodeScore,chron:chron,metaInit:metaInit,ACH_:function(){return ACH;},renderAchievements:renderAchievements,renderChronicle:renderChronicle,renderReport:renderReport,renderShare:renderShare,achCount:achCount,stepAuto:stepAuto,aiRisk:aiRisk,aiCap:aiCap,autoTarget:autoTarget,creditLimit:creditLimit,stepMacro:stepMacro,stepEra:stepEra,eraOf:eraOf,ERA_:function(){return ERA;},MACRO_:function(){return MACRO;},scheduleEvent:scheduleEvent,startCrisis:startCrisis,maybeMacro:maybeMacro,calYear:calYear,dateLabel:dateLabel,kardashev:kardashev,stepKard:stepKard,TECHS_:function(){return TECHS;},costFor:costFor,rdRate:rdRate,fundDeposit:fundDeposit,fundWithdraw:fundWithdraw,stepFund:stepFund,fundBody:fundBody,researchBody:researchBody,scheduleEvent:scheduleEvent,runScheduled:runScheduled,landfillSpace:landfillSpace,stepWaste:stepWaste,startCrisis:startCrisis,MACRO:MACRO,applyBrief:applyBrief,stepCrises:stepCrises,maybeMacro:maybeMacro,shk:shk,renderBrief:renderBrief,worldHTML:worldHTML,stepInfra:stepInfra,get speed(){return speed;},guideHTML:guideHTML,GUIDE:GUIDE,prunePop:prunePop,get animEnabled(){return animEnabled;},setAnim:function(v){animEnabled=v;},overlayMode:overlayMode,startClock:startClock,explainInfo:explainInfo,planDistrict:planDistrict,buildDistrict:buildDistrict,get distState(){return distState;},setHover:function(i){hoverIdx=i;},setDist:function(d){distState=d;},popStep:popStep,setPopMode:setPopMode,toggleMute:toggleMute,get popQ(){return popQ;},showPop:showPop,renderExplain:renderExplain,setExKey:function(k){exKey=k;},auInit:auInit,setAudio:setAudio,undoLast:undoLast,get undoStack(){return undoStack;},adviceList:adviceList,tutorialTick:tutorialTick,setOverlay:setOverlay,overlayData:overlayData,cycleOverlay:cycleOverlay,setOrd:setOrd,saveSlot:saveSlot,loadSlot:loadSlot,slotMeta:slotMeta,exportCode:exportCode,importCode:importCode,scenarioById:scenarioById,SCENARIOS:SCENARIOS,setBuildRot:function(r){buildRot=r;},renderAdvisors:renderAdvisors,renderSaves:renderSaves,showSplash:showSplash,checkScenario:checkScenario,sfx:sfx,get TUT(){return TUT;},get S(){return S;},get T(){return T;},get L(){return L;},get TER(){return TER;},get EL(){return EL;},tick:tick,newGame:newGame,computeEconomy:computeEconomy,scan:scan,
     setTool:function(t){tool=t;},act:act,bailout:bailout,setDeposit:setDeposit,landfillSpace:landfillSpace,stepWaste:stepWaste,checkSite:checkSite,placeBuilding:placeBuilding,clearAt:clearAt,rootOf:rootOf,sizeOf:sizeOf,get PAR(){return PAR;},get MW(){return MW;},setPending:function(p){pending=p;},setRate:setRate,setQE:setQE,sendStimulus:sendStimulus,renderPolicy:renderPolicy,setPolTab:function(t){polTab=t;},borrow:borrow,repay:repay,draw:draw,cam:cam,view:view,pickTile:pickTile,drawMini:drawMini,
     invest:invest,buyShares:buyShares,sellShares:sellShares,acceptOffer:acceptOffer,buyout:buyout,mergeFirms:mergeFirms,spawnFirm:spawnFirm,
     triggerDisaster:triggerDisaster,ipo:ipo,forecastInflation:forecastInflation,openSheet:openSheet,corpAct:corpAct,save:save,loadSave:loadSave,
